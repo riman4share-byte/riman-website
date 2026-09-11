@@ -41,3 +41,6 @@ public/**/*.mp4
 public/**/*.webm
 public/**/*.avi
 public/assets/
+
+# Local hosting import file (may hold private keys)
+.env.netlify-import

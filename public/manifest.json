@@ -1,0 +1,26 @@
+{
+  "name": "Atelier Riman | Sharjah's Premier Bridal & Evening Couture",
+  "short_name": "Riman Atelier",
+  "description": "Bespoke bridal gowns, evening couture, and premium rentals",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EFEAE2",
+  "theme_color": "#A2492B",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/"
+}
