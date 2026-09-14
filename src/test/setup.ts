@@ -13,3 +13,16 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia;
 }
+
+// jsdom does not implement IntersectionObserver (motion's whileInView needs it)
+if (typeof window !== 'undefined' && !('IntersectionObserver' in window)) {
+  class IntersectionObserverStub {
+    callback: (entries: unknown[], observer: unknown) => void;
+    constructor(callback: (entries: unknown[], observer: unknown) => void) { this.callback = callback; }
+    observe(target: Element) { this.callback([{ isIntersecting: false, target }], this); }
+    unobserve() {}
+    disconnect() {}
+    takeRecords() { return []; }
+  }
+  (window as unknown as Record<string, unknown>).IntersectionObserver = IntersectionObserverStub;
+}

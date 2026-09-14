@@ -1,7 +1,7 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { DataProvider } from './contexts/DataContext';
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 
@@ -73,6 +73,7 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <GlobalErrorBoundary>
+      <MotionConfig reducedMotion="user">
       <ToastProvider>
         <QueryClientProvider client={queryClient}>
           <SettingsProvider>
@@ -98,6 +99,7 @@ export default function App() {
           </SettingsProvider>
         </QueryClientProvider>
       </ToastProvider>
+      </MotionConfig>
     </GlobalErrorBoundary>
   );
 }
@@ -254,7 +256,7 @@ function AnimatedRoutes() {
   );
 }
 
-function PageWrapper({ children }: { children: React.ReactNode }) {
+export function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
       initial="initial"
