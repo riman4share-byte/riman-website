@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_STRIPE_CHECKOUT_ENDPOINT: string;
   readonly VITE_CREATE_ORDER_ENDPOINT: string;
+  readonly VITE_SENTRY_DSN?: string;
 }
 
 interface ImportMeta {

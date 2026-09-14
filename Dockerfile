@@ -24,8 +24,10 @@ RUN apk add --no-cache curl
 # Remove default nginx config
 RUN rm -rf /etc/nginx/conf.d/default.conf
 
-# Copy custom nginx config
+# Copy custom nginx config + security header snippet
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN mkdir -p /etc/nginx/snippets
+COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 
 # Copy built assets
 COPY --from=build /app/dist /usr/share/nginx/html

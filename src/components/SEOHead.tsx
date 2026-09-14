@@ -231,22 +231,13 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     const gaId = admin.gaId;
     if (!gaId || document.getElementById('riman-ga')) return;
 
+    // External loader keeps CSP clean: no inline scripts.
     const script = document.createElement('script');
     script.id = 'riman-ga';
     script.async = true;
-    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    script.src = `/ga-loader.js?id=${encodeURIComponent(gaId)}`;
     document.head.appendChild(script);
-
-    const inline = document.createElement('script');
-    inline.id = 'riman-ga-config';
-    inline.textContent = `
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '${gaId}', { page_path: '${location.pathname}' });
-    `;
-    document.head.appendChild(inline);
-  }, [admin.gaId, location.pathname]);
+  }, [admin.gaId]);
 
   useEffect(() => {
     const domain = admin.plausibleDomain;

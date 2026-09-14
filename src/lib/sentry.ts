@@ -2,9 +2,9 @@ import * as Sentry from '@sentry/react';
 import { browserTracingIntegration } from '@sentry/browser';
 
 export function initSentry() {
-  const dsn = import.meta.env.SENTRY_DSN;
+  const dsn = import.meta.env.VITE_SENTRY_DSN;
   if (!dsn) {
-    console.info('[Sentry] No SENTRY_DSN provided — error tracking disabled');
+    console.info('[Sentry] No VITE_SENTRY_DSN provided — error tracking disabled');
     return;
   }
 
