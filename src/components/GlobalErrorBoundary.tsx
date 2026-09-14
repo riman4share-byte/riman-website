@@ -1,4 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { Sentry } from '../lib/sentry';
+import { isChunkLoadError, reloadForFreshChunks } from '../lib/lazyWithRetry';
 
 function ErrorFallback() {
   return (
@@ -8,9 +10,14 @@ function ErrorFallback() {
         <p className="font-body text-stone-500 text-sm mb-8 italic">
           Our atelier encountered a technical issue. Please return home and try again.
         </p>
-        <button onClick={() => window.location.href = '/'} className="btn-luxury">
-          Return to Atelier
-        </button>
+        <div className="flex items-center justify-center gap-4">
+          <button onClick={() => window.location.reload()} className="btn-luxury">
+            Try Again
+          </button>
+          <button onClick={() => window.location.href = '/'} className="btn-luxury">
+            Return to Atelier
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -33,8 +40,18 @@ export default class GlobalErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  public componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-    // Error caught by boundary
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('[riman] Uncaught render error:', error, errorInfo.componentStack);
+    if (isChunkLoadError(error)) {
+      // Stale build after deploy — one controlled reload (cooldown-guarded).
+      reloadForFreshChunks();
+      return;
+    }
+    try {
+      Sentry.captureException(error, { extra: { componentStack: errorInfo.componentStack } });
+    } catch {
+      // reporting must never crash the recovery UI
+    }
   }
 
   public render() {

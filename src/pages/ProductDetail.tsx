@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useState, useMemo, useRef, MouseEvent, Suspense, lazy, useEffect } from 'react';
+import { useState, useMemo, useRef, MouseEvent, Suspense, useEffect } from 'react';
 import { ShoppingBag, Heart, ChevronRight, ChevronLeft, ChevronDown, Share2, Ruler, ShieldCheck, Truck, Search, Star, CheckCircle2, X, Calendar, Info, Loader2, RotateCcw, Box, Sparkles, MessageCircle, Gem, Wind } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { products } from '../data/products';
@@ -10,6 +10,7 @@ import { useCart } from '../contexts/CartContext';
 import { useWishlist } from '../contexts/WishlistContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollLock } from '../hooks/useScrollLock';
+import { lazyWithRetry } from '../lib/lazyWithRetry';
 import { useFeature } from '../hooks/useFeature';
 import { useToast } from '../contexts/ToastContext';
 import { fetchApprovedReviews, submitReview, type Review } from '../services/reviews';
@@ -21,7 +22,7 @@ import SizeGuide from '../components/SizeGuide';
 import { ProductDetailSkeleton } from '../components/Skeleton';
 import { analytics } from '../services/analytics';
 
-const ThreeDViewer = lazy(() => import('../components/ThreeDViewer'));
+const ThreeDViewer = lazyWithRetry(() => import('../components/ThreeDViewer'));
 
 export default function ProductDetail() {
   const { products: dynamicProducts, isLoading } = useData();

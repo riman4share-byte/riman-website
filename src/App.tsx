@@ -1,7 +1,8 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { motion, AnimatePresence, MotionConfig } from 'motion/react';
+import { lazyWithRetry } from './lib/lazyWithRetry';
 import { DataProvider } from './contexts/DataContext';
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
 
@@ -13,31 +14,31 @@ function ScrollToTop() {
 import Layout from './components/Layout';
 
 // Pages - Lazy Loaded
-const Home = lazy(() => import('./pages/Index'));
-const CollectionPage = lazy(() => import('./pages/CollectionPage'));
-const CollectionsPage = lazy(() => import('./pages/CollectionsPage'));
-const JournalPage = lazy(() => import('./pages/JournalPage'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const SearchPage = lazy(() => import('./pages/SearchPage'));
-const WishlistPage = lazy(() => import('./pages/WishlistPage'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const FaqPage = lazy(() => import('./pages/FaqPage'));
-const AlterationsPage = lazy(() => import('./pages/AlterationsPage'));
-const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
-const TermsPage = lazy(() => import('./pages/TermsPage'));
-const Auth = lazy(() => import('./pages/Auth'));
-const Checkout = lazy(() => import('./pages/Checkout'));
-const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'));
-const PaymentCancel = lazy(() => import('./pages/PaymentCancel'));
-const StyleQuiz = lazy(() => import('./pages/StyleQuiz'));
-const AppointmentPage = lazy(() => import('./pages/AppointmentPage'));
-const WeddingTimeline = lazy(() => import('./pages/WeddingTimeline'));
-const WeddingChecklist = lazy(() => import('./pages/WeddingChecklist'));
-const GalleryPage = lazy(() => import('./pages/GalleryPage'));
-const Demo21st = lazy(() => import('./pages/Demo21st'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const Home = lazyWithRetry(() => import('./pages/Index'));
+const CollectionPage = lazyWithRetry(() => import('./pages/CollectionPage'));
+const CollectionsPage = lazyWithRetry(() => import('./pages/CollectionsPage'));
+const JournalPage = lazyWithRetry(() => import('./pages/JournalPage'));
+const ProductDetail = lazyWithRetry(() => import('./pages/ProductDetail'));
+const AboutPage = lazyWithRetry(() => import('./pages/AboutPage'));
+const ContactPage = lazyWithRetry(() => import('./pages/ContactPage'));
+const SearchPage = lazyWithRetry(() => import('./pages/SearchPage'));
+const WishlistPage = lazyWithRetry(() => import('./pages/WishlistPage'));
+const ProfilePage = lazyWithRetry(() => import('./pages/ProfilePage'));
+const FaqPage = lazyWithRetry(() => import('./pages/FaqPage'));
+const AlterationsPage = lazyWithRetry(() => import('./pages/AlterationsPage'));
+const PrivacyPage = lazyWithRetry(() => import('./pages/PrivacyPage'));
+const TermsPage = lazyWithRetry(() => import('./pages/TermsPage'));
+const Auth = lazyWithRetry(() => import('./pages/Auth'));
+const Checkout = lazyWithRetry(() => import('./pages/Checkout'));
+const PaymentSuccess = lazyWithRetry(() => import('./pages/PaymentSuccess'));
+const PaymentCancel = lazyWithRetry(() => import('./pages/PaymentCancel'));
+const StyleQuiz = lazyWithRetry(() => import('./pages/StyleQuiz'));
+const AppointmentPage = lazyWithRetry(() => import('./pages/AppointmentPage'));
+const WeddingTimeline = lazyWithRetry(() => import('./pages/WeddingTimeline'));
+const WeddingChecklist = lazyWithRetry(() => import('./pages/WeddingChecklist'));
+const GalleryPage = lazyWithRetry(() => import('./pages/GalleryPage'));
+const Demo21st = lazyWithRetry(() => import('./pages/Demo21st'));
+const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
 
 // Contexts
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -50,17 +51,17 @@ import { ToastProvider } from './contexts/ToastContext';
 import { applySafeCustomHead, clearSafeCustomHead } from './lib/safeHead';
 
 // Admin Pages - Lazy Loaded
-const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminCalendar = lazy(() => import('./pages/admin/AdminCalendar'));
-const AdminSettings = lazy(() => import('./pages/admin/AdminSettings'));
-const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
-const AdminContent = lazy(() => import('./pages/admin/AdminContent'));
-const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
+const AdminLayout = lazyWithRetry(() => import('./pages/admin/AdminLayout'));
+const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
+const AdminCalendar = lazyWithRetry(() => import('./pages/admin/AdminCalendar'));
+const AdminSettings = lazyWithRetry(() => import('./pages/admin/AdminSettings'));
+const AdminProducts = lazyWithRetry(() => import('./pages/admin/AdminProducts'));
+const AdminContent = lazyWithRetry(() => import('./pages/admin/AdminContent'));
+const AdminReviews = lazyWithRetry(() => import('./pages/admin/AdminReviews'));
 
-const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
-const AdminAppointments = lazy(() => import('./pages/admin/AdminAppointments'));
-const AdminGallery = lazy(() => import('./pages/admin/AdminGallery'));
+const AdminOrders = lazyWithRetry(() => import('./pages/admin/AdminOrders'));
+const AdminAppointments = lazyWithRetry(() => import('./pages/admin/AdminAppointments'));
+const AdminGallery = lazyWithRetry(() => import('./pages/admin/AdminGallery'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,8 +84,11 @@ export default function App() {
                   <CartProvider>
                     <BrowserRouter>
                       <Suspense fallback={
-                        <div className="min-h-screen bg-ivory flex items-center justify-center">
-                          <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                        <div className="min-h-screen bg-ivory flex items-center justify-center" role="status" aria-live="polite">
+                          <div className="text-center">
+                            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
+                            <p className="sr-only">Loading page…</p>
+                          </div>
                         </div>
                       }>
                         <MaintenanceGate>
@@ -277,3 +281,4 @@ export function PageWrapper({ children }: { children: React.ReactNode }) {
     </motion.div>
   );
 }
+
