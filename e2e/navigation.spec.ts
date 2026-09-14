@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// First visit defaults to Arabic (intentional); these assertions are English-based.
+const PIN_EN = () => { test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.setItem('riman_lang', 'en')); }); };
+PIN_EN();
+
 test.describe('Riman Fashion — Navigation & Routing', () => {
 
   /** ─── HEADER NAVIGATION ─── */
@@ -117,9 +121,9 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
       const sidebar = page.locator('[role="dialog"][aria-modal="true"]').filter({ has: page.getByLabel('Close menu') });
 
       // Collection links
-      await expect(sidebar.getByText('Collections')).toBeVisible();
+      await expect(sidebar.getByRole('link', { name: 'Collections' })).toBeVisible();
       await expect(sidebar.getByRole('link', { name: /Bridal/i }).first()).toBeVisible();
-      await expect(sidebar.getByRole('link', { name: /Evening/i }).first()).toBeVisible();
+      await expect(sidebar.getByRole('link', { name: /Couture/i }).first()).toBeVisible();
 
       // Atelier section heading
       await expect(sidebar.getByText('Atelier', { exact: true })).toBeVisible();
@@ -230,7 +234,7 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
       { path: '/about', title: siteTitle },
       { path: '/contact', title: siteTitle },
       { path: '/faq', title: siteTitle },
-      { path: '/blog', title: siteTitle },
+      { path: '/journal', title: siteTitle },
       { path: '/gallery', title: siteTitle },
       { path: '/privacy', title: siteTitle },
       { path: '/terms', title: siteTitle },

@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// First visit defaults to Arabic (intentional); these assertions are English-based.
+const PIN_EN = () => { test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.setItem('riman_lang', 'en')); }); };
+PIN_EN();
+
 test.describe('Riman Fashion — Collection Pages', () => {
 
   /** ─── CATEGORY BROWSING ─── */
