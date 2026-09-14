@@ -1,16 +1,47 @@
-import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
 
-function getResendClient(): Resend | null {
-  // NOTE: Vite only exposes VITE_-prefixed vars to the browser.
-  // Client-side Resend is intentionally disabled — use the Supabase
-  // `send-notification` edge function instead. Kept as no-op guard
-  // so callers fail softly with `not-configured`.
-  const apiKey = (import.meta.env.VITE_RESEND_API_KEY as string | undefined) ?? (import.meta.env.RESEND_API_KEY as string | undefined);
-  if (!apiKey) {
-    console.info('[Riman] Email not configured — route via send-notification edge function');
-    return null;
+export interface EmailResult {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Client-side email is DELEGATED to the `send-notification` Supabase edge
+ * function — there is no browser-side email SDK here. Transactional email
+ * templates and API keys are server-only concerns; anything shipped in the
+ * client bundle is public and forgeable, so this module only composes a
+ * notification request and reports back the edge function's outcome.
+ *
+ * Callers (Checkout, AppointmentPage, PaymentSuccess) fail softly: a guest
+ * without a session receives `{ success: false, error: 'unauthorized' }`
+ * while the Stripe webhook (server-side) paths still send the real emails.
+ */
+
+interface NotificationPayload {
+  type: 'order_confirmed' | 'appointment_booked' | 'contact_submitted';
+  to: string;
+  subject: string;
+  data: Record<string, unknown>;
+}
+
+async function notify(payload: NotificationPayload): Promise<EmailResult> {
+  const url = import.meta.env.VITE_SUPABASE_URL;
+  const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  if (!url || !anon) {
+    return { success: false, error: 'not-configured' };
   }
-  return new Resend(apiKey);
+  try {
+    const supabase = createClient(url, anon);
+    const { error } = await supabase.functions.invoke('send-notification', { body: payload });
+    if (error) {
+      const message = error.message || String(error);
+      console.info('[Riman] send-notification unavailable:', message);
+      return { success: false, error: /401|Unauthorized/i.test(message) ? 'unauthorized' : message };
+    }
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: String(err) };
+  }
 }
 
 interface OrderEmailData {
@@ -43,143 +74,22 @@ interface OrderEmailData {
   createdAt: string;
 }
 
-export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<{ success: boolean; error?: string }> {
-  try {
-    const itemsHtml = data.items.map(item => `
-      <tr style="border-bottom: 1px solid #E8E3D9;">
-        <td style="padding: 12px 8px;">${item.name}${item.size ? ` (${item.size})` : ''}</td>
-        <td style="padding: 12px 8px; text-align: center;">${item.quantity}</td>
-        <td style="padding: 12px 8px; text-align: right;">AED ${item.price.toLocaleString()}</td>
-      </tr>
-    `).join('');
-
-    const rentalInfo = data.items.some(i => i.intent === 'rent') ? `
-      <p style="margin: 16px 0; padding: 12px; background: #F6F0E6; border: 1px solid #E8E3D9; font-size: 14px; color: #44403C;">
-        <strong>Rental order:</strong> Your rental period will be confirmed via email. Please ensure items are returned by the agreed date.
-      </p>
-    ` : '';
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="margin: 0; padding: 0; background: #EFEAE2;">
-          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; color: #292524; max-width: 600px; margin: 0 auto; padding: 24px;">
-          <div style="text-align: center; margin-bottom: 32px; padding-top: 16px;">
-            <h1 style="font-family: Georgia, 'Times New Roman', serif; color: #161513; margin: 0 0 8px; font-size: 26px; letter-spacing: 0.1em; text-transform: uppercase;">Atelier Riman</h1>
-            <p style="color: #78716C; font-size: 13px; margin: 0; letter-spacing: 0.2em; text-transform: uppercase;">Sharjah</p>
-            <div style="width: 48px; height: 2px; background: #A2492B; margin: 16px auto 0;"></div>
-          </div>
-
-          <div style="background: #F6F0E6; border: 1px solid #E8E3D9; padding: 24px; margin-bottom: 24px;">
-            <h2 style="margin: 0 0 16px; font-size: 20px; color: #161513; font-family: Georgia, 'Times New Roman', serif;">Order Confirmation</h2>
-            <p style="margin: 0 0 8px;">Hi <strong>${data.customerName}</strong>,</p>
-            <p style="margin: 0 0 16px;">Thank you for your order! We're delighted to confirm your purchase.</p>
-            
-            <p style="margin: 0 0 8px;"><strong>Order ID:</strong> ${data.orderId}</p>
-            <p style="margin: 0 0 16px;"><strong>Date:</strong> ${new Date(data.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            
-            ${rentalInfo}
-          </div>
-
-          <div style="margin-bottom: 24px;">
-            <h3 style="font-size: 16px; color: #161513; margin: 0 0 12px; border-bottom: 2px solid #A2492B; padding-bottom: 8px; font-family: Georgia, 'Times New Roman', serif;">Order Details</h3>
-            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-              <thead>
-                <tr style="border-bottom: 1px solid #E8E3D9;">
-                  <th style="text-align: left; padding: 12px 8px; font-weight: 600;">Item</th>
-                  <th style="text-align: center; padding: 12px 8px; font-weight: 600;">Qty</th>
-                  <th style="text-align: right; padding: 12px 8px; font-weight: 600;">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
-            </table>
-            
-            <div style="margin-top: 16px; text-align: right;">
-              <p style="margin: 4px 0;"><strong>Subtotal:</strong> AED ${data.subtotal.toLocaleString()}</p>
-              <p style="margin: 4px 0;"><strong>Shipping:</strong> AED ${data.shipping.toLocaleString()}</p>
-              <p style="margin: 4px 0;"><strong>Tax:</strong> AED ${data.tax.toLocaleString()}</p>
-              <p style="margin: 8px 0 0; font-size: 18px; color: #A2492B;"><strong>Total: AED ${data.total.toLocaleString()}</strong></p>
-            </div>
-          </div>
-
-          <div style="background: #F6F0E6; border: 1px solid #E8E3D9; padding: 24px; margin-bottom: 24px;">
-            <h3 style="margin: 0 0 12px; font-size: 16px; color: #161513; font-family: Georgia, 'Times New Roman', serif;">Shipping Address</h3>
-            <p style="margin: 4px 0;">${data.shippingAddress.name}</p>
-            <p style="margin: 4px 0;">${data.shippingAddress.line1}${data.shippingAddress.line2 ? ', ' + data.shippingAddress.line2 : ''}</p>
-            <p style="margin: 4px 0;">${data.shippingAddress.city}${data.shippingAddress.state ? ', ' + data.shippingAddress.state : ''} ${data.shippingAddress.postalCode}</p>
-            <p style="margin: 4px 0;">${data.shippingAddress.country}</p>
-          </div>
-
-          <div style="background: #F6F0E6; border: 1px solid #E8E3D9; padding: 24px; margin-bottom: 24px;">
-            <h3 style="margin: 0 0 12px; font-size: 16px; color: #161513; font-family: Georgia, 'Times New Roman', serif;">Payment Method</h3>
-            <p style="margin: 0;">${data.paymentMethod}</p>
-          </div>
-
-          <hr style="border: none; border-top: 1px solid #E8E3D9; margin: 32px 0;">
-          <p style="font-size: 12px; color: #78716C; text-align: center; margin: 0;">
-            Atelier Riman · Al Zahra St, Sharjah, UAE · hello@riman.ae
-          </p>
-          </div>
-        </body>
-      </html>
-    `;
-
-    const resend = getResendClient();
-    if (!resend) return { success: false, error: 'not-configured' };
-
-    const { data: _result, error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
-      to: data.customerEmail,
-      subject: `Order Confirmation — ${data.orderId}`,
-      html,
-    });
-
-    if (error) {
-      console.error('Resend error:', error);
-      return { success: false, error: error.message };
-    }
-    return { success: true };
-  } catch (err) {
-    console.error('sendOrderConfirmationEmail error:', err);
-    return { success: false, error: String(err) };
-  }
+export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<EmailResult> {
+  return notify({
+    type: 'order_confirmed',
+    to: data.customerEmail,
+    subject: `Order Confirmation — ${data.orderId}`,
+    data: { ...data },
+  });
 }
 
-export async function sendAdminOrderAlert(data: OrderEmailData): Promise<{ success: boolean; error?: string }> {
-  try {
-    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@riman.ae';
-    
-    const html = `
-      <h2>New Order Received</h2>
-      <p><strong>Order ID:</strong> ${data.orderId}</p>
-      <p><strong>Customer:</strong> ${data.customerName} (${data.customerEmail})</p>
-      <p><strong>Total:</strong> AED ${data.total.toLocaleString()}</p>
-      <p><strong>Items:</strong> ${data.items.length} item(s)</p>
-      <p><strong>Payment:</strong> ${data.paymentMethod}</p>
-      <p><a href="https://riman-fashion-v2.netlify.app/admin/orders/${data.orderId}">View in Admin</a></p>
-    `;
-
-    const resend = getResendClient();
-    if (!resend) return { success: false, error: 'not-configured' };
-
-    const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
-      to: adminEmail,
-      subject: `🛍️ New Order — ${data.orderId}`,
-      html,
-    });
-
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: String(err) };
-  }
+export async function sendAdminOrderAlert(data: OrderEmailData): Promise<EmailResult> {
+  return notify({
+    type: 'order_confirmed',
+    to: import.meta.env.VITE_ADMIN_NOTIFY_EMAIL || 'admin@riman.ae',
+    subject: `New Order — ${data.orderId}`,
+    data: { orderId: data.orderId, customerName: data.customerName, customerEmail: data.customerEmail, total: data.total, itemCount: data.items.length, paymentMethod: data.paymentMethod, admin: true },
+  });
 }
 
 export async function sendRentalReminderEmail(
@@ -187,34 +97,14 @@ export async function sendRentalReminderEmail(
   customerName: string,
   orderId: string,
   returnDate: string,
-  items: string[]
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const html = `
-      <h2>Rental Return Reminder</h2>
-      <p>Hi ${customerName},</p>
-      <p>This is a friendly reminder that your rental (Order ${orderId}) is due for return by <strong>${new Date(returnDate).toLocaleDateString()}</strong>.</p>
-      <p>Items to return:</p>
-      <ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>
-      <p>Please ensure items are returned in their original condition.</p>
-      <p>Questions? Reply to this email or contact us at hello@riman.ae</p>
-    `;
-
-    const resend = getResendClient();
-    if (!resend) return { success: false, error: 'not-configured' };
-
-    const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
-      to: customerEmail,
-      subject: `Rental Return Reminder — ${orderId}`,
-      html,
-    });
-
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: String(err) };
-  }
+  items: string[],
+): Promise<EmailResult> {
+  return notify({
+    type: 'order_confirmed',
+    to: customerEmail,
+    subject: `Rental Return Reminder — ${orderId}`,
+    data: { customerName, orderId, returnDate, items, reminder: true },
+  });
 }
 
 export async function sendAppointmentConfirmationEmail(data: {
@@ -223,43 +113,13 @@ export async function sendAppointmentConfirmationEmail(data: {
   date: string;
   time: string;
   gowns: string[];
-}): Promise<{ success: boolean; error?: string }> {
-  try {
-    const resend = getResendClient();
-    if (!resend) return { success: false, error: 'not-configured' };
-
-    const html = `
-      <!DOCTYPE html>
-      <html><body style="margin:0;padding:0;background:#EFEAE2;">
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.6;color:#292524;max-width:600px;margin:0 auto;padding:24px;">
-        <div style="text-align:center;margin-bottom:32px;padding-top:16px;">
-          <h1 style="font-family:Georgia,'Times New Roman',serif;color:#161513;margin:0 0 8px;font-size:26px;letter-spacing:0.1em;text-transform:uppercase;">Atelier Riman</h1>
-          <p style="color:#78716C;font-size:13px;margin:0;letter-spacing:0.2em;text-transform:uppercase;">Sharjah</p>
-          <div style="width:48px;height:2px;background:#A2492B;margin:16px auto 0;"></div>
-        </div>
-        <div style="background:#F6F0E6;border:1px solid #E8E3D9;padding:24px;">
-          <h2 style="margin:0 0 16px;font-size:20px;font-family:Georgia,'Times New Roman',serif;color:#161513;">Your Private Viewing</h2>
-          <p>Dear <strong>${data.name}</strong>,</p>
-          <p>Your viewing request has been received for <strong>${new Date(data.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong> at <strong>${data.time}</strong>.</p>
-          ${data.gowns.length ? `<p>Pieces prepared for you:<br/><em>${data.gowns.join('<br/>')}</em></p>` : ''}
-          <p style="margin-bottom:0;">Al Zahra St, Sharjah, UAE. To reschedule, simply reply to this email.</p>
-        </div>
-        <p style="font-size:12px;color:#78716C;text-align:center;margin-top:32px;">Atelier Riman · hello@riman.ae</p>
-        </div>
-      </body></html>`;
-
-    const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
-      to: data.email,
-      subject: `Private Viewing Request — ${data.date}`,
-      html,
-    });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (err) {
-    console.error('sendAppointmentConfirmationEmail error:', err);
-    return { success: false, error: String(err) };
-  }
+}): Promise<EmailResult> {
+  return notify({
+    type: 'appointment_booked',
+    to: data.email,
+    subject: `Private Viewing Request — ${data.date}`,
+    data: { ...data },
+  });
 }
 
 export async function sendAppointmentAdminAlert(data: {
@@ -269,29 +129,11 @@ export async function sendAppointmentAdminAlert(data: {
   date: string;
   time: string;
   gowns: string[];
-}): Promise<{ success: boolean; error?: string }> {
-  try {
-    const resend = getResendClient();
-    if (!resend) return { success: false, error: 'not-configured' };
-
-    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@riman.ae';
-    const html = `
-      <h2>New Viewing Request</h2>
-      <p><strong>${data.name}</strong> · ${data.phone} · ${data.email}</p>
-      <p><strong>Requested:</strong> ${data.date} at ${data.time}</p>
-      ${data.gowns.length ? `<p><strong>Gowns:</strong> ${data.gowns.join(', ')}</p>` : ''}
-      <p><a href="https://riman-fashion-v2.netlify.app/admin/appointments">Open Admin Calendar</a></p>`;
-
-    const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
-      to: adminEmail,
-      subject: `📅 Viewing Request — ${data.name}`,
-      html,
-    });
-    if (error) return { success: false, error: error.message };
-    return { success: true };
-  } catch (err) {
-    console.error('sendAppointmentAdminAlert error:', err);
-    return { success: false, error: String(err) };
-  }
+}): Promise<EmailResult> {
+  return notify({
+    type: 'appointment_booked',
+    to: import.meta.env.VITE_ADMIN_NOTIFY_EMAIL || 'admin@riman.ae',
+    subject: `Viewing Request — ${data.name}`,
+    data: { ...data, admin: true },
+  });
 }

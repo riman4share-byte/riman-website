@@ -6,6 +6,7 @@ interface ImportMetaEnv {
   readonly VITE_STRIPE_CHECKOUT_ENDPOINT: string;
   readonly VITE_CREATE_ORDER_ENDPOINT: string;
   readonly VITE_SENTRY_DSN?: string;
+  readonly VITE_ADMIN_NOTIFY_EMAIL?: string;
 }
 
 interface ImportMeta {
