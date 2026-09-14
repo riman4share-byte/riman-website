@@ -9,30 +9,11 @@
  */
 import { readFileSync } from 'node:fs';
 import { render } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('../hooks/useFeature', () => ({
   useFeature: () => true,
 }));
-
-const originalMatchMedia = window.matchMedia;
-
-function mockMotionPreference(reduce: boolean) {
-  window.matchMedia = ((query: string) => ({
-    matches: query.includes('prefers-reduced-motion') ? reduce : false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  })) as unknown as typeof window.matchMedia;
-}
-
-afterEach(() => {
-  window.matchMedia = originalMatchMedia;
-});
 
 describe('MotionConfig wiring', () => {
   it('wraps the app in reducedMotion="user" so all JS animations respect the OS setting', () => {
@@ -48,15 +29,22 @@ describe('MotionConfig wiring', () => {
 });
 
 describe('ScrollReveal', () => {
-  it('renders children un-wrapped (no animated node) under reduced motion', async () => {
-    mockMotionPreference(true);
+  it('bypasses the reveal wrapper entirely when the OS prefers reduced motion', async () => {
+    // Mock motion's own hook deterministically: the guarantee we test is that
+    // ScrollReveal short-circuits on prefersReducedMotion (its import-time
+    // media-query cache in jsdom is otherwise unreliable).
     vi.resetModules();
+    vi.doMock('motion/react', async () => {
+      const actual = await vi.importActual<typeof import('motion/react')>('motion/react');
+      return { ...actual, useReducedMotion: () => true };
+    });
     const { default: ScrollReveal } = await import('../components/ScrollReveal');
     const { container } = render(
       <ScrollReveal><p id="probe">Revealed</p></ScrollReveal>,
     );
     expect(container.querySelector('#probe')).not.toBeNull();
     expect(container.firstChild).toBe(container.querySelector('#probe'));
+    vi.doUnmock('motion/react');
   });
 });
 
