@@ -11,7 +11,7 @@ export default function HeroSection21st() {
   const [videoError, setVideoError] = useState(false);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-onyx overflow-hidden">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-onyx overflow-hidden pt-[clamp(7rem,22vh,14rem)]">
       {!videoError ? (
         <video
           className="absolute inset-0 w-full h-full object-cover"

@@ -32,7 +32,11 @@ export default function Header() {
 
   const location = useLocation();
   const isHome = location.pathname === '/';
-  const headerSolid = !isHome || isScrolled;
+  // Light content (white text/icons) whenever the header sits over the dark
+  // hero — home at top (transparent + scrim) or home scrolled (translucent
+  // onyx). Inner pages keep the solid ivory bar with dark content.
+  const onDark = isHome;
+  const scrolledHome = isHome && isScrolled;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
@@ -61,160 +65,164 @@ export default function Header() {
       id="header"
       dir={isRtl ? 'rtl' : 'ltr'}
       className={cn(
-        "top-0 left-0 w-full z-[100] transition-all duration-700 ease-[0.16,1,0.3,1]",
+        "top-0 left-0 w-full z-[100] transition-all duration-500 ease-[0.16,1,0.3,1]",
         isHome ? "fixed" : "absolute",
-        !isHome
-          ? "bg-ivory/98 backdrop-blur-md py-3 border-b border-stone-200"
-          : isScrolled
-            ? "bg-onyx/90 backdrop-blur-md py-3 border-b border-white/10 shadow-2xl"
-            : "bg-transparent py-5 md:py-8"
+        scrolledHome
+          ? "bg-onyx/90 backdrop-blur-xl py-3 border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
+          : !isHome
+            ? "bg-ivory/[0.97] backdrop-blur-xl py-3 border-b border-stone-200/70"
+            : "bg-gradient-to-b from-black/60 via-black/25 to-transparent py-5 md:py-8"
       )}
     >
-      {(headerSolid || isScrolled) && (
+      {((!isHome) || scrolledHome) && (
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       )}
-      <div className="container mx-auto px-6 relative grid grid-cols-[1fr_auto_1fr] items-center">
-        {/* Left Layer: Menu / Primary Nav / Language / Search */}
-        <div className="flex min-w-0 items-center justify-self-start gap-4">
-          <div className="xl:hidden">
-            <button 
-              onClick={() => setIsMenuOpen(true)}
-              className="p-2 -ms-2 hover:bg-stone-100 transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none"
-              aria-label={t('header.menu_open')}
-            >
-              <Menu className={cn("w-6 h-6", (!isHome) ? "text-stone-800" : "text-white")} />
-            </button>
-          </div>
-          
-          {/* Desktop Nav On Left */}
-          <nav className="hidden xl:flex items-center gap-3.5 2xl:gap-5" aria-label="Collections">
+      <div className="w-full px-5 sm:px-8 lg:px-10 2xl:px-16 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+        {/* Left: mobile menu trigger + primary navigation */}
+        <div className="flex min-w-0 items-center justify-self-start">
+          <button
+            onClick={() => setIsMenuOpen(true)}
+            className={cn(
+              "lg:hidden -ms-2 p-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50",
+              onDark ? "text-white/90 hover:text-white" : "text-stone-700 hover:text-stone-900"
+            )}
+            aria-label={t('header.menu_open')}
+          >
+            <Menu className="w-6 h-6" strokeWidth={1.5} />
+          </button>
+
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-8 2xl:gap-10" aria-label="Primary">
             {leftNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "font-label text-xs uppercase whitespace-nowrap tracking-[0.18em] 2xl:tracking-[0.25em] transition-all duration-300",
-                  (!isHome) 
-                    ? "text-stone-600 hover:text-gold-dark" 
-                    : "text-white/80 hover:text-gold border-b border-transparent hover:border-gold/40"
+                  "group relative font-label text-[10px] xl:text-[11px] uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
+                  onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
                 )}
               >
                 {link.key ? t(link.key) : link.label}
+                <span
+                  className={cn(
+                    "absolute -bottom-1.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full",
+                    onDark ? "bg-white/80" : "bg-stone-900"
+                  )}
+                  aria-hidden="true"
+                />
               </Link>
             ))}
           </nav>
-
-          {/* Language Switcher */}
-          <button
-            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-            className={cn(
-              "hidden xl:flex items-center gap-1.5 font-body text-xs tracking-widest uppercase transition-colors ml-2",
-              (!isHome) ? "text-stone-800 hover:text-gold-dark" : "text-white hover:text-gold"
-            )}
-            aria-label={language === 'en' ? t('header.switch_to_ar') : t('header.switch_to_en')}
-          >
-            <Globe className="w-5 h-5" aria-hidden="true" />
-            <span className="hidden lg:inline">{language === 'en' ? 'عربي' : 'EN'}</span>
-          </button>
-
-          {/* Search Icon */}
-          <Link
-            to="/search"
-            className={cn("hidden xl:block hover:text-gold transition-colors", (!isHome) ? "text-stone-800" : "text-white")}
-            aria-label={t('header.search')}
-          >
-            <Search className="w-6 h-6" />
-          </Link>
         </div>
 
-        {/* Center Layer: Logo with Magnetic Effect (grid-centered, never collides) */}
-        <div className="relative flex items-center justify-self-center px-2 2xl:px-10">
+        {/* Center: logo, optically centered */}
+        <div className="flex items-center justify-center">
           <motion.div
-             onMouseMove={handleLogoMove}
-             onMouseLeave={resetLogo}
-             animate={{ x: logoPos.x, y: logoPos.y }}
-             transition={{ type: 'spring', stiffness: 150, damping: 15 }}
-             className="relative z-10 flex flex-col items-center"
+            onMouseMove={handleLogoMove}
+            onMouseLeave={resetLogo}
+            animate={{ x: logoPos.x, y: logoPos.y }}
+            transition={{ type: 'spring', stiffness: 150, damping: 15 }}
+            className="relative z-10 flex flex-col items-center"
           >
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               id="logo"
-              className="flex flex-col items-center group py-2"
+              className="flex flex-col items-center py-1"
+              aria-label="Riman Fashion home"
             >
-              <Logo 
-                variant="gold" 
-                className={cn("transition-all duration-700", !isHome ? "w-10" : "w-14")}
+              <Logo
+                variant="gold"
+                className={cn("transition-all duration-700", onDark ? "w-12" : "w-10")}
                 showText={false}
               />
-              <span className={cn(
-                "text-xs uppercase whitespace-nowrap tracking-[0.5em] mt-2 transition-all duration-700 font-heading font-bold",
-                (!isHome) 
-                  ? "text-stone-600 opacity-100" 
-                  : "text-white/60 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1"
-              )}>
-                {isHome ? 'Atelier' : 'Riman'}
+              <span
+                className={cn(
+                  "mt-1.5 -me-[0.4em] font-heading text-[9px] uppercase tracking-[0.4em] whitespace-nowrap transition-colors duration-700",
+                  onDark ? "text-white/60" : "text-stone-500"
+                )}
+              >
+                Riman
               </span>
             </Link>
           </motion.div>
         </div>
 
-        {/* Right Layer: Secondary Nav + Actions */}
-        <div className="flex min-w-0 items-center justify-self-end gap-4 md:gap-6">
-          <nav className="hidden xl:flex items-center gap-3 mr-3 border-r border-stone-200 pr-3" aria-label="Atelier">
+        {/* Right: contact + language + minimal line icons */}
+        <div className="flex min-w-0 items-center justify-self-end gap-5 xl:gap-6">
+          <nav className="hidden xl:flex items-center" aria-label="Atelier">
             {rightNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "font-label text-xs uppercase whitespace-nowrap tracking-[0.25em] transition-all duration-300",
-                  (!isHome) 
-                    ? "text-stone-600 hover:text-gold-dark" 
-                    : "text-white/80 hover:text-gold border-b border-transparent hover:border-gold/40"
+                  "group relative font-label text-[10px] xl:text-[11px] uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
+                  onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
                 )}
               >
                 {link.key ? t(link.key) : link.label}
+                <span
+                  className={cn(
+                    "absolute -bottom-1.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full",
+                    onDark ? "bg-white/80" : "bg-stone-900"
+                  )}
+                  aria-hidden="true"
+                />
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 md:gap-4">
-            <Link to="/style-quiz" className="hover:text-gold transition-colors" aria-label={t('header.style_quiz')}>
-              <Sparkles className={cn("w-6 h-6", (!isHome) ? "text-stone-800" : "text-white")} />
-            </Link>
-            <Link to="/wishlist" className="hidden lg:block relative group/wishlist hover:text-gold transition-colors" aria-label={t('header.your_selection')}>
-              <Heart className={cn("w-6 h-6 transition-transform group-hover/wishlist:scale-110", (!isHome) ? "text-stone-800" : "text-white")} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold-dark text-white text-[11px] font-bold min-w-4 h-4 px-0.5 flex items-center justify-center leading-none">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-            <Link to="/profile" className="hidden md:block hover:text-gold transition-colors" aria-label={t('header.account')}>
-              <User className={cn("w-6 h-6", (!isHome) ? "text-stone-800" : "text-white")} />
-            </Link>
-            <Link to="/checkout" className="hidden md:block relative group/cart" aria-label={t('header.bag')}>
-              <ShoppingBag className={cn("w-6 h-6 transition-transform group-hover/cart:scale-110", (!isHome) ? "text-stone-800" : "text-white")} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold-dark text-white text-[11px] font-bold min-w-4 h-4 px-0.5 flex items-center justify-center leading-none">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-            {/* Book Appointment CTA - highly visible */}
-            <Link
-              to="/appointment"
-              className={cn(
-                "hidden xl:inline-flex items-center justify-center gap-2 px-6 py-3 font-label text-xs tracking-[0.2em] uppercase transition-all duration-300 min-h-[48px]",
-                (!isHome)
-                  ? "bg-stone-800 text-white hover:bg-gold hover:text-stone-900 border border-stone-800"
-                  : "bg-white/10 backdrop-blur-sm text-white border border-white/30 hover:bg-gold hover:text-stone-900"
-              )}
-              aria-label={t('nav.appointment')}
-            >
-              <Calendar className="w-4 h-4" aria-hidden="true" />
-              <span>{t('nav.appointment')}</span>
-            </Link>
-          </div>
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            className={cn(
+              "hidden sm:flex items-center gap-1.5 font-label text-[11px] uppercase tracking-[0.1em] transition-colors duration-300",
+              onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
+            )}
+            aria-label={language === 'en' ? t('header.switch_to_ar') : t('header.switch_to_en')}
+          >
+            <Globe className="w-[18px] h-[18px]" strokeWidth={1.5} aria-hidden="true" />
+            <span className="hidden xl:inline">{language === 'en' ? 'عربي' : 'EN'}</span>
+          </button>
+
+          <Link
+            to="/search"
+            className={cn("transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
+            aria-label={t('header.search')}
+          >
+            <Search className="w-5 h-5" strokeWidth={1.5} />
+          </Link>
+
+          <Link
+            to="/wishlist"
+            className={cn("hidden lg:block relative group/wishlist transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
+            aria-label={t('header.your_selection')}
+          >
+            <Heart className="w-5 h-5 transition-transform duration-300 group-hover/wishlist:scale-110" strokeWidth={1.5} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-[9px] font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            to="/profile"
+            className={cn("hidden md:block transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
+            aria-label={t('header.account')}
+          >
+            <User className="w-5 h-5" strokeWidth={1.5} />
+          </Link>
+
+          <Link
+            to="/checkout"
+            className={cn("relative group/cart transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
+            aria-label={t('header.bag')}
+          >
+            <ShoppingBag className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" strokeWidth={1.5} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-[9px] font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+                {totalItems}
+              </span>
+            )}
+          </Link>
         </div>
       </div>
 

@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 // Root cause 2026-08: 4 right links in EN filled the right half and slid
 // under the absolutely-centered logo at narrow xl widths.
 test('logo keeps clearance from both header navs (EN)', async ({ page }) => {
-  for (const width of [1280, 1366, 1440]) {
+  for (const width of [1024, 1280, 1366, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#logo', { timeout: 45000 });
