@@ -15,6 +15,8 @@ import Layout from './components/Layout';
 // Pages - Lazy Loaded
 const Home = lazy(() => import('./pages/Index'));
 const CollectionPage = lazy(() => import('./pages/CollectionPage'));
+const CollectionsPage = lazy(() => import('./pages/CollectionsPage'));
+const JournalPage = lazy(() => import('./pages/JournalPage'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
@@ -209,6 +211,8 @@ function AnimatedRoutes() {
         <Route path="/" element={<Layout />}>
           <Route index element={<PageWrapper><Home /></PageWrapper>} />
           <Route path="collection/:category" element={<PageWrapper><CollectionPage /></PageWrapper>} />
+          <Route path="collections" element={<PageWrapper><CollectionsPage /></PageWrapper>} />
+          <Route path="journal" element={<PageWrapper><JournalPage /></PageWrapper>} />
           <Route path="product/:id" element={<PageWrapper><ProductDetail /></PageWrapper>} />
           <Route path="about" element={<PageWrapper><AboutPage /></PageWrapper>} />
           <Route path="contact" element={<PageWrapper><ContactPage /></PageWrapper>} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Heart, User, ShoppingBag, Menu, X, Globe, Search, Sparkles, ChevronRight, Calendar, Scissors, HelpCircle, Phone } from 'lucide-react';
+import { Heart, User, ShoppingBag, Menu, X, Globe, Search, Sparkles, ChevronRight, Calendar, Scissors, HelpCircle, Phone, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -10,15 +10,16 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import Logo from './Logo';
 
 const leftNavLinks = [
-  { label: "Our Story", path: "/about", key: 'nav.about' },
+  { label: "Home", path: "/", key: 'nav.home' },
+  { label: "About", path: "/about", key: 'nav.about' },
   { label: "Bridal", path: "/collection/bridal", key: 'nav.bridal' },
-  { label: "Evening", path: "/collection/evening", key: 'nav.evening' },
-  { label: "Rentals", path: "/collection/rental", key: 'nav.rentals' },
+  { label: "Couture", path: "/collection/couture", key: 'nav.couture' },
+  { label: "Collections", path: "/collections", key: 'nav.collections' },
+  { label: "Journal", path: "/journal", key: 'nav.journal' },
 ];
 
 const rightNavLinks = [
   { label: "Contact", path: "/contact", key: 'nav.contact' },
-  { label: "Private Viewing", path: "/appointment", key: 'nav.appointment' },
 ];
 
 export default function Header() {
@@ -200,6 +201,20 @@ export default function Header() {
                 </span>
               )}
             </Link>
+            {/* Book Appointment CTA - highly visible */}
+            <Link
+              to="/appointment"
+              className={cn(
+                "hidden xl:inline-flex items-center justify-center gap-2 px-6 py-3 font-label text-xs tracking-[0.2em] uppercase transition-all duration-300 min-h-[48px]",
+                (!isHome)
+                  ? "bg-stone-800 text-white hover:bg-gold hover:text-stone-900 border border-stone-800"
+                  : "bg-white/10 backdrop-blur-sm text-white border border-white/30 hover:bg-gold hover:text-stone-900"
+              )}
+              aria-label={t('nav.appointment')}
+            >
+              <Calendar className="w-4 h-4" aria-hidden="true" />
+              <span>{t('nav.appointment')}</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -272,9 +287,12 @@ export default function Header() {
                   <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-3">{t('header.collections')}</p>
                   <nav className="flex flex-col gap-1">
                     {[
+                      { label: 'Home', path: '/', key: 'nav.home' },
+                      { label: 'About', path: '/about', key: 'nav.about' },
                       { label: 'Bridal', path: '/collection/bridal', key: 'nav.bridal' },
-                      { label: 'Evening', path: '/collection/evening', key: 'nav.evening' },
-                      { label: 'Rentals', path: '/collection/rental', key: 'nav.rentals' },
+                      { label: 'Couture', path: '/collection/couture', key: 'nav.couture' },
+                      { label: 'Collections', path: '/collections', key: 'nav.collections' },
+                      { label: 'Journal', path: '/journal', key: 'nav.journal', icon: BookOpen },
                     ].map((link, idx) => (
                       <motion.div
                         key={link.path}
@@ -287,7 +305,10 @@ export default function Header() {
                           onClick={() => setIsMenuOpen(false)}
                           className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-gold hover:bg-gold/5 transition-all"
                         >
-                          <span>{link.key ? t(link.key) : link.label}</span>
+                          <span className="flex items-center gap-2">
+                            {link.icon && <link.icon className="w-3.5 h-3.5 text-gold" />}
+                            {link.key ? t(link.key) : link.label}
+                          </span>
                           <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-gold transition-colors" />
                         </Link>
                       </motion.div>
@@ -300,7 +321,6 @@ export default function Header() {
                   <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-3">{t('header.atelier')}</p>
                   <nav className="flex flex-col gap-1">
                     {[
-                      { label: 'Our Story', path: '/about', key: 'nav.about' },
                       { label: 'Gallery', path: '/gallery', key: 'nav.gallery' },
                       { label: 'Style Quiz', path: '/style-quiz', key: 'nav.style_quiz', icon: Sparkles },
                     ].map((link, idx) => (

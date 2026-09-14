@@ -56,6 +56,7 @@ export default function CollectionPage() {
     if (category && category !== 'all') {
       if (category === 'bridal') result = result.filter(p => p.category === 'Bridal Gown');
       else if (category === 'evening') result = result.filter(p => p.category === 'Evening Dress');
+      else if (category === 'couture') result = result.filter(p => p.category === 'Evening Dress');
       else if (category === 'rental') result = result.filter(p => p.productType === 'rent' || p.productType === 'both');
       else if (category === 'accessories') result = result.filter(p => p.category === 'Accessory');
       else if (category === 'jewelry') result = result.filter(p => p.category === 'Fine Jewelry');
@@ -96,6 +97,7 @@ export default function CollectionPage() {
 
   const categoryTitle = category === 'bridal' ? t('cat.bridal_title')
     : category === 'evening' ? t('cat.evening_title')
+    : category === 'couture' ? t('cat.couture_title')
     : category === 'rental' ? t('cat.rental_title')
     : t('cat.all');
 

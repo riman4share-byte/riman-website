@@ -17,7 +17,10 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.bridal': 'Bridal',
     'nav.evening': 'Evening',
     'nav.rentals': 'Rentals',
-    'nav.about': 'Our Story',
+    'nav.about': 'About',
+    'nav.couture': 'Couture',
+    'nav.collections': 'Collections',
+    'nav.journal': 'Journal',
     'nav.contact': 'Contact',
     'nav.timeline': 'Timeline',
     'nav.style_quiz': 'Style Quiz',
@@ -41,6 +44,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.bridal_title': 'Bridal Collection',
     'cat.evening_title': 'Evening Gowns',
     'cat.rental_title': 'Premium Rentals',
+    'cat.couture_title': 'Couture Evening Wear',
     'cat.jewelry_title': 'Majestic Jewelry',
     'cat.accessories_title': 'Accessories',
     'cat.subtitle': 'Exquisite silhouettes and premium fabrics selected for the modern visionary.',
@@ -824,6 +828,17 @@ const translations: Record<Language, Record<string, string>> = {
     'gallery.admin_delete': 'Delete Item',
     'gallery.admin_featured': 'Featured',
     'gallery.admin_sort': 'Sort Order',
+
+    // Collections & Journal pages
+    'collections.title': 'The Collections',
+    'collections.subtitle': 'Every Riman piece is hand-finished in our Sharjah atelier — explore the houses of the collection.',
+    'collections.browse': 'Browse Collection',
+    'collections.count': 'pieces',
+    'journal.title': 'The Journal',
+    'journal.subtitle': 'Stories, styling notes and behind-the-scenes from the atelier.',
+    'journal.read_time': 'min read',
+    'journal.featured': 'Featured Story',
+    'journal.latest': 'Latest',
   },
 
   ar: {
@@ -833,6 +848,9 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.evening': 'فساتين السهرة',
     'nav.rentals': 'الإيجار',
     'nav.about': 'قصتنا',
+    'nav.couture': 'الكوتور',
+    'nav.collections': 'المجموعات',
+    'nav.journal': 'المدونة',
     'nav.contact': 'تواصل معنا',
     'nav.timeline': 'الجدول الزمني',
     'nav.style_quiz': 'اختبار الأناقة',
@@ -856,6 +874,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.bridal_title': 'مجموعة العرائس',
     'cat.evening_title': 'فساتين السهرة',
     'cat.rental_title': 'الإيجار المتميز',
+    'cat.couture_title': 'أزياء السهرة الراقية',
     'cat.jewelry_title': 'المجوهرات المهيبة',
     'cat.accessories_title': 'الإكسسوارات',
     'cat.subtitle': 'تصاميم راقية وأقمشة فاخرة مختارة بعناية للمرأة العصرية الواعية.',
@@ -1639,6 +1658,17 @@ const translations: Record<Language, Record<string, string>> = {
     'gallery.admin_delete': 'حذف العنصر',
     'gallery.admin_featured': 'مميز',
     'gallery.admin_sort': 'ترتيب العرض',
+
+    // Collections & Journal pages
+    'collections.title': 'المجموعات',
+    'collections.subtitle': 'كل قطعة من ريمان تُنهى يدويًا في أتيليه الشارقة — اكتشف عوالم المجموعة.',
+    'collections.browse': 'تصفح المجموعة',
+    'collections.count': 'قطعة',
+    'journal.title': 'المدونة',
+    'journal.subtitle': 'قصص وملاحظات تنسيق وكواليس من الأتيليه.',
+    'journal.read_time': 'دقيقة قراءة',
+    'journal.featured': 'قصة مميزة',
+    'journal.latest': 'الأحدث',
   }
 };
 
