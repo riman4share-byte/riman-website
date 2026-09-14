@@ -112,7 +112,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
 // JSON-LD Structured Data
 // ────────────────────────────────
 
-export const BASE_URL = 'https://rimanfashion.com';
+export const BASE_URL = 'https://riman.ae';
 
 export function organizationSchema() {
   return {

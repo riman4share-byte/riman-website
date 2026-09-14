@@ -1,0 +1,270 @@
+- generic [ref=e7]:
+  - banner [ref=e8]:
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - navigation [ref=e286]:
+          - link "قصتنا" [ref=e287]:
+            - /url: /about
+          - link "فساتين الزفاف" [ref=e288]:
+            - /url: /collection/bridal
+          - link "فساتين السهرة" [ref=e289]:
+            - /url: /collection/evening
+          - link "الإيجار" [ref=e290]:
+            - /url: /collection/rental
+        - button "Switch to English" [ref=e291]:
+          - img [ref=e292]
+          - generic [ref=e295]: EN
+        - link "Search" [ref=e296]:
+          - /url: /search
+          - img [ref=e297]
+      - link "Atelier Riman Atelier" [ref=e16]:
+        - /url: /
+        - img "Atelier Riman" [ref=e18]
+        - generic [ref=e19]: Atelier
+      - generic [ref=e20]:
+        - navigation [ref=e300]:
+          - link "تواصل معنا" [ref=e301]:
+            - /url: /contact
+          - link "زيارة خاصة" [ref=e302]:
+            - /url: /appointment
+        - generic [ref=e21]:
+          - link "Style Quiz" [ref=e22]:
+            - /url: /style-quiz
+            - img [ref=e23]
+          - link "Your Selection" [ref=e26]:
+            - /url: /wishlist
+            - img [ref=e27]
+          - link "Account" [ref=e29]:
+            - /url: /profile
+            - img [ref=e30]
+          - link "1" [ref=e33]:
+            - /url: /checkout
+            - img [ref=e34]
+            - generic [ref=e37]: "1"
+  - main [ref=e38]:
+    - main [ref=e40]:
+      - generic [ref=e41]:
+        - generic "Riman Fashion couture atelier showcase" [ref=e42]
+        - generic: أناقة
+        - generic [ref=e44]:
+          - paragraph [ref=e45]: دار الأزياء الرائدة في الشارقة
+          - heading "حلمٌ وجوهر" [level=1] [ref=e46]
+          - generic [ref=e47]:
+            - link "اطلب عرضاً خاصاً" [ref=e48]:
+              - /url: /appointment
+            - link "استكشف المجموعة" [ref=e49]:
+              - /url: "#atelier"
+        - generic [ref=e50]: اكتشف
+      - generic [ref=e52]:
+        - generic [ref=e55]:
+          - generic [ref=e56]: I
+          - heading "الأتيليه" [level=2] [ref=e58]
+        - generic [ref=e59]:
+          - heading "إتقان أيقونة الإرث" [level=3] [ref=e61]
+          - paragraph [ref=e63]: يبدأ كل شيء بتوترٍ جميل — هندسة حرير الميكادو في مواجهة همس التول الفرنسي.
+          - paragraph [ref=e65]: من مرسمنا في الشارقة، نقطع باليد، ونقاس بالنظر، ونُنهي العمل بالصبر. فساتين أقل، وإتقانًا أكبر.
+      - generic [ref=e66]:
+        - paragraph [ref=e68]: أكمِل الحوار — اطلب زيارة خاصة.
+        - link "اطلب زيارة خاصة" [ref=e69]:
+          - /url: /appointment
+          - text: اطلب زيارة خاصة
+          - img [ref=e70]
+      - generic [ref=e73]:
+        - generic [ref=e74]:
+          - generic [ref=e75]: II
+          - heading "القصات" [level=2] [ref=e77]
+        - generic [ref=e78]:
+          - figure "إطلالة 01 L'Aube Majestic Gown French Chantilly Lace, Silk Organdy with Gold Thread استفسار" [ref=e81]:
+            - generic [ref=e82]:
+              - img "L'Aube Majestic Gown" [ref=e83]
+              - generic [ref=e84]: "01"
+            - generic [ref=e85]:
+              - generic [ref=e86]: إطلالة 01
+              - heading "L'Aube Majestic Gown" [level=3] [ref=e87]
+              - paragraph [ref=e88]: French Chantilly Lace, Silk Organdy with Gold Thread
+              - link "استفسار" [ref=e89]:
+                - /url: /product/1
+                - text: استفسار
+                - img [ref=e90]
+          - figure "إطلالة 02 Majestic Bridal Set Silk Mikado & Hand-beaded Tulle استفسار" [ref=e94]:
+            - generic [ref=e95]:
+              - img "Majestic Bridal Set" [ref=e96]
+              - generic [ref=e97]: "02"
+            - generic [ref=e98]:
+              - generic [ref=e99]: إطلالة 02
+              - heading "Majestic Bridal Set" [level=3] [ref=e100]
+              - paragraph [ref=e101]: Silk Mikado & Hand-beaded Tulle
+              - link "استفسار" [ref=e102]:
+                - /url: /product/13
+                - text: استفسار
+                - img [ref=e103]
+          - figure "إطلالة 03 Heritage Gold Anklet 22k Gold استفسار" [ref=e107]:
+            - generic [ref=e108]:
+              - img "Heritage Gold Anklet" [ref=e109]
+              - generic [ref=e110]: "03"
+            - generic [ref=e111]:
+              - generic [ref=e112]: إطلالة 03
+              - heading "Heritage Gold Anklet" [level=3] [ref=e113]
+              - paragraph [ref=e114]: 22k Gold
+              - link "استفسار" [ref=e115]:
+                - /url: /product/16
+                - text: استفسار
+                - img [ref=e116]
+          - figure "إطلالة 04 Eternal Gilded Necklace 18k Gold, Diamonds استفسار" [ref=e120]:
+            - generic [ref=e121]:
+              - img "Eternal Gilded Necklace" [ref=e122]
+              - generic [ref=e123]: "04"
+            - generic [ref=e124]:
+              - generic [ref=e125]: إطلالة 04
+              - heading "Eternal Gilded Necklace" [level=3] [ref=e126]
+              - paragraph [ref=e127]: 18k Gold, Diamonds
+              - link "استفسار" [ref=e128]:
+                - /url: /product/9
+                - text: استفسار
+                - img [ref=e129]
+      - generic [ref=e131]:
+        - paragraph [ref=e133]: أكمِل الحوار — اطلب زيارة خاصة.
+        - link "اطلب زيارة خاصة" [ref=e134]:
+          - /url: /appointment
+          - text: اطلب زيارة خاصة
+          - img [ref=e135]
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - generic [ref=e140]: III
+          - heading "الحرفية" [level=2] [ref=e142]
+        - generic [ref=e143]:
+          - paragraph [ref=e144]: نقلّ القليل لنُتقن أكثر. نُشكّل الحرير الميكادو والتول الفرنسي يدويًا، تاركين للقماش أن يرسم الخط.
+          - paragraph [ref=e145]: "كل تخصصات الدار — الزفاف، السهرة، الإيجار — تبدأ من الطاولة نفسها: قماش، خيط، وصبر."
+        - generic [ref=e146]:
+          - link "Bridal العرائس فساتين تُخلَّد لِيومٍ واحد، وتبقى للأبد. اكتشف" [ref=e149]:
+            - /url: /collection/bridal
+            - img "Bridal" [ref=e151]
+            - heading "العرائس" [level=3] [ref=e152]
+            - paragraph [ref=e153]: فساتين تُخلَّد لِيومٍ واحد، وتبقى للأبد.
+            - generic [ref=e154]: اكتشف
+          - link "Evening السهرة حضور سجادة حمراء، مفصّل للحظة. اكتشف" [ref=e157]:
+            - /url: /collection/evening
+            - img "Evening" [ref=e159]
+            - heading "السهرة" [level=3] [ref=e160]
+            - paragraph [ref=e161]: حضور سجادة حمراء، مفصّل للحظة.
+            - generic [ref=e162]: اكتشف
+          - link "الإيجار كوتور ليلة واحدة، يبقى بلا عيب. اكتشف" [ref=e165]:
+            - /url: /collection/rental
+            - heading "الإيجار" [level=3] [ref=e168]
+            - paragraph [ref=e169]: كوتور ليلة واحدة، يبقى بلا عيب.
+            - generic [ref=e170]: اكتشف
+      - generic [ref=e171]:
+        - paragraph [ref=e173]: أكمِل الحوار — اطلب زيارة خاصة.
+        - link "اطلب زيارة خاصة" [ref=e174]:
+          - /url: /appointment
+          - text: اطلب زيارة خاصة
+          - img [ref=e175]
+      - generic [ref=e177]:
+        - generic: دعوة
+        - generic [ref=e178]:
+          - heading "عِش لمسة ريمان" [level=2] [ref=e179]
+          - blockquote [ref=e180]:
+            - paragraph [ref=e181]: "\"They got some nice dresses!! I had an issue with my dress that I got from the same place and they were so helpful that they managed to get it fixed when it was their off day.\""
+            - generic [ref=e182]: Sugar Pie — Bridal Client
+          - generic [ref=e183]:
+            - link "اطلب عرضاً خاصاً" [ref=e184]:
+              - /url: /appointment
+            - paragraph [ref=e185]: الشارقة · بموعد مسبق فقط
+      - generic [ref=e186]:
+        - paragraph [ref=e188]: أكمِل الحوار — اطلب زيارة خاصة.
+        - link "اطلب زيارة خاصة" [ref=e189]:
+          - /url: /appointment
+          - text: اطلب زيارة خاصة
+          - img [ref=e190]
+  - contentinfo [ref=e192]:
+    - generic [ref=e194]:
+      - generic [ref=e196]:
+        - heading "رسالة الدار" [level=4] [ref=e197]
+        - paragraph [ref=e199]: انضمي إلى دائرتنا الخاصة لمعاينات حصرية للمجموعات ورؤى الأزياء الراقية.
+        - generic [ref=e200]:
+          - textbox "بريدك الإلكتروني" [ref=e201]
+          - button [ref=e202]:
+            - img [ref=e203]
+      - generic [ref=e205]:
+        - generic [ref=e206]:
+          - link "Atelier Riman" [ref=e207]:
+            - /url: /
+            - img "Atelier Riman" [ref=e209]
+          - paragraph [ref=e210]: نصنع أرقى الفساتين في الشارقة. نعيد تصور تراث الأناقة للملهمة العصرية، حيث يحمل كل خيط قصة من الجوهر الملكي.
+          - generic [ref=e211]:
+            - link "Instagram" [ref=e212]:
+              - /url: https://instagram.com/rimanfashion
+              - img [ref=e213]
+            - link "Facebook" [ref=e216]:
+              - /url: https://facebook.com/rimanfashion
+              - img [ref=e217]
+            - link "Email" [ref=e219]:
+              - /url: mailto:boutique@rimanfashion.com
+              - img [ref=e220]
+        - generic [ref=e224]:
+          - button "المجموعات" [ref=e225]:
+            - heading "المجموعات" [level=4] [ref=e226]
+          - list [ref=e228]:
+            - listitem [ref=e229]:
+              - link "فساتين الزفاف" [ref=e230]:
+                - /url: /collection/bridal
+                - text: فساتين الزفاف
+            - listitem [ref=e231]:
+              - link "فساتين السهرة" [ref=e232]:
+                - /url: /collection/evening
+                - text: فساتين السهرة
+            - listitem [ref=e233]:
+              - link "الإيجار" [ref=e234]:
+                - /url: /collection/rental
+                - text: الإيجار
+            - listitem [ref=e235]:
+              - link "المعرض" [ref=e236]:
+                - /url: /gallery
+                - text: المعرض
+        - generic [ref=e238]:
+          - button "الخدمات" [ref=e239]:
+            - heading "الخدمات" [level=4] [ref=e240]
+          - list [ref=e242]:
+            - listitem [ref=e243]:
+              - link "قياس خاص" [ref=e244]:
+                - /url: /alterations
+                - text: قياس خاص
+            - listitem [ref=e245]:
+              - link "استشارة الأناقة" [ref=e246]:
+                - /url: /style-quiz
+                - text: استشارة الأناقة
+            - listitem [ref=e247]:
+              - link "كنسيرج العرائس" [ref=e248]:
+                - /url: /timeline
+                - text: كنسيرج العرائس
+            - listitem [ref=e249]:
+              - link "المساعدة" [ref=e250]:
+                - /url: /faq
+                - text: المساعدة
+        - generic [ref=e252]:
+          - button "موقع الدار" [ref=e253]:
+            - heading "موقع الدار" [level=4] [ref=e254]
+          - generic [ref=e256]:
+            - generic [ref=e257]:
+              - img [ref=e258]
+              - paragraph [ref=e261]: شارع الزهراء، الشارقة، الإمارات
+            - generic [ref=e262]:
+              - img [ref=e263]
+              - paragraph [ref=e265]: +971 553 730 792
+      - generic:
+        - paragraph:
+          - text: RIMAN
+          - superscript: ®
+      - button "الصعود للأعلى" [ref=e267]:
+        - img [ref=e268]
+        - text: الصعود للأعلى
+      - generic [ref=e270]:
+        - paragraph [ref=e271]: © 2026 ATELIER RIMAN. صُنع في الشارقة.
+        - generic [ref=e272]:
+          - link "الخصوصية" [ref=e273]:
+            - /url: /privacy
+          - link "الشروط" [ref=e274]:
+            - /url: /terms
+  - link "Contact us on WhatsApp" [ref=e275]:
+    - /url: https://wa.me/971553730792
+    - img [ref=e276]

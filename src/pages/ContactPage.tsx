@@ -44,7 +44,8 @@ export default function ContactPage() {
         addToast({ type: 'info', title: t('contact.toast_demo_title'), message: t('contact.toast_demo_msg') });
       }
     } catch {
-      addToast({ type: 'info', title: t('contact.toast_demo_title'), message: t('contact.toast_demo_msg') });
+      addToast({ type: 'error', title: t('contact.toast_demo_title'), message: t('contact.toast_demo_msg') });
+      return;
     }
     addToast({ type: 'success', title: t('contact.toast_sent_title'), message: t('contact.toast_sent_msg') });
     setIsSubmitted(true);
@@ -113,8 +114,9 @@ export default function ContactPage() {
                   <form className="space-y-6 relative z-10" onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-2">
-                        <label className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('form.name')}</label>
-                        <input 
+                        <label htmlFor="contact-name" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('form.name')}</label>
+                        <input
+                          id="contact-name"
                           {...register('name')}
                           disabled={isSubmitted}
                           className={cn(
@@ -127,8 +129,9 @@ export default function ContactPage() {
                         {errors.name && <span className="text-red-500 text-micro tracking-widest uppercase">{errors.name.message}</span>}
                       </div>
                       <div className="flex flex-col gap-2">
-                        <label className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('form.email')}</label>
-                        <input 
+                        <label htmlFor="contact-email" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('form.email')}</label>
+                        <input
+                          id="contact-email"
                           {...register('email')}
                           type="email" 
                           disabled={isSubmitted}
@@ -143,8 +146,9 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('nav.contact')}</label>
-                      <input 
+                      <label htmlFor="contact-phone" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('nav.contact')}</label>
+                      <input
+                        id="contact-phone"
                         {...register('phone')}
                         type="tel" 
                         disabled={isSubmitted}
@@ -158,9 +162,10 @@ export default function ContactPage() {
                       {errors.phone && <span className="text-red-500 text-micro tracking-widest uppercase">{errors.phone.message}</span>}
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('contact.inquiry_type')}</label>
+                      <label htmlFor="contact-type" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('contact.inquiry_type')}</label>
                       <div className="relative">
-                        <select 
+                        <select
+                          id="contact-type"
                           {...register('type')}
                           disabled={isSubmitted}
                           className={cn(
@@ -177,8 +182,9 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('contact.vision_prefs')}</label>
-                      <textarea 
+                      <label htmlFor="contact-message" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('contact.vision_prefs')}</label>
+                      <textarea
+                        id="contact-message"
                         {...register('message')}
                         rows={4} 
                         disabled={isSubmitted}

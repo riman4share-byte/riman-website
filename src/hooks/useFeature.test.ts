@@ -20,12 +20,12 @@ describe('useFeature', () => {
       { wrapper },
     );
 
-    expect(result.current.value).toBe(true);
+    expect(result.current.value).toBe(false);
 
     act(() => {
-      result.current.updateSetting('features', 'newsletter', false);
+      result.current.updateSetting('features', 'newsletter', true);
     });
-    await waitFor(() => expect(result.current.value).toBe(false));
+    await waitFor(() => expect(result.current.value).toBe(true));
   });
 
   it('defaults unknown features to enabled', () => {

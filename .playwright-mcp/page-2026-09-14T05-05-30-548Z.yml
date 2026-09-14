@@ -1,0 +1,251 @@
+- generic [ref=e1]:
+  - generic: 
+  - link "Skip to Main Content" [ref=e2] [cursor=pointer]:
+    - /url: "#MainContent"
+  - generic [ref=e3]:
+    - generic [ref=e5]:
+      - generic [ref=e7]:
+        - button "open menu" [ref=e8] [cursor=pointer]:
+          - img [ref=e9]
+          - img [ref=e11]
+        - link "open search bar" [ref=e16] [cursor=pointer]:
+          - /url: /pages/wishlist
+          - img [ref=e17]
+      - heading "KYHA Studios US" [level=1] [ref=e20]:
+        - link "KYHA Studios US" [ref=e21] [cursor=pointer]:
+          - /url: /
+          - img "KYHA Studios US" [ref=e23]
+      - generic [ref=e25]:
+        - button "Select undefined" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: United States $USD
+          - img [ref=e33]
+        - search [ref=e36]:
+          - generic "Search" [ref=e37] [cursor=pointer]:
+            - img [ref=e38]
+        - button "open mini cart" [ref=e40] [cursor=pointer]:
+          - img [ref=e42]
+    - main [ref=e46]:
+      - group "1 / 1" [ref=e52]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - heading "Gift With Purchase" [level=2]
+              - generic: This September receive a complimentary veil or accessory with any KYHA Bride purchase. Minimum spend applies. Review T&C's.
+              - generic:
+                - link "Shop Now" [ref=e55] [cursor=pointer]:
+                  - /url: /collections/promotion
+                - link "Book Appointment" [ref=e56] [cursor=pointer]:
+                  - /url: /pages/contact
+      - generic [ref=e60]:
+        - generic [ref=e62]:
+          - generic:
+            - generic:
+              - generic:
+                - heading "Gowns" [level=3]
+                - link "Shop Now":
+                  - /url: /collections/all-gowns
+        - generic [ref=e65]:
+          - generic:
+            - generic:
+              - generic:
+                - heading "Second look" [level=3]
+                - link "Shop now":
+                  - /url: /collections/second-look
+      - group "1 / 1" [ref=e72]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - heading "Veils & Accessories" [level=2]
+              - link "Shop now" [ref=e75] [cursor=pointer]:
+                - /url: /collections/veils
+      - generic [ref=e79]:
+        - heading "DISCOVER" [level=2] [ref=e80]
+        - generic [ref=e81]:
+          - generic [ref=e84]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "chroma" [level=3]
+                  - link "DISCOVER":
+                    - /url: https://kyhastudios.com/blogs/news/chroma
+          - generic [ref=e88]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "August Edition" [level=3]
+                  - link "Discover":
+                    - /url: /blogs/news/august-edition
+          - generic [ref=e92]:
+            - generic:
+              - generic:
+                - generic:
+                  - heading "WATERLINES" [level=3]
+                  - link "DISCOVER":
+                    - /url: /blogs/news/waterlines
+    - generic [ref=e95]:
+      - contentinfo [ref=e96]:
+        - generic [ref=e98]:
+          - generic [ref=e100]:
+            - generic [ref=e101]:
+              - heading "Subscribe" [level=3] [ref=e102]
+              - paragraph [ref=e103]: Sign up to receive news about KYHA Studios collections & events.
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - textbox "Email Address" [ref=e108]
+                - generic: Email Address
+              - button "Subscribe" [ref=e109] [cursor=pointer]
+          - generic [ref=e110]:
+            - heading "Our World" [level=3] [ref=e111]
+            - list [ref=e112]:
+              - listitem [ref=e113]:
+                - link "About KYHA" [ref=e114] [cursor=pointer]:
+                  - /url: /pages/about-us
+              - listitem [ref=e115]:
+                - link "Careers" [ref=e116] [cursor=pointer]:
+                  - /url: /pages/careers
+              - listitem [ref=e117]:
+                - link "Retailers" [ref=e118] [cursor=pointer]:
+                  - /url: /pages/store-locator
+              - listitem [ref=e119]:
+                - link "Events" [ref=e120] [cursor=pointer]:
+                  - /url: /pages/events
+              - listitem [ref=e121]:
+                - link "The Stories" [ref=e122] [cursor=pointer]:
+                  - /url: /blogs/news
+          - generic [ref=e123]:
+            - heading "Service" [level=3] [ref=e124]
+            - list [ref=e125]:
+              - listitem [ref=e126]:
+                - link "Shipping & Delivery" [ref=e127] [cursor=pointer]:
+                  - /url: /pages/shipping-delivery
+              - listitem [ref=e128]:
+                - link "Returns & Exchanges" [ref=e129] [cursor=pointer]:
+                  - /url: /pages/returns-policy
+              - listitem [ref=e130]:
+                - link "FAQs" [ref=e131] [cursor=pointer]:
+                  - /url: /pages/faqs
+              - listitem [ref=e132]:
+                - link "T&Cs" [ref=e133] [cursor=pointer]:
+                  - /url: /pages/terms-of-service
+              - listitem [ref=e134]:
+                - link "Privacy Policy" [ref=e135] [cursor=pointer]:
+                  - /url: /policies/privacy-policy
+          - generic [ref=e137]:
+            - heading "Contact" [level=3] [ref=e138]
+            - generic [ref=e139]:
+              - paragraph [ref=e142]:
+                - link "Talk to a Stylist" [ref=e143] [cursor=pointer]:
+                  - /url: https://app.acuityscheduling.com/schedule/4ec00ae6/appointment/56137617/calendar/any?appointmentTypeIds[]=56137617
+              - paragraph [ref=e145]:
+                - link "General Enquiries" [ref=e146] [cursor=pointer]:
+                  - /url: /pages/general-enquiries
+              - button "Select undefined" [ref=e152] [cursor=pointer]:
+                - generic [ref=e153]: United States
+                - img [ref=e154]
+      - generic [ref=e158]:
+        - paragraph [ref=e159]: © KYHA Studios 2024
+        - generic [ref=e160]:
+          - link "Icon Instagram" [ref=e161] [cursor=pointer]:
+            - /url: https://www.instagram.com/kyhabride/
+            - img "Icon Instagram" [ref=e163]
+          - link "Icon Tiktok" [ref=e164] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@kyhastudios
+            - img "Icon Tiktok" [ref=e166]
+          - link "Icon Pinterest" [ref=e167] [cursor=pointer]:
+            - /url: https://pinterest.com/kyhastudios/
+            - img "Icon Pinterest" [ref=e169]
+    - dialog [active] [ref=e171]:
+      - button "Close" [ref=e172] [cursor=pointer]:
+        - img [ref=e173]
+      - generic [ref=e181]:
+        - generic [ref=e182]:
+          - heading "Keep IN Touch" [level=2] [ref=e183]
+          - paragraph [ref=e184]: Enter your email below to stay up to date.
+        - generic [ref=e185]:
+          - generic [ref=e186]:
+            - textbox "Enter your email address" [ref=e187]
+            - generic: Enter your email address
+          - button "Subscribe" [ref=e188] [cursor=pointer]
+  - generic [ref=e193]:
+    - generic [ref=e194]:
+      - button "Shop" [ref=e196] [cursor=pointer]:
+        - generic [ref=e197]: Shop
+        - img [ref=e198]
+      - generic [ref=e200]:
+        - button "Back sub panel" [ref=e202] [cursor=pointer]:
+          - img [ref=e203]
+          - generic [ref=e205]: Shop
+        - generic [ref=e206]:
+          - generic [ref=e208]:
+            - link "Gowns" [ref=e210] [cursor=pointer]:
+              - /url: /collections/all-gowns
+            - link "Separates" [ref=e212] [cursor=pointer]:
+              - /url: /collections/two-piece-wedding-dress
+            - link "Second Look" [ref=e214] [cursor=pointer]:
+              - /url: /collections/second-look
+            - link "Veils & Accessories" [ref=e216] [cursor=pointer]:
+              - /url: /collections/veils
+            - link "Womenswear" [ref=e218] [cursor=pointer]:
+              - /url: /collections/story-01
+            - link "Sale" [ref=e220] [cursor=pointer]:
+              - /url: /collections/sale
+          - generic [ref=e221]:
+            - generic [ref=e222]:
+              - link [ref=e223] [cursor=pointer]:
+                - /url: /collections/new
+                - figure [ref=e224]:
+                  - img "Banner Discover" [ref=e226]
+              - generic [ref=e227]:
+                - heading "New Season" [level=4] [ref=e228]
+                - link "Discover" [ref=e229] [cursor=pointer]:
+                  - /url: /collections/new
+            - generic [ref=e230]:
+              - link [ref=e231] [cursor=pointer]:
+                - /url: /collections/promotion
+                - figure [ref=e232]:
+                  - img "Banner Shop Now" [ref=e234]
+              - generic [ref=e235]:
+                - heading "Gift With Purchase" [level=4] [ref=e236]
+                - link "Shop Now" [ref=e237] [cursor=pointer]:
+                  - /url: /collections/promotion
+          - generic [ref=e239]:
+            - paragraph [ref=e240]: Select Your Region
+            - button "United States $" [ref=e241] [cursor=pointer]:
+              - generic [ref=e242]: United States $
+              - img [ref=e243]
+      - link "Bride" [ref=e246] [cursor=pointer]:
+        - /url: /pages/latest-collections
+      - link "Womenswear" [ref=e248] [cursor=pointer]:
+        - /url: /pages/womenswear-latest-collections
+      - link "Retailers" [ref=e250] [cursor=pointer]:
+        - /url: /pages/store-locator
+      - link "Events" [ref=e252] [cursor=pointer]:
+        - /url: /pages/events
+      - link "Book Appointment" [ref=e254] [cursor=pointer]:
+        - /url: /pages/contact
+    - generic [ref=e255]:
+      - link "My Account" [ref=e257] [cursor=pointer]:
+        - /url: /account
+      - link "About" [ref=e259] [cursor=pointer]:
+        - /url: /pages/about-us
+      - link "Shipping" [ref=e261] [cursor=pointer]:
+        - /url: /pages/shipping-delivery
+      - link "Stores" [ref=e263] [cursor=pointer]:
+        - /url: /pages/contact
+      - link "Events" [ref=e265] [cursor=pointer]:
+        - /url: /pages/events
+      - link "Returns" [ref=e267] [cursor=pointer]:
+        - /url: /pages/returns-policy
+  - generic [ref=e270]:
+    - generic [ref=e271]:
+      - generic [ref=e273]: You're shopping in United Arab Emirates
+      - button [ref=e274] [cursor=pointer]:
+        - img [ref=e275]
+    - generic [ref=e280]: You can enjoy a dedicated shopping experience at the AU store with prices in your local currency
+    - generic [ref=e281]:
+      - link "Take me to ae store" [ref=e282] [cursor=pointer]:
+        - /url: javascript:void(0)
+      - link "NO, STAY ON CURRENT STORE" [ref=e283] [cursor=pointer]:
+        - /url: javascript:void(0)

@@ -34,6 +34,7 @@ const AppointmentPage = lazy(() => import('./pages/AppointmentPage'));
 const WeddingTimeline = lazy(() => import('./pages/WeddingTimeline'));
 const WeddingChecklist = lazy(() => import('./pages/WeddingChecklist'));
 const GalleryPage = lazy(() => import('./pages/GalleryPage'));
+const Demo21st = lazy(() => import('./pages/Demo21st'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Contexts
@@ -227,6 +228,7 @@ function AnimatedRoutes() {
           <Route path="timeline" element={<PageWrapper><WeddingTimeline /></PageWrapper>} />
           <Route path="wedding-checklist" element={<PageWrapper><WeddingChecklist /></PageWrapper>} />
           <Route path="gallery" element={<PageWrapper><GalleryPage /></PageWrapper>} />
+          <Route path="demo-21st" element={<PageWrapper><Demo21st /></PageWrapper>} />
           <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
         </Route>
 
@@ -247,6 +249,8 @@ function AnimatedRoutes() {
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="reviews" element={<AdminReviews />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="orders/:id" element={<AdminOrders />} />
+          <Route path="*" element={<AdminDashboard />} />
         </Route>
       </Routes>
       </motion.div>

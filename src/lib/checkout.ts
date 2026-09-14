@@ -11,9 +11,9 @@ export interface OrderItem {
 }
 
 export function deriveOrderType(items: OrderItem[]): OrderType {
-  const hasRental = items.some(i => i.productType === 'rent' || i.productType === 'both');
+  const hasRental = items.some(i => i.intent === 'rent');
   if (!hasRental) return 'sale';
-  const hasSale = items.some(i => i.productType === 'sale');
+  const hasSale = items.some(i => i.intent === 'sale');
   return hasSale ? 'mixed' : 'rental';
 }
 

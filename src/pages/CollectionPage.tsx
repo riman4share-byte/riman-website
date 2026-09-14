@@ -1,59 +1,54 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useMemo } from 'react';
-import { ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { cn } from '../lib/utils';
 import { useData } from '../contexts/DataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ProductGridSkeleton } from '../components/Skeleton';
+import FilterBar, { type Filter, type FilterFieldDef } from '@/components/ui/filter-token-bar';
 
 const YEARS = [2025, 2024];
+const COLORS = ['Ivory', 'Emerald', 'Gold', 'Champagne', 'Silver', 'Soft White', 'White', 'Blush', 'Black', 'Rose Gold', 'Amber', 'Dual Tone', 'Pearl', 'Sage Green', 'Lavender'];
+const SILHOUETTES = ['A-Line', 'Ballgown', 'Mermaid', 'Column', 'Kaftan', 'One Size'];
+const CATEGORIES = ['Bridal Gown', 'Evening Dress', 'Rental', 'Accessory', 'Fine Jewelry'];
 
 export default function CollectionPage() {
   const { products, isLoading } = useData();
   const { category } = useParams();
   const { t } = useLanguage();
 
-  const SILHOUETTES = useMemo(() => [
-    { value: '', label: t('collection.all_silhouettes') },
-    { value: 'A-Line', label: t('silhouette.A-Line') },
-    { value: 'Ballgown', label: t('silhouette.Ballgown') },
-    { value: 'Mermaid', label: t('silhouette.Mermaid') },
-    { value: 'Column', label: t('silhouette.Column') },
-    { value: 'Kaftan', label: t('silhouette.Kaftan') },
-    { value: 'One Size', label: t('silhouette.One Size') },
-  ], [t]);
+  const filterFields: FilterFieldDef[] = [
+    {
+      id: 'category',
+      label: t('cat.collection'),
+      operators: [{ value: 'is', label: 'is' }, { value: 'is_any', label: 'is any of', multi: true }],
+      options: CATEGORIES.map(c => ({ value: c.toLowerCase(), label: c })),
+    },
+    {
+      id: 'color',
+      label: t('collection.colors'),
+      operators: [{ value: 'is_any', label: 'is any of', multi: true }],
+      options: COLORS.map(c => ({ value: c.toLowerCase(), label: c })),
+    },
+    {
+      id: 'silhouette',
+      label: t('collection.silhouette'),
+      operators: [{ value: 'is', label: 'is' }, { value: 'is_any', label: 'is any of', multi: true }],
+      options: SILHOUETTES.map(s => ({ value: s.toLowerCase(), label: s })),
+    },
+    {
+      id: 'year',
+      label: t('collection.year'),
+      operators: [{ value: 'is', label: 'is' }],
+      options: YEARS.map(y => ({ value: String(y), label: String(y) })),
+    },
+  ];
+
+  const [filters, setFilters] = useState<Filter[]>([]);
   const [sortBy, setSortBy] = useState('featured');
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [selectedSilhouette, setSelectedSilhouette] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
-
-  const colorMap: Record<string, string> = {
-    'Ivory': '#FFFFF0',
-    'Emerald': '#046307',
-    'Gold': '#D4AF37',
-    'Champagne': '#F7E7CE',
-    'Silver': '#C0C0C0',
-    'Soft White': '#F5F5F5',
-    'White': '#FFFFFF',
-    'Blush': '#FE828C',
-    'Black': '#000000',
-    'Rose Gold': '#B76E79',
-    'Amber': '#FFBF00',
-    'Dual Tone': '#C0C0C0',
-    'Pearl': '#F0EAD6',
-    'Sage Green': '#9CAF88',
-    'Lavender': '#E6E0F0',
-  };
-
-  const allAvailableColors = useMemo(() => {
-    const colors = new Set<string>();
-    products.forEach(p => p.color.forEach(c => colors.add(c)));
-    return Array.from(colors);
-  }, [products]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -62,41 +57,42 @@ export default function CollectionPage() {
       if (category === 'bridal') result = result.filter(p => p.category === 'Bridal Gown');
       else if (category === 'evening') result = result.filter(p => p.category === 'Evening Dress');
       else if (category === 'rental') result = result.filter(p => p.productType === 'rent' || p.productType === 'both');
+      else if (category === 'accessories') result = result.filter(p => p.category === 'Accessory');
+      else if (category === 'jewelry') result = result.filter(p => p.category === 'Fine Jewelry');
     }
 
-    if (selectedYear) {
-      result = result.filter(p => p.collectionYear === selectedYear);
-    }
-
-    if (selectedSilhouette) {
-      result = result.filter(p => p.silhouette === selectedSilhouette);
-    }
-
-    if (selectedColors.length > 0) {
-      result = result.filter(p => p.color.some(c => selectedColors.includes(c)));
-    }
+    filters.forEach(f => {
+      if (f.values.length === 0) return;
+      if (f.field === 'category') {
+        result = result.filter(p =>
+          f.values.some(v =>
+            v === 'rental'
+              ? p.productType === 'rent' || p.productType === 'both'
+              : p.category.toLowerCase() === v
+          )
+        );
+      } else if (f.field === 'color') {
+        result = result.filter(p => p.color.some(c => f.values.includes(c.toLowerCase())));
+      } else if (f.field === 'silhouette') {
+        result = result.filter(p => p.silhouette && f.values.includes(p.silhouette.toLowerCase()));
+      } else if (f.field === 'year') {
+        result = result.filter(p => f.values.includes(String(p.collectionYear)));
+      }
+    });
 
     if (sortBy === 'price-low') result.sort((a, b) => (a.salePrice || 0) - (b.salePrice || 0));
     if (sortBy === 'price-high') result.sort((a, b) => (b.salePrice || 0) - (a.salePrice || 0));
     if (sortBy === 'newest') result.sort((a, b) => (b.collectionYear || 0) - (a.collectionYear || 0));
 
     return result;
-  }, [category, sortBy, selectedColors, selectedYear, selectedSilhouette, products]);
+  }, [category, filters, sortBy, products]);
 
-  const toggleColor = (color: string) => {
-    setSelectedColors(prev => 
-      prev.includes(color) ? prev.filter(c => c !== color) : [...prev, color]
-    );
-  };
+  const hasActiveFilters = filters.length > 0 || sortBy !== 'featured';
 
   const clearFilters = () => {
-    setSelectedColors([]);
-    setSelectedYear(null);
-    setSelectedSilhouette('');
+    setFilters([]);
     setSortBy('featured');
   };
-
-  const hasActiveFilters = selectedColors.length > 0 || selectedYear !== null || selectedSilhouette !== '' || sortBy !== 'featured';
 
   const categoryTitle = category === 'bridal' ? t('cat.bridal_title')
     : category === 'evening' ? t('cat.evening_title')
@@ -122,46 +118,19 @@ export default function CollectionPage() {
       <div className="z-40 bg-ivory/80 backdrop-blur-md border-b border-stone-100">
         <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar">
-              <div className="flex items-center gap-2">
-                {YEARS.map(year => (
-                  <button
-                    key={year}
-                    onClick={() => setSelectedYear(selectedYear === year ? null : year)}
-                    className={cn(
-                      "px-4 py-2 text-micro tracking-widest uppercase font-bold transition-all border",
-                      selectedYear === year ? "border-gold text-gold" : "border-stone-200 text-stone-600 hover:border-gold hover:text-gold"
-                    )}
-                  >
-                    {year}
-                  </button>
-                ))}
-              </div>
-
-              <div className="hidden md:flex items-center gap-2 border-l border-stone-200 pl-6">
-                {SILHOUETTES.map(sil => (
-                  <button
-                    key={sil.value}
-                    onClick={() => setSelectedSilhouette(sil.value === selectedSilhouette ? '' : sil.value)}
-                    className={cn(
-                      "px-3 py-2 text-micro tracking-widest uppercase font-bold transition-all whitespace-nowrap",
-                      selectedSilhouette === sil.value ? "text-gold border-b-2 border-gold" : "text-stone-600 hover:text-gold"
-                    )}
-                  >
-                    {sil.label}
-                  </button>
-                ))}
-              </div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <FilterBar
+                fields={filterFields}
+                value={filters}
+                onChange={setFilters}
+                aria-label={t('collection.filters')}
+              />
             </div>
 
             <div className="flex items-center gap-4 flex-shrink-0">
-              <button onClick={() => setShowFilters(!showFilters)} className={cn("p-2 transition-colors", showFilters ? "text-gold" : "text-stone-600 hover:text-gold")}>
-                <SlidersHorizontal className="w-5 h-5" />
-              </button>
-
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setShowSortMenu(!showSortMenu)}
                   onBlur={() => setTimeout(() => setShowSortMenu(false), 200)}
                   className="flex items-center gap-2 font-body text-xs tracking-[0.2em] uppercase text-stone-800 font-bold cursor-pointer"
@@ -180,7 +149,7 @@ export default function CollectionPage() {
                     >
                       <div className="bg-ivory border border-stone-100 p-2 w-56 flex flex-col gap-1 backdrop-blur-md shadow-lg shadow-stone-200/50">
                         {[['featured', t('collection.sort_featured')], ['newest', t('collection.sort_newest')], ['price-low', t('collection.sort_price_low')], ['price-high', t('collection.sort_price_high')]].map(([option, label]) => (
-                          <button 
+                          <button
                             key={option}
                             onClick={() => { setSortBy(option); setShowSortMenu(false); }}
                             className={cn(
@@ -198,60 +167,6 @@ export default function CollectionPage() {
               </div>
             </div>
           </div>
-
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-4 pb-2 border-t border-stone-100 mt-4">
-                  <div className="flex items-center gap-4">
-                    <span className="text-xs tracking-widest uppercase text-stone-600 font-bold">{t('collection.colors')}</span>
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      {allAvailableColors.map(color => (
-                        <button
-                          key={color}
-                          onClick={() => toggleColor(color)}
-                          title={color}
-                          className={cn(
-                            "w-8 h-8 rounded-full border border-stone-200 transition-all duration-300 relative",
-                            selectedColors.includes(color) ? "ring-2 ring-gold ring-offset-2 scale-110" : "hover:scale-110"
-                          )}
-                          style={{ backgroundColor: colorMap[color] || '#E8E3D9' }}
-                        >
-                          {selectedColors.includes(color) && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className={cn("w-2 h-2 rounded-full", color === 'White' || color === 'Ivory' || color === 'Soft White' ? "bg-stone-800" : "bg-white")} />
-                            </div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="md:hidden mt-4">
-                    <span className="text-xs tracking-widest uppercase text-stone-600 font-bold block mb-2">{t('collection.silhouette')}</span>
-                    <div className="flex flex-wrap gap-2">
-                      {SILHOUETTES.map(sil => (
-                        <button
-                          key={sil.value}
-                          onClick={() => setSelectedSilhouette(sil.value === selectedSilhouette ? '' : sil.value)}
-                          className={cn(
-                            "px-3 py-2 text-micro tracking-widest uppercase font-bold transition-all border",
-                            selectedSilhouette === sil.value ? "bg-onyx text-white border-onyx" : "border-stone-200 text-stone-600 hover:border-gold"
-                          )}
-                        >
-                          {sil.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {hasActiveFilters && (
             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-stone-100">

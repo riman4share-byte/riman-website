@@ -12,7 +12,6 @@ migration_dir = "supabase/migrations"
 
 [functions]
 enabled = true
-include = ["create-checkout", "stripe-webhook", "send-notification"]
 
 [functions.secrets]
 RESEND_API_KEY = ""

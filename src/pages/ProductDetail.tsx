@@ -705,7 +705,7 @@ export default function ProductDetail() {
                         ) : (
                           <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6" onSubmit={async (e) => {
                             e.preventDefault();
-                            if (!newReview.name || !newReview.comment || !product) return;
+                            if (!newReview.name.trim() || newReview.name.trim().length < 2 || !newReview.comment.trim() || newReview.comment.trim().length < 10 || !product) return;
                             try {
                               await submitReview({
                                 productId: product.id,

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -11,6 +12,15 @@ interface SizeGuideProps {
 export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
   useScrollLock(isOpen);
   const { t } = useLanguage();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
   const sizes = [
     { label: 'XS', bust: '78-82', waist: '60-64', hips: '86-90' },
     { label: 'S', bust: '82-86', waist: '64-68', hips: '90-94' },
@@ -40,7 +50,7 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
           >
             <div className="sticky top-0 bg-ivory border-b border-stone-100 px-6 py-4 flex items-center justify-between z-10">
               <h3 className="font-heading text-lg text-stone-800 tracking-widest uppercase">{t('size_guide.title')}</h3>
-              <button onClick={onClose} className="p-2 text-stone-600 hover:text-stone-800 transition-colors" aria-label="Close size guide">
+              <button ref={closeRef} onClick={onClose} className="p-2 text-stone-600 hover:text-stone-800 transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none" aria-label="Close size guide">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -54,10 +64,10 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-stone-200">
-                      <th className="text-left py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.size')}</th>
-                      <th className="text-left py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.bust')}</th>
-                      <th className="text-left py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.waist')}</th>
-                      <th className="text-left py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.hips')}</th>
+                      <th className="text-start py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.size')}</th>
+                      <th className="text-start py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.bust')}</th>
+                      <th className="text-start py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.waist')}</th>
+                      <th className="text-start py-3 px-2 font-heading text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('size_guide.hips')}</th>
                     </tr>
                   </thead>
                   <tbody>

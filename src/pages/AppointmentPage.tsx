@@ -67,8 +67,8 @@ export default function AppointmentPage() {
 
   const validate = (): boolean => {
     if (!form.name.trim()) { setError(t('appointment.error_name')); return false; }
-    if (!form.email.trim() || !form.email.includes('@')) { setError(t('appointment.error_email')); return false; }
-    if (!form.phone.trim()) { setError(t('appointment.error_phone')); return false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError(t('appointment.error_email')); return false; }
+    if (!/^\+?[0-9\s-]{7,15}$/.test(form.phone.trim())) { setError(t('appointment.error_phone')); return false; }
     if (!form.service_type) { setError(t('appointment.error_service')); return false; }
     if (!form.date) { setError(t('appointment.error_date')); return false; }
     if (!form.time) { setError(t('appointment.error_time')); return false; }
@@ -200,22 +200,22 @@ export default function AppointmentPage() {
                   <div>
                     <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.full_name')}</label>
                     <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input type="text" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Your full name" className="w-full pl-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <User className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+                      <input id="appt-name" type="text" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Your full name" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.email')}</label>
                     <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input type="email" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder="your@email.com" className="w-full pl-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+                      <input id="appt-email" type="email" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder="your@email.com" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.phone')}</label>
                     <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder="+971 50 000 0000" className="w-full pl-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <Phone className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
+                      <input id="appt-phone" type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder="+971 50 000 0000" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>

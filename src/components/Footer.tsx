@@ -113,7 +113,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 justify-center md:justify-start">
               <SocialLink href="https://instagram.com/rimanfashion" icon={<Instagram />} label="Instagram" />
               <SocialLink href="https://facebook.com/rimanfashion" icon={<Facebook />} label="Facebook" />
-              <SocialLink href="mailto:boutique@rimanfashion.com" icon={<Mail />} label="Email" />
+              <SocialLink href="mailto:boutique@riman.ae" icon={<Mail />} label="Email" />
             </div>
           </div>
 
@@ -209,8 +209,8 @@ function SocialLink({ href, icon, label }: { href: string; icon: React.ReactElem
   return (
     <a 
       href={href} 
-      target="_blank" 
-      rel="noreferrer"
+      target="_blank"
+      rel="noopener noreferrer"
       className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-stone-800 flex items-center justify-center text-stone-400 hover:bg-gold hover:border-gold hover:text-white transition-all duration-500"
       aria-label={label}
     >

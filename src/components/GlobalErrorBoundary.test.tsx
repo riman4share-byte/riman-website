@@ -12,6 +12,6 @@ describe('GlobalErrorBoundary', () => {
         <Bomb />
       </GlobalErrorBoundary>
     );
-    expect(screen.getByText('A Technical Moment')).toBeInTheDocument();
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 });

@@ -1,9 +1,13 @@
 import { Resend } from 'resend';
 
 function getResendClient(): Resend | null {
-  const apiKey = import.meta.env.RESEND_API_KEY;
+  // NOTE: Vite only exposes VITE_-prefixed vars to the browser.
+  // Client-side Resend is intentionally disabled — use the Supabase
+  // `send-notification` edge function instead. Kept as no-op guard
+  // so callers fail softly with `not-configured`.
+  const apiKey = (import.meta.env.VITE_RESEND_API_KEY as string | undefined) ?? (import.meta.env.RESEND_API_KEY as string | undefined);
   if (!apiKey) {
-    console.info('[Riman] Email not configured — set RESEND_API_KEY');
+    console.info('[Riman] Email not configured — route via send-notification edge function');
     return null;
   }
   return new Resend(apiKey);
@@ -119,7 +123,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
 
           <hr style="border: none; border-top: 1px solid #E8E3D9; margin: 32px 0;">
           <p style="font-size: 12px; color: #78716C; text-align: center; margin: 0;">
-            Atelier Riman · Al Zahra St, Sharjah, UAE · hello@rimanfashion.com
+            Atelier Riman · Al Zahra St, Sharjah, UAE · hello@riman.ae
           </p>
           </div>
         </body>
@@ -130,7 +134,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
     if (!resend) return { success: false, error: 'not-configured' };
 
     const { data: _result, error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@rimanfashion.com>',
+      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
       to: data.customerEmail,
       subject: `Order Confirmation — ${data.orderId}`,
       html,
@@ -149,7 +153,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
 
 export async function sendAdminOrderAlert(data: OrderEmailData): Promise<{ success: boolean; error?: string }> {
   try {
-    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@rimanfashion.com';
+    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@riman.ae';
     
     const html = `
       <h2>New Order Received</h2>
@@ -165,7 +169,7 @@ export async function sendAdminOrderAlert(data: OrderEmailData): Promise<{ succe
     if (!resend) return { success: false, error: 'not-configured' };
 
     const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@rimanfashion.com>',
+      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
       to: adminEmail,
       subject: `🛍️ New Order — ${data.orderId}`,
       html,
@@ -193,14 +197,14 @@ export async function sendRentalReminderEmail(
       <p>Items to return:</p>
       <ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>
       <p>Please ensure items are returned in their original condition.</p>
-      <p>Questions? Reply to this email or contact us at hello@rimanfashion.com</p>
+      <p>Questions? Reply to this email or contact us at hello@riman.ae</p>
     `;
 
     const resend = getResendClient();
     if (!resend) return { success: false, error: 'not-configured' };
 
     const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@rimanfashion.com>',
+      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
       to: customerEmail,
       subject: `Rental Return Reminder — ${orderId}`,
       html,
@@ -240,12 +244,12 @@ export async function sendAppointmentConfirmationEmail(data: {
           ${data.gowns.length ? `<p>Pieces prepared for you:<br/><em>${data.gowns.join('<br/>')}</em></p>` : ''}
           <p style="margin-bottom:0;">Al Zahra St, Sharjah, UAE. To reschedule, simply reply to this email.</p>
         </div>
-        <p style="font-size:12px;color:#78716C;text-align:center;margin-top:32px;">Atelier Riman · hello@rimanfashion.com</p>
+        <p style="font-size:12px;color:#78716C;text-align:center;margin-top:32px;">Atelier Riman · hello@riman.ae</p>
         </div>
       </body></html>`;
 
     const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@rimanfashion.com>',
+      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
       to: data.email,
       subject: `Private Viewing Request — ${data.date}`,
       html,
@@ -270,7 +274,7 @@ export async function sendAppointmentAdminAlert(data: {
     const resend = getResendClient();
     if (!resend) return { success: false, error: 'not-configured' };
 
-    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@rimanfashion.com';
+    const adminEmail = import.meta.env.RESEND_ADMIN_EMAIL || 'admin@riman.ae';
     const html = `
       <h2>New Viewing Request</h2>
       <p><strong>${data.name}</strong> · ${data.phone} · ${data.email}</p>
@@ -279,7 +283,7 @@ export async function sendAppointmentAdminAlert(data: {
       <p><a href="https://riman-fashion-v2.netlify.app/admin/appointments">Open Admin Calendar</a></p>`;
 
     const { error } = await resend.emails.send({
-      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@rimanfashion.com>',
+      from: import.meta.env.RESEND_FROM_EMAIL || 'Riman Fashion <orders@riman.ae>',
       to: adminEmail,
       subject: `📅 Viewing Request — ${data.name}`,
       html,

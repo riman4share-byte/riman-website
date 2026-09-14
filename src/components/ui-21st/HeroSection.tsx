@@ -1,75 +1,100 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'motion/react';
-import { MessageCircle, CalendarCheck } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { buildWhatsAppUrl } from '../../lib/whatsapp';
+import CalligraphicAccent from '../salon/CalligraphicAccent';
 
-export default function HeroSection21st({ dressCode = 'RF-BR-2514' }: { dressCode?: string }) {
-  const { t, isRtl } = useLanguage();
-  const [imgError, setImgError] = useState(false);
-  const wa = buildWhatsAppUrl(
-    `Hello Riman, I'm interested in ${dressCode}. I'm interested in: Rental. Event date: … Dress link: …`,
-  );
+const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
+const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
+
+export default function HeroSection21st() {
+  const { t, language } = useLanguage();
+  const [videoError, setVideoError] = useState(false);
 
   return (
-    <section className="relative overflow-hidden bg-onyx text-ivory" aria-label="Riman hero">
-      <div className="absolute inset-0 bg-gradient-to-b from-onyx via-onyx/80 to-onyx" aria-hidden="true" />
-      <div className="relative container mx-auto px-6 py-24 md:py-36 grid gap-12 md:grid-cols-2 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <p className="font-label text-xs tracking-[0.35em] uppercase text-gold mb-4">
-            Riman Fashion — Bridal · Engagement · Evening
-          </p>
-          <h1 className="font-heading font-light leading-[1.02] text-[clamp(2.5rem,6vw,5rem)] mb-6">
-            Sharjah Couture, <em className="font-editorial italic text-gold">Made to Measure</em>
-          </h1>
-          <p className="font-body text-white/70 max-w-md mb-10 leading-relaxed">
-            {t('hero.subtitle')}
-          </p>
-          <div className={`flex flex-wrap gap-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
-            <Link
-              to="/appointment"
-              className="inline-flex items-center gap-2 bg-gold text-onyx px-8 py-4 text-xs tracking-[0.25em] uppercase font-bold hover:bg-gold-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none min-h-[44px]"
-            >
-              <CalendarCheck className="w-4 h-4" /> Book a Fitting
-            </Link>
-            <a
-              href={wa}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-ivory/30 px-8 py-4 text-xs tracking-[0.25em] uppercase hover:border-gold hover:text-gold transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none min-h-[44px]"
-            >
-              <MessageCircle className="w-4 h-4" /> Ask about {dressCode}
-            </a>
-          </div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="relative aspect-[3/4] bg-white/5 border border-ivory/10 overflow-hidden"
-        >
-          {!imgError ? (
-            <img
-              src="/images/hero-default.jpg"
-              alt="Riman bridal gown editorial"
-              className="w-full h-full object-cover"
-              loading="eager"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="w-full h-full bg-stone-800" />
-          )}
-          <div className="absolute bottom-4 start-4 end-4 flex items-center justify-between bg-onyx/70 backdrop-blur px-4 py-3 text-xs tracking-[0.2em] uppercase">
-            <span>{dressCode} · Bridal</span>
-            <span className="text-gold">Rental / Sale</span>
-          </div>
-        </motion.div>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-onyx overflow-hidden">
+      {!videoError ? (
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src={HERO_VIDEO}
+          poster={HERO_POSTER}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          aria-hidden="true"
+          tabIndex={-1}
+          onError={(e) => {
+            const code = (e.currentTarget as HTMLVideoElement).error?.code;
+            if (code === MediaError.MEDIA_ERR_ABORTED) return;
+            setVideoError(true);
+          }}
+          ref={(el) => {
+            if (!el) return;
+            el.playbackRate = 0.8;
+            if (el.paused) el.play().catch(() => {});
+          }}
+        />
+      ) : (
+        <img
+          className="absolute inset-0 w-full h-full object-cover"
+          src={HERO_POSTER}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+        />
+      )}
+      <div className="absolute inset-0 bg-onyx/60" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80" aria-hidden="true" />
+      <CalligraphicAccent
+        word="أناقة"
+        className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(6rem,16vw,14rem)] opacity-25 pointer-events-none"
+      />
+      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-in">
+        <p className="font-label text-xs md:text-sm tracking-[0.35em] uppercase text-white mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {t('hero.subtitle')}
+        </p>
+        <p className="font-label text-xs tracking-[0.25em] uppercase text-bone/90 mb-6 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {t('cat.bridal')} · {t('cat.evening')} · {t('cat.rentals')}
+        </p>
+        <h1 className="font-heading text-white font-light leading-[1.02] text-[clamp(2.5rem,8vw,7rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]">
+          {t('hero.title').split('&').map((part, i, arr) => (
+            <span key={i}>
+              {part}
+              {i < arr.length - 1 && <em className="font-editorial italic text-gold">&</em>}
+            </span>
+          ))}
+        </h1>
+        <p className="font-body text-base md:text-lg text-white leading-relaxed mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب — تجربة خاصة في الشارقة' : 'Buy · Rent · Bespoke — private fittings in Sharjah'}
+        </p>
+        <p className="font-label text-xs tracking-[0.2em] uppercase text-white/90 mb-10 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {t('invitation.contact_line')}
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            to="/appointment"
+            className="btn-luxury w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center bg-bone text-onyx hover:text-gold-dark ring-1 ring-white/30 shadow-2xl text-sm"
+            aria-label={t('cta.viewing')}
+          >
+            {t('cta.viewing')}
+          </Link>
+          <Link
+            to="/search"
+            className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-white bg-white/10 backdrop-blur-sm border border-white/70 hover:border-gold hover:text-gold hover:bg-black/40 transition-colors duration-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]"
+            aria-label={t('cta.explore')}
+          >
+            {t('cta.explore')} →
+          </Link>
+        </div>
+        <p className="mt-8 font-label text-xs tracking-[0.2em] uppercase text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {language === 'ar' ? '★★★★★ أكثر من 200 عروس · fittings خاصة يومياً' : '★★★★★ 200+ brides · Private fittings daily'}
+        </p>
       </div>
+      <span aria-hidden="true" className="hidden sm:block absolute bottom-8 left-1/2 -translate-x-1/2 font-label text-xs tracking-[0.3em] uppercase text-white/80">
+        {t('hero.discover')}
+      </span>
     </section>
   );
 }

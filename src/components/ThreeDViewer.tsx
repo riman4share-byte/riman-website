@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import '@google/model-viewer';
 import { motion, AnimatePresence } from 'motion/react';
 import { Maximize2, RotateCcw, Box, Loader2, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,6 +17,13 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { t } = useLanguage();
+
+  // Lazy-load the ~1MB model-viewer runtime only when a 3D model is actually rendered
+  useEffect(() => {
+    let cancelled = false;
+    import('@google/model-viewer').catch(() => { if (!cancelled) setHasError(true); });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     const model = modelRef.current;

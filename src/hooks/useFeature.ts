@@ -1,7 +1,7 @@
 import { useSettings } from '../contexts/SettingsContext';
 
 const DEFAULT_FEATURES: Record<string, boolean> = {
-  newsletter: false,
+  newsletter: true,
   whatsappBtn: true,
   preloader: true,
   instagramFeed: true,

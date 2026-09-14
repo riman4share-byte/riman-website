@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { deriveOrderType, validateCheckoutStep, isCartEmpty, type OrderItem, type CheckoutFormData } from './checkout';
 import type { Product } from '../types';
 
-const makeItem = (productType: Product['productType']): OrderItem => ({
+const makeItem = (productType: Product['productType'], intent: 'sale' | 'rent' = 'sale'): OrderItem => ({
   id: 'p1',
   name: 'Gown',
   productType,
   quantity: 1,
-  intent: 'sale',
+  intent,
 });
 
 const validForm: CheckoutFormData = {
@@ -25,14 +25,18 @@ describe('deriveOrderType', () => {
     expect(deriveOrderType([makeItem('sale')])).toBe('sale');
   });
 
-  it("returns 'rental' when every item is rent or both", () => {
-    expect(deriveOrderType([makeItem('rent')])).toBe('rental');
-    expect(deriveOrderType([makeItem('both')])).toBe('rental');
+  it("returns 'rental' when every item intent is rent", () => {
+    expect(deriveOrderType([makeItem('rent', 'rent')])).toBe('rental');
+    expect(deriveOrderType([makeItem('both', 'rent')])).toBe('rental');
   });
 
-  it("returns 'mixed' when the cart has both sale and rental items", () => {
-    expect(deriveOrderType([makeItem('sale'), makeItem('rent')])).toBe('mixed');
-    expect(deriveOrderType([makeItem('both'), makeItem('sale')])).toBe('mixed');
+  it("classifies dual-type product bought as sale correctly", () => {
+    expect(deriveOrderType([makeItem('both', 'sale')])).toBe('sale');
+  });
+
+  it("returns 'mixed' when the cart has both sale and rental intents", () => {
+    expect(deriveOrderType([makeItem('sale', 'sale'), makeItem('rent', 'rent')])).toBe('mixed');
+    expect(deriveOrderType([makeItem('both', 'rent'), makeItem('sale', 'sale')])).toBe('mixed');
   });
 
   it("returns 'sale' for an empty cart", () => {

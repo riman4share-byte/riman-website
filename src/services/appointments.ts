@@ -18,7 +18,7 @@ function saveLocalAppointments(appointments: Appointment[]): void {
 
 export async function createAppointment(appointment: Omit<Appointment, 'id' | 'status' | 'created_at'>): Promise<Appointment> {
   if (!isSupabaseConfigured) {
-    return createLocalAppointment(appointment);
+    throw new Error('Booking service unavailable. Please try again or contact us on WhatsApp.');
   }
 
   try {
@@ -41,25 +41,13 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 's
     if (error) throw error;
     return data as Appointment;
   } catch (err: any) {
-    // Fall back to local storage if Supabase is unreachable (e.g. paused project)
+    // Production: never fake success. Surface failure so UI shows
+    // retry + WhatsApp fallback instead of a false confirmation.
     if (err instanceof TypeError || (err.message && err.message.includes('Failed to fetch'))) {
-      return createLocalAppointment(appointment);
+      throw new Error('Booking service unavailable. Please try again or contact us on WhatsApp.');
     }
     throw err;
   }
-}
-
-function createLocalAppointment(appointment: Omit<Appointment, 'id' | 'status' | 'created_at'>): Appointment {
-  const appointments = getLocalAppointments();
-  const newAppointment: Appointment = {
-    ...appointment,
-    id: `local-${Date.now()}`,
-    status: 'pending',
-    created_at: new Date().toISOString(),
-  };
-  appointments.push(newAppointment);
-  saveLocalAppointments(appointments);
-  return newAppointment;
 }
 
 export async function fetchAppointments(): Promise<Appointment[]> {

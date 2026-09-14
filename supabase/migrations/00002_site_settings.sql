@@ -30,7 +30,7 @@ INSERT INTO site_settings (key, value) VALUES ('branding', '{
 }'::jsonb) ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO site_settings (key, value) VALUES ('contact', '{
-  "email": "hello@rimanfashion.com",
+  "email": "hello@riman.ae",
   "phone": "+971 50 123 4567",
   "address": "Al Zahra St, Sharjah, UAE",
   "hours": "Sat-Thu, 10am - 8pm"

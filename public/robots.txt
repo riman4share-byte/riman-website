@@ -5,4 +5,4 @@ Disallow: /checkout
 Disallow: /profile
 Disallow: /auth
 
-Sitemap: https://www.rimanfashion.com/sitemap.xml
+Sitemap: https://www.riman.ae/sitemap.xml

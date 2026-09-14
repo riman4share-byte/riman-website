@@ -42,11 +42,12 @@ export default function FaqPage() {
         <div className="container mx-auto px-6 text-center max-w-4xl">
           <h1 className="font-heading text-5xl md:text-7xl text-stone-800 tracking-tight mb-8">{t('faq.title')}</h1>
           <div className="relative max-w-xl mx-auto">
-             <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-             <input 
-              type="text" 
+             <Search className="absolute start-6 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+             <input
+              id="faq-search"
+              type="text"
               placeholder={t('faq.search_placeholder')}
-              className="w-full bg-ivory border border-stone-100 p-6 pl-14 text-xs tracking-widest outline-none focus:border-gold transition-all"
+              className="w-full bg-ivory border border-stone-100 p-6 ps-14 text-xs tracking-widest outline-none focus:border-gold transition-all"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -70,7 +71,7 @@ export default function FaqPage() {
                     <div key={id} className="border border-stone-50 bg-ivory hover:border-gold/20 transition-all">
                       <button 
                         onClick={() => setActiveIdx(isOpen ? null : id)}
-                        className="w-full p-6 flex justify-between items-center text-left"
+                        className="w-full p-6 flex justify-between items-center text-start"
                       >
                         <span className="font-heading text-sm md:text-lg text-stone-800 tracking-wide">{t(faq.qKey)}</span>
                         <ChevronDown className={cn("w-5 h-5 text-gold transition-transform duration-500", isOpen && "rotate-180")} />

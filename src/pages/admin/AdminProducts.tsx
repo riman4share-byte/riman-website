@@ -91,7 +91,7 @@ export default function AdminProducts() {
       await createRentalBooking({
         product_id: editingProduct.id,
         customer_name: 'Atelier Hold',
-        customer_email: 'atelier@rimanfashion.com',
+        customer_email: 'atelier@riman.ae',
         start_date: blockStart,
         end_date: blockEnd,
         status: 'blocked',

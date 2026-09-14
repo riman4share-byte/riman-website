@@ -48,6 +48,26 @@ const defaultContent: SiteContent = {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+/**
+ * Backfill local catalogue fields (Arabic names/descriptions) onto rows
+ * fetched from Supabase. Only fills fields that are missing/empty — admin
+ * edits stored in the database always win.
+ */
+function mergeLocalCatalogue(remote: Product[]): Product[] {
+  const localById = new Map(initialProducts.map((p) => [p.id, p]));
+  return remote.map((p) => {
+    const local = localById.get(p.id);
+    if (!local) return p;
+    return {
+      ...p,
+      name: p.name || local.name,
+      description: p.description || local.description,
+      nameAr: p.nameAr || local.nameAr,
+      descriptionAr: p.descriptionAr || local.descriptionAr,
+    };
+  });
+}
+
 function safeParse<T>(key: string, fallback: T): T {
   try {
     const saved = localStorage.getItem(key);
@@ -81,7 +101,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = await fetchProducts();
       if (data && data.length > 0) {
-        setProducts(data);
+        setProducts(mergeLocalCatalogue(data));
       }
     } catch {
       // Transient/connection errors are non-fatal; catalog falls back to local data.

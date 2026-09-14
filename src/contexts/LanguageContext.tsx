@@ -26,7 +26,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.gallery': 'Gallery',
     'nav.alterations': 'Alterations',
     'nav.faq': 'FAQ',
-    'nav.appointment': 'Book Now',
+    'nav.appointment': 'Private Viewing',
 
     // Categories
     'cat.bridal': 'Bridal',
@@ -152,7 +152,7 @@ const translations: Record<Language, Record<string, string>> = {
     'terms.section_9_body': 'These terms are governed by the laws of the United Arab Emirates, Emirate of Sharjah. Any disputes shall be resolved through amicable negotiation or, failing that, in the courts of Sharjah.',
     'terms.contact_title': 'Contact',
     'terms.contact_body': 'For questions about these terms, please reach out to our team:',
-    'terms.contact_info': 'Atelier Riman — Al Zahra St, Sharjah, UAE — hello@rimanfashion.com',
+    'terms.contact_info': 'Atelier Riman — Al Zahra St, Sharjah, UAE — hello@riman.ae',
 
     // Privacy
     'privacy.title': 'Privacy Policy',
@@ -174,7 +174,7 @@ const translations: Record<Language, Record<string, string>> = {
     'privacy.section_7_body': 'We implement appropriate technical and organisational measures to protect your data, including SSL/TLS encryption, access controls, and regular security reviews. However, no method of transmission over the internet is 100% secure.',
     'privacy.contact_title': 'Contact',
     'privacy.contact_body': 'For privacy-related inquiries or to exercise your rights:',
-    'privacy.contact_info': 'Atelier Riman — Al Zahra St, Sharjah, UAE — hello@rimanfashion.com',
+    'privacy.contact_info': 'Atelier Riman — Al Zahra St, Sharjah, UAE — hello@riman.ae',
 
     // Product
     'product.added': 'Added',
@@ -188,7 +188,7 @@ const translations: Record<Language, Record<string, string>> = {
     'product.back_to_collection': 'Back to Collection',
     'product.limited_edition': 'Limited Edition',
     'product.purchase_value': 'Purchase Value',
-    'product.rental_7day': '7-Day Premium Rental',
+    'product.rental_7day': '4-Day Premium Rental',
     'product.rental_includes': 'Dry Clean & Insurance Included',
     'product.refundable_deposit': '+ Refundable Deposit Required',
     'product.select_size_label': 'Select Size',
@@ -227,7 +227,7 @@ const translations: Record<Language, Record<string, string>> = {
     'product.selection': 'Selection',
     'product.period_starts': 'Period Starts',
     'product.rental_policy': 'Rental Policy',
-    'product.rental_policy_desc': '7-day hire period includes eco-friendly dry cleaning and couture insurance. Please ensure return within your window.',
+    'product.rental_policy_desc': '4-day hire, return on day five. Includes eco-friendly dry cleaning and couture insurance. Please ensure return within your window.',
     'product.security_deposit': 'Security Deposit',
     'product.continue_exploring': 'Continue Exploring',
     'product.go_to_checkout': 'Go to Checkout',
@@ -285,6 +285,8 @@ const translations: Record<Language, Record<string, string>> = {
     'collection.sort_price_high': 'price high',
     'collection.colors': 'Colors',
     'collection.silhouette': 'Silhouette',
+    'collection.year': 'Year',
+    'collection.filters': 'Filters',
     'collection.all_silhouettes': 'All Silhouettes',
     'silhouette.A-Line': 'A-Line',
     'silhouette.Ballgown': 'Ball Gown',
@@ -400,6 +402,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cookies.body': 'We use cookies to curate a personalized atelier experience.',
     'cookies.learn': 'Learn details',
     'cookies.accept': 'Accept & Explore',
+    'cookies.reject': 'Reject',
 
     // Errors & common
     'errors.tech_title': 'A Technical Moment',
@@ -751,7 +754,7 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.location': 'Location',
     'contact.location_addr': 'Al Zahra St, Sharjah, United Arab Emirates',
     'contact.contact_details': 'Contact Details',
-    'contact.phone_email': 'Phone: +971 553 730 792 | Email: boutique@rimanfashion.com',
+    'contact.phone_email': 'Phone: +971 553 730 792 | Email: boutique@riman.ae',
     'contact.hours': 'Opening Hours',
     'contact.hours_detail': 'Daily: 11:00 AM - 9:00 PM | Friday: after prayer - 9:00 PM',
     'contact.special_note': 'Special Note',
@@ -838,7 +841,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.gallery': 'المعرض',
     'nav.alterations': 'التعديلات',
     'nav.faq': 'الأسئلة الشائعة',
-    'nav.appointment': 'احجز الآن',
+    'nav.appointment': 'زيارة خاصة',
 
     // Categories
     'cat.bridal': 'العرائس',
@@ -964,7 +967,7 @@ const translations: Record<Language, Record<string, string>> = {
     'terms.section_9_body': 'تخضع هذه الشروط لقوانين دولة الإمارات العربية المتحدة، إمارة الشارقة. يتم حل النزاعات عبر التفاوض الودي أو، عند فشله، في محاكم الشارقة.',
     'terms.contact_title': 'اتصل بنا',
     'terms.contact_body': 'للاستفسارات حول هذه الشروط، يرجى التواصل مع فريقنا:',
-    'terms.contact_info': 'أتيليه ريمان — شارع الزهرة، الشارقة، الإمارات — hello@rimanfashion.com',
+    'terms.contact_info': 'أتيليه ريمان — شارع الزهرة، الشارقة، الإمارات — hello@riman.ae',
 
     // Privacy
     'privacy.title': 'سياسة الخصوصية',
@@ -986,7 +989,7 @@ const translations: Record<Language, Record<string, string>> = {
     'privacy.section_7_body': 'نحن نطبق تدابير فنية وتنظيمية مناسبة لحماية بياناتكم، بما في ذلك تشفير SSL/TLS وضوابط الوصول والمراجعات الأمنية الدورية. ومع ذلك، لا توجد طريقة نقل عبر الإنترنت آمنة بنسبة ١٠٠٪.',
     'privacy.contact_title': 'اتصل بنا',
     'privacy.contact_body': 'للاستفسارات المتعلقة بالخصوصية أو لممارسة حقوقكم:',
-    'privacy.contact_info': 'أتيليه ريمان — شارع الزهرة، الشارقة، الإمارات — hello@rimanfashion.com',
+    'privacy.contact_info': 'أتيليه ريمان — شارع الزهرة، الشارقة، الإمارات — hello@riman.ae',
 
     // Product
     'product.added': 'تمت الإضافة',
@@ -1097,6 +1100,8 @@ const translations: Record<Language, Record<string, string>> = {
     'collection.sort_price_high': 'السعر: من الأعلى',
     'collection.colors': 'الألوان',
     'collection.silhouette': 'القصّة',
+    'collection.year': 'السنة',
+    'collection.filters': 'التصفية',
     'collection.all_silhouettes': 'جميع القصّات',
     'silhouette.A-Line': 'قصة A',
     'silhouette.Ballgown': 'منفوش',
@@ -1212,6 +1217,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cookies.body': 'نستخدم ملفات تعريف الارتباط لتوفير تجربة أتيليه مخصصة لكِ.',
     'cookies.learn': 'اعرفي المزيد',
     'cookies.accept': 'الموافقة والاستكشاف',
+    'cookies.reject': 'رفض',
 
     // Errors & common
     'errors.tech_title': 'لحظة تقنية',
@@ -1563,7 +1569,7 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.location': 'الموقع',
     'contact.location_addr': 'شارع الزهراء، الشارقة، الإمارات العربية المتحدة',
     'contact.contact_details': 'بيانات الاتصال',
-    'contact.phone_email': 'الهاتف: ٧٩٧٣٠٥٥٣+ | البريد: boutique@rimanfashion.com',
+    'contact.phone_email': 'الهاتف: ٧٩٧٣٠٥٥٣+ | البريد: boutique@riman.ae',
     'contact.hours': 'ساعات العمل',
     'contact.hours_detail': 'يومياً: ١١ صباحاً - ٩ مساءً | الجمعة: بعد الصلاة - ٩ مساءً',
     'contact.special_note': 'ملاحظة خاصة',

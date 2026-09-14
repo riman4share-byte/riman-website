@@ -1,11 +1,22 @@
 // Supabase Edge Function: send-notification
-// Deploy: supabase functions deploy send-notification --no-verify-jwt
+// Deploy WITH JWT verification: supabase functions deploy send-notification
+// (do NOT use --no-verify-jwt — this was previously an open mail relay).
 // Set secrets: supabase secrets set RESEND_API_KEY=re_xxx
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
-const FROM_EMAIL = 'Atelier Riman <orders@rimanfashion.com>';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+const FROM_EMAIL = 'Riman Fashion <orders@riman.ae>';
+const APP_URL = Deno.env.get('APP_URL') || 'https://riman.ae';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': APP_URL,
+  'Access-Control-Allow-Headers': 'authorization, content-type',
+  'Vary': 'Origin',
+};
 
 interface NotificationPayload {
   type: 'order_confirmed' | 'appointment_booked' | 'contact_submitted';
@@ -14,18 +25,53 @@ interface NotificationPayload {
   data: Record<string, any>;
 }
 
+const ALLOWED_TYPES = new Set(['order_confirmed', 'appointment_booked', 'contact_submitted']);
+
 serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
   }
 
   try {
+    // Require authenticated caller (Supabase JWT). Service-role callers
+    // (stripe-webhook, create-checkout) bypass via service key.
+    const authHeader = req.headers.get('authorization') || '';
+    if (!authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user?.email) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const payload: NotificationPayload = await req.json();
 
     if (!payload.to || !payload.subject) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (!ALLOWED_TYPES.has(payload.type)) {
+      return new Response(JSON.stringify({ error: 'Invalid type' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    // Recipient must be the caller — no arbitrary `to` (prevents open relay).
+    // Admin alerts (contact/appointment) are sent server-side by other
+    // functions with service_role, not via this user-facing path.
+    if (payload.to.toLowerCase() !== user.email!.toLowerCase()) {
+      return new Response(JSON.stringify({ error: 'Recipient mismatch' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -50,19 +96,19 @@ serve(async (req) => {
       console.error('Resend API error:', err);
       return new Response(JSON.stringify({ error: 'Failed to send email' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
     console.error('Edge function error:', err);
     return new Response(JSON.stringify({ error: 'Internal error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
@@ -95,7 +141,7 @@ function buildHtml(payload: NotificationPayload): string {
         ${orderRows}
         ${appointmentRows}
         <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
-        <p style="font-size: 12px; color: #666; text-align: center;">Al Zahra St, Sharjah, UAE | hello@rimanfashion.com</p>
+        <p style="font-size: 12px; color: #666; text-align: center;">Al Zahra St, Sharjah, UAE | hello@riman.ae</p>
       </div>
     </body>
     </html>

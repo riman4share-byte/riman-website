@@ -13,7 +13,7 @@ export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories = ["Bridal Gown", "Evening Dress"];
+  const categories = ["Bridal Gown", "Evening Dress", "Accessory", "Fine Jewelry"];
   const categoryLabel = (c: string) => c === 'Bridal Gown' ? 'Bridal' : c === 'Evening Dress' ? 'Evening' : c;
 
   const filteredProducts = useMemo(() => {
@@ -37,13 +37,14 @@ export default function SearchPage() {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
              <div className="relative group">
-                <SearchIcon className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-gold transition-colors" />
-                <input 
-                  type="text" 
+                <SearchIcon className="absolute start-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-gold transition-colors" />
+                <input
+                  id="site-search"
+                  type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t('search.placeholder')}
-                  className="w-full bg-stone-50 border-stone-100 p-8 pl-16 text-sm tracking-[0.2em] uppercase outline-none focus:bg-ivory focus:border-gold transition-all"
+                  className="w-full bg-stone-50 border-stone-100 p-8 ps-16 text-sm tracking-[0.2em] uppercase outline-none focus:bg-ivory focus:border-gold transition-all"
                   autoFocus
                 />
                 {query && (
@@ -79,10 +80,10 @@ export default function SearchPage() {
       {/* Results */}
       <section className="section-padding container mx-auto px-6">
         <div className="flex justify-between items-center mb-12 border-b border-stone-200 pb-6">
-           <h2 className="font-heading text-lg text-stone-800 tracking-widest uppercase">
+           <h1 className="font-heading text-lg text-stone-800 tracking-widest uppercase">
              {t('search.results')} <span className="text-stone-500 font-normal ml-2">({filteredProducts.length})</span>
-           </h2>
-           <button className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-gold transition-colors">
+           </h1>
+           <button onClick={() => document.getElementById('search-categories')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-gold transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none">
               <SlidersHorizontal className="w-3 h-3" /> {t('search.advanced_filters')}
            </button>
         </div>

@@ -172,7 +172,7 @@ export default function Checkout() {
         });
 
         if (url) {
-          clearCart();
+          try { sessionStorage.setItem('riman_pending_order', JSON.stringify({ ts: Date.now() })); } catch { /* ignore */ }
           window.location.href = url;
           return;
         }
@@ -504,7 +504,7 @@ export default function Checkout() {
                             {item.selectedSize && <p className="text-micro text-stone-600 uppercase">{t('checkout.size')}: {item.selectedSize}</p>}
                             {item.selectedDate && <p className="text-micro text-gold uppercase">{t('checkout.date')}: {new Date(item.selectedDate).toLocaleDateString()}</p>}
                           </div>
-                          <p className="text-xs text-gold font-medium">{formatPrice((item.rentalPrice || item.salePrice || 0) * item.quantity)}</p>
+                          <p className="text-xs text-gold font-medium">{formatPrice(getItemUnitPrice({ intent: item.intent ?? 'sale', salePrice: item.salePrice, rentalPrice: item.rentalPrice }) * item.quantity)}</p>
                         </div>
                       ))}
                     </div>
@@ -547,7 +547,7 @@ export default function Checkout() {
                           type="button"
                           onClick={() => setPaymentMethod('card')}
                           className={cn(
-                            "flex items-center gap-4 p-4 border text-left transition-all",
+                            "flex items-center gap-4 p-4 border text-start transition-all",
                             paymentMethod === 'card'
                               ? "bg-gold/5 border-gold/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
@@ -563,7 +563,7 @@ export default function Checkout() {
                           type="button"
                           onClick={() => setPaymentMethod('atelier')}
                           className={cn(
-                            "flex items-center gap-4 p-4 border text-left transition-all",
+                            "flex items-center gap-4 p-4 border text-start transition-all",
                             paymentMethod === 'atelier'
                               ? "bg-gold/5 border-gold/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
@@ -597,7 +597,7 @@ export default function Checkout() {
                     <a
                       href={`https://wa.me/${WHATSAPP_NUMBER}`}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="flex items-center justify-center gap-2 py-3 border border-stone-200 text-micro tracking-[0.2em] uppercase text-stone-600 font-bold hover:border-gold/30 hover:text-gold transition-all"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
@@ -627,7 +627,7 @@ export default function Checkout() {
                         <a
                           href={`https://wa.me/${WHATSAPP_NUMBER}`}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="text-micro tracking-widest uppercase text-gold font-bold hover:text-gold-dark transition-colors"
                         >
                           {t('checkout.whatsapp_support')} &rarr;
