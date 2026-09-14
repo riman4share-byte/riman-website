@@ -270,24 +270,8 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     document.head.appendChild(script);
   }, [admin.fathomSiteId]);
 
-  useEffect(() => {
-    if (!admin.customHeadCode || document.getElementById('riman-custom-head')) return;
-    // Sanitize: allow only meta, link, style tags; strip scripts and event handlers
-    const sanitized = admin.customHeadCode
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
-      .replace(/<object[\s\S]*?<\/object>/gi, '')
-      .replace(/<embed[\s\S]*?>/gi, '')
-      .replace(/<form[\s\S]*?<\/form>/gi, '')
-      .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-      .replace(/javascript\s*:/gi, '');
-    if (!sanitized.trim()) return;
-    const el = document.createElement('div');
-    el.id = 'riman-custom-head';
-    el.style.display = 'none';
-    el.innerHTML = sanitized;
-    document.head.appendChild(el);
-  }, [admin.customHeadCode]);
+  // Custom <head> code is applied safely and centrally by <SEOInjector /> (App.tsx)
+  // via src/lib/safeHead.ts — this component must not manage it too.
 
   return null;
 }

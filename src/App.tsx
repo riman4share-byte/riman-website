@@ -47,6 +47,7 @@ import { WishlistProvider } from './contexts/WishlistContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary';
 import { ToastProvider } from './contexts/ToastContext';
+import { applySafeCustomHead, clearSafeCustomHead } from './lib/safeHead';
 
 // Admin Pages - Lazy Loaded
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
@@ -175,24 +176,14 @@ function SEOInjector() {
     }
 
     if (settings.advanced.customHeadCode) {
-      const existing = document.getElementById('custom-head-code');
-      if (existing) existing.remove();
-      // Sanitize: strip scripts, iframes, forms, event handlers — same policy as SEOHead.
-      // customHeadCode is admin-only; this blocks stored-XSS if the value is ever compromised.
-      const sanitized = settings.advanced.customHeadCode
-        .replace(/<script[\s\S]*?<\/script>/gi, '')
-        .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
-        .replace(/<object[\s\S]*?<\/object>/gi, '')
-        .replace(/<embed[\s\S]*?>/gi, '')
-        .replace(/<form[\s\S]*?<\/form>/gi, '')
-        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-        .replace(/javascript\s*:/gi, '');
-      if (!sanitized.trim()) return;
-      const wrapper = document.createElement('div');
-      wrapper.id = 'custom-head-code';
-      wrapper.innerHTML = sanitized;
-      document.head.appendChild(wrapper);
+      // Allowlisted, inert parsing only — see src/lib/safeHead.ts
+      applySafeCustomHead(settings.advanced.customHeadCode);
+    } else {
+      clearSafeCustomHead();
     }
+    return () => {
+      clearSafeCustomHead();
+    };
   }, [settings.advanced]);
 
   return null;
