@@ -5,11 +5,13 @@ import { useLanguage } from '../contexts/LanguageContext';
 import ChapterLabel from '../components/salon/ChapterLabel';
 import InvitationRule from '../components/salon/InvitationRule';
 import EditorialPlate from '../components/salon/EditorialPlate';
-import Hero21st from '../components/ui-21st/Hero21st';
-import LookbookCarousel21st from '../components/ui-21st/LookbookCarousel21st';
-import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
+import HeroSection21st from '../components/ui-21st/HeroSection';
+import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
+import Marquee21st from '../components/ui-21st/Marquee21st';
+import TestimonialsWall21st from '../components/ui-21st/TestimonialsWall21st';
+import CallToAction21st from '../components/ui-21st/CallToAction21st';
+import FooterSection from '../components/ui-21st/FooterSection';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
-import Footer21st from '../components/ui-21st/Footer21st';
 
 const DISCIPLINES = [
   { titleKey: 'cat.bridal', descKey: 'disciplines.bridal', media: '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg', alt: 'Bridal', to: '/collection/bridal', isVideo: false },
@@ -26,7 +28,7 @@ export default function Index() {
 
   return (
     <main className="film-grain">
-      <Hero21st />
+      <HeroSection21st />
 
       <section id="atelier" className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 md:gap-16">
@@ -121,15 +123,19 @@ export default function Index() {
 
       <InvitationRule className="bg-bone border-t border-gold/15" />
 
-      <LookbookCarousel21st />
+      <Marquee21st />
+
+      <ElegantCarousel21st />
 
       <InvitationRule className="bg-champagne border-t border-gold/15" />
 
-      <TestimonialWall21st />
+      <TestimonialsWall21st />
+
+      <CallToAction21st />
 
       <BookingCTA21st />
 
-      <Footer21st />
+      <FooterSection />
     </main>
   );
 }

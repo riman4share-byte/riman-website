@@ -1,5 +1,11 @@
-export { default as Hero21st } from './Hero21st';
+export { default as Hero21st } from './HeroSection';
+export { default as HeroSection21st } from './HeroSection';
 export { default as LookbookCarousel21st } from './LookbookCarousel21st';
-export { default as TestimonialWall21st } from './TestimonialWall21st';
+export { default as ElegantCarousel21st } from './ElegantCarousel21st';
+export { default as TestimonialsWall21st } from './TestimonialsWall21st';
 export { default as BookingCTA21st } from './BookingCTA21st';
-export { default as Footer21st } from './Footer21st';
+export { default as Footer21st } from './FooterSection';
+export { default as FooterSection } from './FooterSection';
+export { default as Marquee21st } from './Marquee21st';
+export { default as CallToAction21st } from './CallToAction21st';
+export { default as HeroSection } from './HeroSection';
