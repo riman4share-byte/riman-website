@@ -10,7 +10,6 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import Logo from './Logo';
 
 const leftNavLinks = [
-  { label: "Home", path: "/", key: 'nav.home' },
   { label: "About", path: "/about", key: 'nav.about' },
   { label: "Bridal", path: "/collection/bridal", key: 'nav.bridal' },
   { label: "Couture", path: "/collection/couture", key: 'nav.couture' },
@@ -74,9 +73,9 @@ export default function Header() {
       {(headerSolid || isScrolled) && (
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       )}
-      <div className="container mx-auto px-6 relative flex items-center">
+      <div className="container mx-auto px-6 relative grid grid-cols-[1fr_auto_1fr] items-center">
         {/* Left Layer: Menu / Primary Nav / Language / Search */}
-        <div className="flex flex-1 items-center justify-start gap-4">
+        <div className="flex min-w-0 items-center justify-self-start gap-4">
           <div className="xl:hidden">
             <button 
               onClick={() => setIsMenuOpen(true)}
@@ -88,13 +87,13 @@ export default function Header() {
           </div>
           
           {/* Desktop Nav On Left */}
-          <nav className="hidden xl:flex items-center gap-4" aria-label="Collections">
+          <nav className="hidden xl:flex items-center gap-3.5 2xl:gap-5" aria-label="Collections">
             {leftNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "font-label text-xs tracking-[0.25em] uppercase transition-all duration-300",
+                  "font-label text-xs uppercase whitespace-nowrap tracking-[0.18em] 2xl:tracking-[0.25em] transition-all duration-300",
                   (!isHome) 
                     ? "text-stone-600 hover:text-gold-dark" 
                     : "text-white/80 hover:text-gold border-b border-transparent hover:border-gold/40"
@@ -128,8 +127,8 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Center Layer: Logo with Magnetic Effect (pinned to true center) */}
-        <div className="absolute left-1/2 top-0 h-full -translate-x-1/2 flex items-center">
+        {/* Center Layer: Logo with Magnetic Effect (grid-centered, never collides) */}
+        <div className="relative flex items-center justify-self-center px-2 2xl:px-10">
           <motion.div
              onMouseMove={handleLogoMove}
              onMouseLeave={resetLogo}
@@ -148,7 +147,7 @@ export default function Header() {
                 showText={false}
               />
               <span className={cn(
-                "text-xs tracking-[0.5em] uppercase mt-2 transition-all duration-700 font-heading font-bold",
+                "text-xs uppercase whitespace-nowrap tracking-[0.5em] mt-2 transition-all duration-700 font-heading font-bold",
                 (!isHome) 
                   ? "text-stone-600 opacity-100" 
                   : "text-white/60 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1"
@@ -160,14 +159,14 @@ export default function Header() {
         </div>
 
         {/* Right Layer: Secondary Nav + Actions */}
-        <div className="flex flex-1 items-center justify-end gap-4 md:gap-6">
-          <nav className="hidden xl:flex items-center gap-4 mr-4 border-r border-stone-200 pr-4" aria-label="Atelier">
+        <div className="flex min-w-0 items-center justify-self-end gap-4 md:gap-6">
+          <nav className="hidden xl:flex items-center gap-3 mr-3 border-r border-stone-200 pr-3" aria-label="Atelier">
             {rightNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "font-label text-xs tracking-[0.25em] uppercase transition-all duration-300",
+                  "font-label text-xs uppercase whitespace-nowrap tracking-[0.25em] transition-all duration-300",
                   (!isHome) 
                     ? "text-stone-600 hover:text-gold-dark" 
                     : "text-white/80 hover:text-gold border-b border-transparent hover:border-gold/40"
