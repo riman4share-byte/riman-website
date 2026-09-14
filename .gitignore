@@ -44,3 +44,17 @@ public/assets/
 
 # Local hosting import file (may hold private keys)
 .env.netlify-import
+
+# Agent/tool session artifacts (regeneratable, noisy in diffs)
+.playwright-mcp/
+.impeccable/live/sessions/
+graphify-out/
+supabase/.temp/
+
+# Test coverage output
+coverage/
+
+# Ad-hoc root-level screenshots/report dumps (keep public/ tracked assets)
+/*.png
+/*.jpg
+
