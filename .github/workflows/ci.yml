@@ -49,6 +49,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || '' }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || '' }}
+          SITE_URL: ${{ secrets.SITE_URL || 'https://riman.ae' }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -80,5 +81,6 @@ jobs:
           build-args: |
             VITE_SUPABASE_URL=${{ secrets.VITE_SUPABASE_URL }}
             VITE_SUPABASE_ANON_KEY=${{ secrets.VITE_SUPABASE_ANON_KEY }}
+            SITE_URL=${{ secrets.SITE_URL || 'https://riman.ae' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

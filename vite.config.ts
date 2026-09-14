@@ -1,50 +1,78 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import fs from 'node:fs';
 import path from 'path';
-import {defineConfig, type Plugin} from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { products } from './src/data/products';
+import {
+  buildPrerenderPages,
+  buildRobotsTxt,
+  buildSitemapXml,
+  injectPrerenderPage,
+  resolveSiteUrl,
+  routeToOutputFile,
+} from './vite/static';
 
-const SITE_URL = process.env.SITE_URL || '';
-
-function sitemapPlugin(): Plugin {
+function staticSeoPlugin(siteUrl: string): Plugin {
+  let resolvedOutDir = 'dist';
   return {
-    name: 'generate-sitemap',
-    apply: 'build',
+    name: 'riman-static-seo',
+    configResolved(config) {
+      resolvedOutDir = path.resolve(config.root, config.build.outDir);
+    },
+    transformIndexHtml(html) {
+      // Root index.html: absolute placeholder URLs for the homepage shell.
+      return html.replace(/%SITE_URL%/g, siteUrl);
+    },
     closeBundle() {
-      if (!SITE_URL) return;
-      const staticPaths = ['/', '/collection/all', '/collection/bridal', '/collection/evening', '/about', '/contact', '/appointment', '/style-quiz', '/faq'];
-      const productPaths = products.map(p => `/product/${p.id}`);
-      const urls = [...staticPaths, ...productPaths]
-        .map(route => `  <url><loc>${SITE_URL}${route}</loc><changefreq>weekly</changefreq></url>`)
-        .join('\n');
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
-      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: xml });
-      const robots = `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /checkout\nDisallow: /profile\nDisallow: /auth\n\nSitemap: ${SITE_URL}/sitemap.xml\n`;
-      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots });
+      const indexPath = path.join(resolvedOutDir, 'index.html');
+      const html = fs.readFileSync(indexPath, 'utf8');
+
+      const pages = buildPrerenderPages(siteUrl, products as never[]);
+      const lastmod = new Date().toISOString();
+
+      fs.writeFileSync(path.join(resolvedOutDir, 'sitemap.xml'), buildSitemapXml(siteUrl, pages, lastmod), 'utf8');
+      fs.writeFileSync(path.join(resolvedOutDir, 'robots.txt'), buildRobotsTxt(siteUrl), 'utf8');
+
+      for (const page of pages) {
+        const outFile = routeToOutputFile(page.route);
+        const target = path.join(resolvedOutDir, ...outFile.split('/'));
+        fs.mkdirSync(path.dirname(target), { recursive: true });
+        fs.writeFileSync(target, injectPrerenderPage(html, page), 'utf8');
+      }
     },
   };
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), sitemapPlugin()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const siteUrl = resolveSiteUrl(env, command === 'build' ? 'build' : 'serve');
+
+  return {
+    plugins: [react(), tailwindcss(), staticSeoPlugin(siteUrl)],
+    define: {
+      __SITE_URL__: JSON.stringify(siteUrl),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     },
-  },
-  server: {
-    hmr: process.env.DISABLE_HMR !== 'true',
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['lucide-react', 'motion', 'date-fns'],
-          recharts: ['recharts'],
-          'model-viewer': ['@google/model-viewer'],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+    server: {
+      hmr: process.env.DISABLE_HMR !== 'true',
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            ui: ['lucide-react', 'motion', 'date-fns'],
+            recharts: ['recharts'],
+            'model-viewer': ['@google/model-viewer'],
+          },
         },
       },
     },
-  },
+  };
 });

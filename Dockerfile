@@ -8,8 +8,12 @@ RUN npm ci --no-audit --no-fund
 COPY . .
 ARG VITE_SUPABASE_URL
 ARG VITE_SUPABASE_ANON_KEY
+# Canonical production origin — REQUIRED. The build fails without a valid
+# https:// SITE_URL (SEO metadata, sitemap and robots are validated at build).
+ARG SITE_URL
 ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
 ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+ENV SITE_URL=$SITE_URL
 
 RUN npm run build
 

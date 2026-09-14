@@ -1,5 +1,21 @@
 import { Product } from '../types';
 
+// Injected at build time from the validated SITE_URL (see vite.config.ts).
+declare const __SITE_URL__: string | undefined;
+export const SITE_URL: string =
+  (typeof __SITE_URL__ !== 'undefined' && __SITE_URL__) || 'http://localhost:3001';
+
+/** Absolute, canonical URL for a path on this site. */
+export function absoluteUrl(path: string): string {
+  return `${SITE_URL}${path === '/' ? '/' : path}`;
+}
+
+/** Pass CDN/absolute image URLs through untouched; prefix site-relative ones. */
+export function resolveMediaUrl(src?: string): string | undefined {
+  if (!src) return undefined;
+  return /^https?:\/\//i.test(src) ? src : `${SITE_URL}${src.startsWith('/') ? '' : '/'}${src}`;
+}
+
 // ────────────────────────────────
 // Route-level metadata
 // ────────────────────────────────
@@ -78,6 +94,26 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     title: 'Wedding Checklist | Atelier Riman',
     description: 'Your complete wedding planning checklist from Atelier Riman. Stay organised from engagement to your grand entrance.',
   },
+  '/collection/couture': {
+    title: 'Couture Evening Wear | Atelier Riman',
+    description: 'Couture evening silhouettes cut from silk and crystal — hand-finished in our Sharjah atelier for the grandest entrances.',
+    ogType: 'website',
+  },
+  '/collection/accessories': {
+    title: 'Accessories | Atelier Riman',
+    description: 'Veils, straps and couture finishing details, hand-made in our Sharjah atelier alongside every gown.',
+    ogType: 'website',
+  },
+  '/collections': {
+    title: 'The Collections | Atelier Riman',
+    description: 'Browse every Atelier Riman collection — bridal gowns, couture evening wear, premium rentals, accessories and fine jewelry.',
+    ogType: 'website',
+  },
+  '/journal': {
+    title: 'The Journal | Atelier Riman',
+    description: 'Stories, styling notes and behind-the-scenes from the Atelier Riman Sharjah atelier.',
+    ogType: 'website',
+  },
   '/wishlist': {
     title: 'Your Wishlist | Atelier Riman',
     description: 'View your saved Atelier Riman designs. Create your personal collection of bridal and evening favourites.',
@@ -106,13 +142,33 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     title: 'Terms & Conditions | Atelier Riman',
     description: 'Atelier Riman terms and conditions for purchases, rentals, and appointments.',
   },
+  '/auth': {
+    title: 'Sign In | Atelier Riman',
+    description: 'Sign in to your Atelier Riman account.',
+    noIndex: true,
+  },
+  '/payment/success': {
+    title: 'Payment | Atelier Riman',
+    description: 'Atelier Riman payment confirmation.',
+    noIndex: true,
+  },
+  '/payment/cancel': {
+    title: 'Payment | Atelier Riman',
+    description: 'Atelier Riman payment cancelled.',
+    noIndex: true,
+  },
+  '/demo-21st': {
+    title: 'Atelier Riman',
+    description: 'Preview.',
+    noIndex: true,
+  },
 };
 
 // ────────────────────────────────
 // JSON-LD Structured Data
 // ────────────────────────────────
 
-export const BASE_URL = 'https://riman.ae';
+export const BASE_URL = SITE_URL;
 
 export function organizationSchema() {
   return {
@@ -125,7 +181,7 @@ export function organizationSchema() {
     description: 'Sharjah\'s premier bridal and evening couture house. Bespoke gowns, premium rentals, and fine jewelry.',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Al Majaz, Sharjah',
+      streetAddress: 'Al Zahra St',
       addressLocality: 'Sharjah',
       addressCountry: 'AE',
     },
@@ -160,11 +216,10 @@ export function localBusinessSchema() {
     telephone: '+971-55-373-0792',
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
-      opens: '10:00',
-      closes: '20:00',
+      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '11:00',
+      closes: '21:00',
     },
-    priceRange: '$$$$',
   };
 }
 
@@ -195,7 +250,7 @@ export function productSchema(product: Product) {
     '@id': `${BASE_URL}/product/${product.id}`,
     name: product.name,
     description: product.description,
-    image: product.images[0],
+    image: (product.images || []).map(resolveMediaUrl).filter(Boolean),
     category: product.category,
     brand: {
       '@type': 'Brand',
@@ -268,11 +323,15 @@ export function resolveRouteMeta(pathname: string): RouteMeta {
   return ROUTE_META['/'];
 }
 
-/** Build hreflang entries for the current path. */
+/**
+ * Hreflang entries for the current path.
+ * EN/AR is a client-side language switch inside a single bilingual app —
+ * there are no /ar/* URLs, so emitting them would point crawlers at 404s.
+ */
 export function getHreflangEntries(pathname: string) {
+  const url = `${BASE_URL}${pathname === '/' ? '/' : pathname}`;
   return [
-    { rel: 'alternate', href: `${BASE_URL}${pathname}`, hreflang: 'en' },
-    { rel: 'alternate', href: `${BASE_URL}/ar${pathname}`, hreflang: 'ar' },
-    { rel: 'alternate', href: `${BASE_URL}${pathname}`, hreflang: 'x-default' },
+    { rel: 'alternate', href: url, hreflang: 'en' },
+    { rel: 'alternate', href: url, hreflang: 'x-default' },
   ];
 }

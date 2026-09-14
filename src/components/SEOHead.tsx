@@ -12,12 +12,13 @@ import {
   productSchema,
   breadcrumbSchema,
   getHreflangEntries,
-  BASE_URL,
+  absoluteUrl,
+  resolveMediaUrl,
 } from '../lib/seo';
 
 const SITE_NAME = 'Atelier Riman | Sharjah Bridal & Evening Couture';
 const DEFAULT_DESCRIPTION = 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, and premium rentals.';
-const DEFAULT_OG_IMAGE = '/logo.png';
+const DEFAULT_OG_IMAGE = '/og-cover.png';
 
 interface SEOProps {
   title?: string;
@@ -45,7 +46,7 @@ export default function SEOHead({ title, description, image, noIndex, product: p
   const { products } = useData();
   const { settings } = useSettings();
   const params = useParams();
-  const canonical = `${BASE_URL}${location.pathname}`;
+  const canonical = absoluteUrl(location.pathname);
   const admin = settings.advanced;
   const previousPathRef = useRef(location.pathname);
 
@@ -66,7 +67,8 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     ? `${title} | Atelier Riman`
     : routeMeta.title || SITE_NAME;
   const pageDesc = description || routeMeta.description || admin.metaDescription || DEFAULT_DESCRIPTION;
-  const ogImage = image || admin.ogImageUrl || DEFAULT_OG_IMAGE;
+  const ogImage =
+    resolveMediaUrl(image || (product ? product.images?.[0] : undefined) || admin.ogImageUrl || DEFAULT_OG_IMAGE) || DEFAULT_OG_IMAGE;
   const shouldNoIndex = noIndex ?? routeMeta.noIndex ?? false;
   const ogType = product ? 'product' : routeMeta.ogType || 'website';
 
