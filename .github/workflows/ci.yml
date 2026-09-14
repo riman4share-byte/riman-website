@@ -5,6 +5,11 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  schedule:
+    - cron: '24 4 * * 1' # CodeQL weekly scan
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,6 +35,49 @@ jobs:
       - run: npx vitest run
         name: Run tests
 
+  supply-chain:
+    name: Dependency review & audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Review new dependencies (PRs)
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      # The repo registry mirror has no audit endpoint — query npmjs.org.
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org
+
+      - name: Audit all dependencies (informational)
+        continue-on-error: true
+        run: npm audit --registry=https://registry.npmjs.org
+
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:javascript-typescript'
+
   build:
     name: Build
     needs: quality
@@ -51,6 +99,38 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || '' }}
           SITE_URL: ${{ secrets.SITE_URL || 'https://riman.ae' }}
 
+      - name: Verify SEO/static artifacts
+        run: |
+          set -euo pipefail
+          SITE='${{ secrets.SITE_URL || 'https://riman.ae' }}'
+          test -f dist/index.html
+          test -f dist/about/index.html
+          test -f dist/collections/index.html
+          test -f dist/sitemap.xml
+          test -f dist/robots.txt
+          test -f dist/og-cover.png
+          # sitemap: well-formed XML, absolute production URLs, nothing private
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET, sys, pathlib
+          root = ET.parse('dist/sitemap.xml').getroot()
+          locs = [e.text for e in root.iter() if e.tag.endswith('loc')]
+          assert locs, 'sitemap has no <loc> entries'
+          assert all(l.startswith('https://') for l in locs), 'non-absolute URL in sitemap'
+          assert not any('localhost' in l for l in locs), 'localhost leaked into sitemap'
+          banned = ('/admin', '/auth', '/checkout', '/payment/', '/profile', '/wishlist', '/search')
+          assert not any(b in l for l in locs), 'private route in sitemap'
+          print(f'sitemap OK ({len(locs)} urls)')
+          PY
+          grep -q "Sitemap: $SITE/sitemap.xml" dist/robots.txt
+          grep -q 'Disallow: /admin' dist/robots.txt
+          # private routes must not be prerendered; public ones must be
+          test ! -e dist/checkout && test ! -e dist/auth && test ! -e dist/admin
+          grep -q '<link rel="canonical" href="https://' dist/index.html
+          grep -q 'og:image" content="https://' dist/index.html
+          grep -q '<script type="module"' dist/index.html
+          grep -q 'application/ld+json' dist/index.html
+          echo 'dist artifacts OK'
+
       - uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -59,9 +139,12 @@ jobs:
 
   docker:
     name: Docker Image
-    needs: quality
+    needs: [quality, build]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
 
