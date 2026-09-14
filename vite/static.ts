@@ -203,7 +203,7 @@ function staticBody(title: string, description: string, links: { label: string; 
     ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}" width="480" height="640" style="max-width:480px" />`
     : '';
   return [
-    `<header style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;">`,
+    `<header class="prerender-shell" style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;">`,
     `<p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Atelier Riman — Sharjah</p>`,
     `<h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">${escapeHtml(title)}</h1>`,
     `<p style="font-size:16px;line-height:1.7;">${escapeHtml(description)}</p>`,
@@ -319,3 +319,4 @@ export function resolveSiteUrl(env: Record<string, string | undefined>, command:
   }
   return raw || 'http://localhost:3001';
 }
+

@@ -2,6 +2,11 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
+    <style>
+      /* Hide the crawler prerender shell the moment the document is parsed
+         (JS-capable browser). Inline so it applies before first paint. */
+      @media (scripting: enabled) { .prerender-shell { display: none } }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Atelier Riman | Sharjah's Premier Bridal &amp; Evening Couture</title>
     <meta name="description" content="Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, and premium rentals.">
@@ -63,7 +68,8 @@
     <!--/prerender-jsonld-->
   </head>
   <body>
-    <div id="root"><!--prerender-body--><header style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;"><p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Atelier Riman — Sharjah</p><h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">Bridal &amp; Evening Couture</h1><p style="font-size:16px;line-height:1.7;">Bespoke bridal gowns, evening couture, premium rentals and fine jewelry — hand-finished in our atelier at Al Zahra St, Sharjah. Private viewings daily, 11AM–9PM.</p><nav><a href="/collections">Collections</a> · <a href="/about">About</a> · <a href="/appointment">Book a private viewing</a> · <a href="/contact">Contact</a></nav></header><!--/prerender-body--></div>
+    <div id="root"><!--prerender-body--><header class="prerender-shell" style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;"><p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Atelier Riman — Sharjah</p><h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">Bridal &amp; Evening Couture</h1><p style="font-size:16px;line-height:1.7;">Bespoke bridal gowns, evening couture, premium rentals and fine jewelry — hand-finished in our atelier at Al Zahra St, Sharjah. Private viewings daily, 11AM–9PM.</p><nav><a href="/collections">Collections</a> · <a href="/about">About</a> · <a href="/appointment">Book a private viewing</a> · <a href="/contact">Contact</a></nav></header><!--/prerender-body--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+

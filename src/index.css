@@ -247,3 +247,12 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Prerendered crawler content (index.html #root placeholder) is hidden the
+   instant a JS-capable browser parses the stylesheet — no pre-mount flash.
+   No-JS clients and crawlers still receive the full static markup. */
+@media (scripting: enabled) {
+  .prerender-shell {
+    display: none;
+  }
+}
