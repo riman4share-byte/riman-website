@@ -147,21 +147,23 @@ export default function Checkout() {
         })),
       );
 
+      // Server-trusted line contract: ids, quantities, intents, dates only.
+      // Prices/names/totals are derived by the edge functions from the DB.
+      const checkoutLines = items.map(i => ({
+        product_id: i.id,
+        quantity: i.quantity,
+        intent: i.intent ?? 'sale' as const,
+        ...(i.intent === 'rent' && i.selectedDate ? {
+          rental_start_date: new Date(i.selectedDate).toISOString().split('T')[0],
+          rental_end_date: new Date(new Date(i.selectedDate).getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        } : {}),
+      }));
+
       // Stripe card payment (Visa / Mastercard) — redirect to hosted checkout.
       if (paymentMethod === 'card' && isStripeConfigured()) {
-        const url = await createCheckoutSession({
-          items: items.map(i => ({
-            product_id: i.id,
-            name: i.name,
-            price: getItemUnitPrice(i),
-            quantity: i.quantity,
-            productType: i.productType,
-            intent: i.intent,
-          })),
-          subtotal,
-          orderType,
-          successUrl: `${window.location.origin}/payment/success`,
-          cancelUrl: `${window.location.origin}/payment/cancel`,
+        const checkout = await createCheckoutSession({
+          lines: checkoutLines,
+          returnOrigin: window.location.origin,
           customerName: `${formData.firstName} ${formData.lastName}`,
           customerEmail: formData.email,
           customerPhone: formData.phone,
@@ -171,25 +173,16 @@ export default function Checkout() {
           notes: orderNotes,
         });
 
-        if (url) {
+        if (checkout?.url) {
           try { sessionStorage.setItem('riman_pending_order', JSON.stringify({ ts: Date.now() })); } catch { /* ignore */ }
-          window.location.href = url;
+          window.location.href = checkout.url;
           return;
         }
       }
 
       if (isSupabaseConfigured) {
         const edgeOrderId = await createOrderViaEdge({
-          items: orderItems.map(item => ({
-            product_id: item.product_id,
-            intent: item.intent ?? 'sale',
-            quantity: item.quantity,
-            size: item.size,
-            rental_start_date: item.rental_start_date,
-            rental_end_date: item.rental_end_date,
-            security_deposit: item.security_deposit,
-          })),
-          orderType,
+          lines: checkoutLines,
           customerName: `${formData.firstName} ${formData.lastName}`,
           customerEmail: formData.email,
           customerPhone: formData.phone,

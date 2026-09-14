@@ -144,16 +144,15 @@ export async function createOrder(order: Order, items: OrderItem[]): Promise<Ord
 }
 
 export async function createOrderViaEdge(payload: {
-  items: Array<{
+  // Server-trusted contract: ids/quantities/intents only. Prices and order
+  // type are derived from the database by the create-order function.
+  lines: Array<{
     product_id: string;
     intent: 'sale' | 'rent';
     quantity: number;
-    size?: string;
     rental_start_date?: string;
     rental_end_date?: string;
-    security_deposit?: number;
   }>;
-  orderType: string;
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
