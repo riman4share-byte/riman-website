@@ -1,5 +1,5 @@
 [project]
-ref = "qiccxnxtwbsreyfbqilw"
+ref = "vbuavhnpemnfsuguglqn"
 name = "riman-fashion"
 
 [api]
@@ -19,9 +19,9 @@ RESEND_API_KEY = ""
 STRIPE_SECRET_KEY = ""
 STRIPE_WEBHOOK_SECRET = ""
 SUPABASE_SERVICE_ROLE_KEY = ""
-APP_URL = "http://localhost:3001"
+APP_URL = "https://riman-website.pages.dev"
 
 [auth]
 enabled = true
-site_url = "http://localhost:3001"
-additional_redirect_urls = ["http://localhost:3001", "http://127.0.0.1:3001"]
+site_url = "https://riman-website.pages.dev"
+additional_redirect_urls = ["https://riman-website.pages.dev", "http://localhost:3001", "http://127.0.0.1:3001"]

@@ -432,7 +432,7 @@ INSERT INTO site_settings (key, value) VALUES ('branding', '{
 }'::jsonb) ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO site_settings (key, value) VALUES ('contact', '{
-  "email": "hello@rimanfashion.com",
+  "email": "hello@riman.ae",
   "phone": "+971 50 123 4567",
   "address": "Al Zahra St, Sharjah, UAE",
   "hours": "Sat-Thu, 10am - 8pm"
@@ -652,8 +652,9 @@ CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean
 LANGUAGE sql
 SECURITY DEFINER
+SET search_path = public
 AS $$
-  SELECT public.is_admin();
+  SELECT EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin');
 $$;
 
 DROP POLICY IF EXISTS "Admins can view all profiles" ON profiles;

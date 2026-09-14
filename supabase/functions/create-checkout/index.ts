@@ -10,13 +10,15 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const FROM_EMAIL = 'Atelier Riman <orders@rimanfashion.com>';
+const FROM_EMAIL = 'Atelier Riman <orders@riman.ae>';
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
 const APP_URL = Deno.env.get('APP_URL') || 'http://localhost:3001';
 
+const ALLOWED_ORIGINS = (Deno.env.get('APP_URL') || 'http://localhost:3001').split(',').map(s => s.trim());
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': ALLOWED_ORIGINS[0] || '*',
   'Access-Control-Allow-Headers': 'authorization, content-type',
+  'Vary': 'Origin',
 };
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -188,6 +190,23 @@ serve(async (req) => {
 
     if (orderError) throw orderError;
 
+    // 1b. Persist line items so paid orders are fulfillable
+    const orderItemsRows = payload.items.map((item) => {
+      const db = productMap.get(item.product_id);
+      const intent = item.intent === 'rent' ? 'rent' : 'sale';
+      const unitPrice = db ? resolveUnitPrice(db, intent) : 0;
+      return {
+        order_id: order.id,
+        product_id: item.product_id,
+        product_name: db?.name ?? item.name,
+        quantity: item.quantity,
+        unit_price: unitPrice,
+        product_type: db?.product_type ?? item.productType,
+      };
+    });
+    const { error: itemsError } = await supabase.from('order_items').insert(orderItemsRows);
+    if (itemsError) throw itemsError;
+
     // 2. Create Stripe Checkout Session
     const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -292,7 +311,7 @@ async function handleVerify(sessionId: string) {
               <p><strong>Order ID:</strong> ${orderId}</p>
               <p><strong>Total Paid:</strong> AED ${(orderData.subtotal || 0).toLocaleString()}</p>
               <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
-              <p style="font-size: 12px; color: #666; text-align: center;">Al Zahra St, Sharjah, UAE | hello@rimanfashion.com</p>
+              <p style="font-size: 12px; color: #666; text-align: center;">Al Zahra St, Sharjah, UAE | hello@riman.ae</p>
             </div>
           </body>
           </html>
