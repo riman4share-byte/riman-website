@@ -137,6 +137,33 @@
       cursor: none !important;
     }
   }
+
+  /* Couture hairline fields: bottom rule only, gold focus. Utility-classed
+     inputs (explicit border/bg classes) intentionally override this. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([class*="border"]),
+  textarea:not([class*="border"]),
+  select:not([class*="border"]) {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-stone-300);
+    border-radius: 0;
+    padding: 0.85rem 0.25rem;
+    color: var(--color-stone-800);
+    transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-bottom-color: var(--color-gold);
+  }
+  label {
+    transition: color 400ms;
+  }
+  input:focus + label,
+  input:focus-visible + label {
+    color: var(--color-gold-dark);
+  }
 }
 
 @layer components {
