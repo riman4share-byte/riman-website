@@ -404,7 +404,7 @@ export default function ProductDetail() {
               )}
 
               {/* Pricing */}
-              <div className="mb-8 p-5 bg-gold/5 border border-gold/20 flex flex-col gap-4">
+              <div className="mb-8 p-5 bg-gold/5 flex flex-col gap-4">
                 {isSale && (
                   <div className="flex justify-between items-baseline">
                     <span className="font-body text-micro tracking-widest uppercase text-stone-600 font-medium">{t('product.purchase_value')}</span>
@@ -433,7 +433,7 @@ export default function ProductDetail() {
               {/* Selection */}
               <div className="space-y-6 mb-10">
                 {isRent && (
-                  <div className="p-5 bg-stone-50 border border-stone-200">
+                  <div className="p-5 bg-stone-50">
                     <div className="flex justify-between items-center mb-3">
                       <span className="font-body text-micro tracking-[0.2em] uppercase text-stone-800">{t('product.rental_availability')}</span>
                       <span className="text-micro text-gold uppercase tracking-widest font-bold">{t('product.fast_booking')}</span>
@@ -514,7 +514,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Specifications Accordion */}
-              <div className="border border-stone-100 mb-4">
+              <div className="mb-4 border-t border-stone-200">
                 <button onClick={() => setShowDetails(!showDetails)} className="w-full flex items-center justify-between p-5 bg-ivory hover:bg-ivory transition-colors">
                   <span className="font-body text-micro font-bold tracking-widest uppercase text-stone-800">{t('product.specifications')}</span>
                   <ChevronDown className={cn("w-4 h-4 text-stone-600 transition-transform duration-300", showDetails && "rotate-180")} />
@@ -549,7 +549,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Care Instructions Accordion */}
-              <div className="border border-stone-100 mb-4">
+              <div className="mb-4 border-t border-stone-200">
                 <button onClick={() => setShowCare(!showCare)} className="w-full flex items-center justify-between p-5 bg-ivory hover:bg-ivory transition-colors">
                   <span className="font-body text-micro font-bold tracking-widest uppercase text-stone-800">{t('product.care_instructions')}</span>
                   <ChevronDown className={cn("w-4 h-4 text-stone-600 transition-transform duration-300", showCare && "rotate-180")} />
@@ -593,7 +593,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Ask a Stylist CTA */}
-              <Link to="/appointment" className="block p-5 bg-gold/5 border border-gold/20 hover:border-gold/40 transition-all mb-4 group">
+              <Link to="/appointment" className="block p-5 bg-gold/5 transition-all mb-4 group">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-gold/10 flex items-center justify-center shrink-0">
                     <MessageCircle className="w-5 h-5 text-gold" />
@@ -607,7 +607,7 @@ export default function ProductDetail() {
               </Link>
 
               {/* Artistry & Essence — collapsible */}
-              <div className="border border-stone-100">
+              <div className="border-t border-stone-200">
                 <button onClick={() => setShowDetails(!showDetails)} className="w-full flex items-center justify-between p-5 bg-ivory hover:bg-ivory transition-colors">
                   <span className="font-body text-micro font-bold tracking-widest uppercase text-stone-800">{t('product.artistry_essence')}</span>
                   <ChevronDown className={cn("w-4 h-4 text-stone-600 transition-transform duration-300", showDetails && "rotate-180")} />
@@ -685,7 +685,7 @@ export default function ProductDetail() {
                             </div>
                             <p className="text-sm text-stone-600 leading-relaxed italic">"{review.comment}"</p>
                             {review.photoUrl && (
-                              <img src={review.photoUrl} alt={`${review.name}'s photo`} className="mt-4 w-24 h-24 object-cover border border-stone-200" loading="lazy" />
+                              <img src={review.photoUrl} alt={`${review.name}'s photo`} className="mt-4 w-24 h-24 object-cover" loading="lazy" />
                             )}
                           </div>
                         ))}
@@ -694,7 +694,7 @@ export default function ProductDetail() {
                     </div>
 
                     {/* Review Submission Form */}
-                    <div className="bg-pearl p-8 border border-stone-100 min-h-[400px] flex flex-col">
+                    <div className="bg-pearl p-8 min-h-[400px] flex flex-col">
                       <h4 className="font-heading text-lg text-stone-800 tracking-widest uppercase mb-6">{t('product.leave_reflection')}</h4>
                       <AnimatePresence mode="wait">
                         {reviewSuccess ? (
@@ -733,21 +733,21 @@ export default function ProductDetail() {
                             </div>
                             <div>
                               <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_name')}</label>
-                              <input type="text" value={newReview.name} onChange={(e) => setNewReview({ ...newReview, name: e.target.value })} className="w-full px-5 py-4 bg-ivory border border-stone-100 text-xs tracking-widest outline-none focus:border-gold transition-colors" placeholder={t('product.enter_name')} />
+                              <input type="text" value={newReview.name} onChange={(e) => setNewReview({ ...newReview, name: e.target.value })} className="field-couture" placeholder={t('product.enter_name')} />
                             </div>
                             <div>
                               <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_reflection')}</label>
-                              <textarea rows={4} value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })} className="w-full px-5 py-4 bg-ivory border border-stone-100 text-xs tracking-widest outline-none focus:border-gold transition-colors resize-none" placeholder={t('product.share_experience')}></textarea>
+                              <textarea rows={4} value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })} className="field-couture resize-none" placeholder={t('product.share_experience')}></textarea>
                             </div>
                             <div>
                               <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.add_photo')}</label>
                               {newReview.photoUrl ? (
                                 <div className="flex items-center gap-3">
-                                  <img src={newReview.photoUrl} alt="Review attachment" className="w-14 h-14 object-cover border border-stone-200" />
+                                  <img src={newReview.photoUrl} alt="Review attachment" className="w-14 h-14 object-cover" />
                                   <button type="button" onClick={() => setNewReview({ ...newReview, photoUrl: undefined })} className="text-micro text-rose-500 uppercase tracking-widest">{t('product.cancel')}</button>
                                 </div>
                               ) : (
-                                <button type="button" onClick={() => document.getElementById('review-photo-upload')?.click()} className="flex items-center gap-2 px-4 py-3 border border-stone-200 text-micro tracking-widest uppercase text-stone-600 hover:border-gold hover:text-gold transition-colors">
+                                <button type="button" onClick={() => document.getElementById('review-photo-upload')?.click()} className="btn-couture-ghost !text-stone-800">
                                   {isUploadingPhoto ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Share2 className="w-3.5 h-3.5" />}
                                   {t('product.upload_photo')}
                                 </button>
@@ -845,7 +845,7 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-ivory max-w-lg w-full p-8 md:p-12 relative border border-stone-200 max-h-[90vh] overflow-y-auto"
+        className="bg-ivory max-w-lg w-full p-8 md:p-12 relative max-h-[90vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
       >

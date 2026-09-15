@@ -155,3 +155,29 @@ test('phase 2: contact form controls are hairline .field-couture', async ({ page
   expect(styles.radius).toBe('0px');
   expect(styles.bg).toBe('rgba(0, 0, 0, 0)');
 });
+
+test('phase 2: product detail has no plate borders and hairline review fields', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const href = await page.locator('a[href^="/product/"]').first().getAttribute('href');
+  expect(href).toBeTruthy();
+  await page.goto('http://localhost:3001' + href!, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('main', { timeout: 45000 });
+  await page.locator('button:has(h3)').first().click(); // expand "Client Reflections" accordion
+  await page.waitForSelector('main .field-couture', { timeout: 10000 });
+  const probe = await page.evaluate(() => {
+    const plates = [...document.querySelectorAll('main *')].filter((el) => {
+      const cs = getComputedStyle(el);
+      return cs.borderTopWidth !== '0px' && cs.borderLeftWidth === cs.borderTopWidth && cs.borderTopWidth === cs.borderBottomWidth && cs.borderTopWidth === cs.borderRightWidth && parseFloat(cs.borderTopLeftRadius) > 0;
+    }).length;
+    const boxedInputs = [...document.querySelectorAll('main input, main textarea')].filter((el) => {
+      const cs = getComputedStyle(el);
+      return cs.borderTopWidth !== '0px';
+    }).length;
+    const reviewFields = document.querySelectorAll('main .field-couture').length;
+    return { plates, boxedInputs, reviewFields };
+  });
+  expect(probe.reviewFields).toBeGreaterThanOrEqual(2);
+  expect(probe.boxedInputs).toBe(0);
+  expect(probe.plates).toBe(0);
+});
