@@ -8,6 +8,8 @@ test.describe('Riman Fashion — Product Detail Page', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/product/bridal-gown-1');
+    // Ensure React has mounted before reading price/text snapshots.
+    await page.waitForSelector('h1', { timeout: 45000 });
   });
 
   /** ─── PRODUCT HEADER ─── */

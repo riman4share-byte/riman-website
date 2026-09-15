@@ -8,6 +8,9 @@ test.describe('Riman Fashion — Homepage', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Dev server hydrates asynchronously; pin "React mounted" before assertions
+    // that read scrollHeight / element visibility (prevents load-vs-mount races).
+    await page.waitForSelector('h1', { timeout: 45000 });
   });
 
   /** ─── HERO SECTION ─── */

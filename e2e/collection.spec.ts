@@ -115,7 +115,10 @@ test.describe('Riman Fashion — Collection Pages', () => {
     test('product grid adapts to mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 812 });
       await page.goto('/collection/bridal');
+      // Products mount after hydration; wait for the grid before counting so the
+      // load-event-vs-mount race doesn't read a transient zero.
       const productCards = page.locator('a[href^="/product/"]');
+      await productCards.first().waitFor({ state: 'visible', timeout: 45000 }).catch(() => {});
       const count = await productCards.count();
       expect(count).toBeGreaterThan(0);
     });
