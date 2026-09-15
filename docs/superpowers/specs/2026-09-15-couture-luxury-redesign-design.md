@@ -53,7 +53,7 @@ Accent metal: `--color-gold #A2492B→#B08D57`, `gold-light→#C9A96F`, `gold-da
 - Secondary/ghost: no border — text + 1px gold underline (8px offset), underline animates via scaleX on hover. Remove the hero's boxed secondary button.
 - Cards (product/collection/journal/plates): no borders/shadows/plates; edge-to-edge image; name Prata 18–20px; meta Archivo caps stone-500; hover image scale 1.04/1.2s.
 - Badges (cart/wishlist counts): champagne-ink dots (gold-light bg + stone-950 text), rounded-full, no change in placement.
-- Inputs: transparent, bottom 1px stone-300 only; focus → gold bottom border + label turns gold; error text keeps rose. Implemented once as a shared `.field` class set applied to the reusable input components (components/ui/*), with the four heaviest form pages (appointment, contact, auth, checkout) updated to use them.
+- Inputs: transparent, bottom 1px stone-300 only; focus → gold bottom border + label turns gold; error text keeps rose. There is no shared ui/input component (verified), so this ships as one global `.field` class pair in index.css (input + matching label styles), applied in the four form-heavy pages (appointment, contact, auth, checkout).
 - Section dividers: existing gold/15 hairlines remain.
 
 ## §4 Homepage composition (Index.tsx / ui-21st)
