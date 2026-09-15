@@ -109,3 +109,20 @@ test('phase 2: .card-couture and .field-couture classes are live in the bundle',
   expect(probe.fieldRadius).toBe('0px');
   expect(probe.fieldBg).toBe('rgba(0, 0, 0, 0)');
 });
+
+test('phase 2: mobile bottom-nav is an ink band with gold active state', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const nav = page.locator('nav.fixed.bottom-0');
+  await expect(nav).toBeVisible({ timeout: 45000 });
+  const styles = await nav.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    const active = el.querySelector('a.text-gold-light') as HTMLElement | null;
+    const linkCs = active ? getComputedStyle(active) : null;
+    return { bg: cs.backgroundColor, hasActive: !!active, activeColor: linkCs?.color ?? null };
+  });
+  expect(styles.bg).toBe('rgb(15, 13, 10)');
+  expect(styles.hasActive).toBe(true);
+  expect(styles.activeColor).toBe('rgb(201, 169, 111)');
+});
