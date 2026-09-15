@@ -52,7 +52,7 @@ export default function KineticHeading({
       viewport={{ once: true, amount: 0.35 }}
     >
       {chars.map((char, i) => (
-        <span
+        <motion.span
           key={`${char}-${i}`}
           variants={letter}
           className={
@@ -62,7 +62,7 @@ export default function KineticHeading({
           }
         >
           {char}
-        </span>
+        </motion.span>
       ))}
     </MotionTag>
   );

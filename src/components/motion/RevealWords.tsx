@@ -41,9 +41,9 @@ export default function RevealWords({ text, as = 'p', className = '', stagger = 
       viewport={{ once: true, amount: 0.3 }}
     >
       {words.map((w, i) => (
-        <span key={`${w}-${i}`} variants={word} className="kin-word inline-block whitespace-pre me-[0.25em]">
+        <motion.span key={`${w}-${i}`} variants={word} className="kin-word inline-block whitespace-pre me-[0.25em]">
           {w}
-        </span>
+        </motion.span>
       ))}
     </MotionTag>
   );
