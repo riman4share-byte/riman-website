@@ -72,20 +72,20 @@ export default function HeroSection21st() {
         <p className="font-label text-xs tracking-[0.2em] uppercase text-white/90 mb-10 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {t('invitation.contact_line')}
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
           <Link
             to="/appointment"
-            className="btn-luxury w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center bg-bone text-onyx hover:text-gold-dark ring-1 ring-white/30 shadow-2xl text-sm"
+            className="btn-luxury min-h-[52px]"
             aria-label={t('cta.viewing')}
           >
             {t('cta.viewing')}
           </Link>
           <Link
             to="/search"
-            className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-white bg-white/10 backdrop-blur-sm border border-white/70 hover:border-gold hover:text-gold hover:bg-black/40 transition-colors duration-300 [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]"
+            className="btn-couture-ghost"
             aria-label={t('cta.explore')}
           >
-            {t('cta.explore')} →
+            {t('cta.explore')}
           </Link>
         </div>
         <p className="mt-8 font-label text-xs tracking-[0.2em] uppercase text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">

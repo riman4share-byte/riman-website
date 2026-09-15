@@ -25,6 +25,7 @@ test.describe('Riman Fashion — Homepage', () => {
     test('hero has CTA buttons that navigate correctly', async ({ page }) => {
       const hero = page.locator('#hero');
       const ctaButtons = hero.getByRole('link');
+      await ctaButtons.first().waitFor({ timeout: 45000 });
       const count = await ctaButtons.count();
       expect(count).toBeGreaterThan(0);
 
