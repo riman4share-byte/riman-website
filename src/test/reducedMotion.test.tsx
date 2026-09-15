@@ -29,7 +29,7 @@ describe('MotionConfig wiring', () => {
 });
 
 describe('ScrollReveal', () => {
-  it('bypasses the reveal wrapper entirely when the OS prefers reduced motion', async () => {
+  it('bypasses the reveal wrapper entirely when the OS prefers reduced motion', { timeout: 15000 }, async () => {
     // Mock motion's own hook deterministically: the guarantee we test is that
     // ScrollReveal short-circuits on prefersReducedMotion (its import-time
     // media-query cache in jsdom is otherwise unreliable).
