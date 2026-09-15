@@ -73,3 +73,39 @@ test('homepage has dark Ken Burns interstitial with the atelier quote', async ({
   const anim = await band.locator('.ken-burns img').evaluate((el) => getComputedStyle(el).animationName);
   expect(anim).toBe('ken-burns');
 });
+
+test('phase 2: .card-couture and .field-couture classes are live in the bundle', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('h1', { timeout: 45000 });
+  const probe = await page.evaluate(() => {
+    const card = document.createElement('div');
+    card.className = 'card-couture';
+    const img = document.createElement('img');
+    card.appendChild(img);
+    document.body.appendChild(card);
+    const field = document.createElement('input');
+    field.className = 'field-couture';
+    document.body.appendChild(field);
+    const c = getComputedStyle(card);
+    const i = getComputedStyle(img);
+    const f = getComputedStyle(field);
+    const out = {
+      cardBorder: c.borderTopWidth, cardShadow: c.boxShadow, cardRadius: c.borderTopLeftRadius,
+      cardOverflow: c.overflow, imgTransition: i.transitionDuration,
+      fieldTop: f.borderTopWidth, fieldBottom: f.borderBottomWidth,
+      fieldRadius: f.borderTopLeftRadius, fieldBg: f.backgroundColor,
+    };
+    card.remove(); field.remove();
+    return out;
+  });
+  expect(probe.cardBorder).toBe('0px');
+  expect(probe.cardShadow).toBe('none');
+  expect(probe.cardRadius).toBe('0px');
+  expect(probe.cardOverflow).toBe('hidden');
+  expect(probe.imgTransition).toContain('1.2s');
+  expect(probe.fieldTop).toBe('0px');
+  expect(probe.fieldBottom).toBe('1px');
+  expect(probe.fieldRadius).toBe('0px');
+  expect(probe.fieldBg).toBe('rgba(0, 0, 0, 0)');
+});

@@ -231,6 +231,45 @@
     .ken-burns > img { animation: none; transform: scale(1.04); }
   }
 
+  .card-couture {
+    position: relative;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .card-couture img {
+    transition: transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .card-couture:hover img,
+  .card-couture:focus-within img {
+    transform: scale(1.04);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-couture:hover img,
+    .card-couture:focus-within img { transform: none; }
+  }
+
+  .field-couture {
+    width: 100%;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--color-stone-300);
+    border-radius: 0;
+    padding: 0.85rem 0.25rem;
+    color: var(--color-stone-800);
+    outline: none;
+    transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .field-couture:focus {
+    outline: none;
+    border-bottom-color: var(--color-gold);
+  }
+  .field-couture::placeholder {
+    color: var(--color-stone-500);
+  }
+
   .divider-gold {
     @apply w-12 h-px bg-gold mx-auto;
   }
