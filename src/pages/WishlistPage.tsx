@@ -118,7 +118,7 @@ export default function WishlistPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="bg-ivory border border-stone-100 group relative"
+                  className="card-couture group relative"
                 >
                   {!isSharedView && (
                     <button
@@ -174,7 +174,7 @@ export default function WishlistPage() {
           </div>
           </>
         ) : (
-          <div className="text-center py-32 bg-ivory border border-stone-100">
+          <div className="text-center py-32">
             <Heart className="w-16 h-16 text-stone-100 mx-auto mb-8" />
               <h3 className="font-heading text-2xl text-stone-800 mb-4 tracking-widest uppercase">
                 {isSharedView ? t('product.not_found') : t('selection.empty')}

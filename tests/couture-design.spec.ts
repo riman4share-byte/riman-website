@@ -126,3 +126,17 @@ test('phase 2: mobile bottom-nav is an ink band with gold active state', async (
   expect(styles.hasActive).toBe(true);
   expect(styles.activeColor).toBe('rgb(201, 169, 111)');
 });
+
+test('phase 2: collections page renders borderless couture cards', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/collections', { waitUntil: 'domcontentloaded' });
+  const card = page.locator('.card-couture').first();
+  await expect(card).toBeVisible({ timeout: 45000 });
+  const styles = await card.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { border: cs.borderTopWidth, radius: cs.borderTopLeftRadius, overflow: cs.overflow };
+  });
+  expect(styles.border).toBe('0px');
+  expect(styles.radius).toBe('0px');
+  expect(styles.overflow).toBe('hidden');
+});

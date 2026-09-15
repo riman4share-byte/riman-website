@@ -120,7 +120,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             </span>
           )}
           {product.glbUrl && (
-            <span className="bg-ivory/90 backdrop-blur-md text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 font-bold border border-onyx/10">
+            <span className="bg-ivory/90 backdrop-blur-md text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 font-bold">
               <Box className="w-3 h-3 text-gold" />
               {t('badge.3d')}
             </span>
@@ -243,9 +243,6 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
         {product.fabric && (
           <p className="font-editorial italic text-sm text-stone-600">{translateProductValue('fabric', product.fabric, language)}</p>
         )}
-
-        {/* Expanding gold frame — couture hover detail */}
-        <span className="absolute inset-3 border border-gold/0 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:inset-4 group-hover:border-gold/40 pointer-events-none z-10" aria-hidden="true" />
         
           <div className="mt-2 flex flex-col gap-1">
             {isSale && (

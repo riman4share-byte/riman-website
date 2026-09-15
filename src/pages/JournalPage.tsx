@@ -149,7 +149,7 @@ export default function JournalPage() {
               {featured.title[lang]}
             </h2>
             <div className="grid md:grid-cols-2 gap-10 items-start">
-              <div className="overflow-hidden border border-stone-200/60">
+              <div className="card-couture">
                 <img
                   src={featured.image(products)}
                   alt={featured.title[lang]}
@@ -181,7 +181,7 @@ export default function JournalPage() {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="grid md:grid-cols-2 gap-10 items-center"
               >
-                <div className={`overflow-hidden border border-stone-200/60 ${idx % 2 === 1 ? 'md:order-2' : ''}`}>
+                <div className={`card-couture ${idx % 2 === 1 ? 'md:order-2' : ''}`}>
                   <img
                     src={article.image(products)}
                     alt={article.title[lang]}

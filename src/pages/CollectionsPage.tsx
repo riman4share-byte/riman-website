@@ -113,7 +113,7 @@ export default function CollectionsPage() {
                   >
                     <Link
                       to={`/collection/${def.slug}`}
-                      className="group relative block overflow-hidden border border-stone-200/60 bg-stone-100"
+                      className="card-couture group relative block bg-stone-100"
                       aria-label={t(def.nameKey)}
                     >
                       <div className="aspect-[3/4] overflow-hidden">
