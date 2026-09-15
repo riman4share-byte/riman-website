@@ -31,7 +31,7 @@
 - Consumes: nothing.
 - Produces: remapped `--color-stone-*`, `--color-gold*`, `--color-onyx: #0F0D0A`, `--font-heading: "Prata"` — every later task and every existing component inherits these automatically.
 
-- [ ] **Step 1: Write the failing e2e spec**
+- [x] **Step 1: Write the failing e2e spec**
 
 Create `tests/couture-design.spec.ts`:
 
@@ -65,12 +65,12 @@ test('couture palette + Prata display face are active', async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Run it, verify FAIL**
+- [x] **Step 2: Run it, verify FAIL**
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line`
 Expected: FAIL — gold `#a2492b`, onyx `#161513`, h1 font Fraunces, color `rgb(120, 113, 108)`.
 
-- [ ] **Step 3: Apply the token surgery in `src/index.css`**
+- [x] **Step 3: Apply the token surgery in `src/index.css`**
 
 3a. Replace the font `@import` URL on line 1 with (Prata added; everything else identical):
 
@@ -123,17 +123,17 @@ Expected: FAIL — gold `#a2492b`, onyx `#161513`, h1 font Fraunces, color `rgb(
   }
 ```
 
-- [ ] **Step 4: Run the spec, verify PASS**
+- [x] **Step 4: Run the spec, verify PASS**
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line`
 Expected: PASS.
 
-- [ ] **Step 5: Guard the suites**
+- [x] **Step 5: Guard the suites**
 
 Run: `npm run lint && npm test` then `npx playwright test e2e/smoke.spec.ts e2e/navigation.spec.ts --reporter=line`
 Expected: tsc clean; 195 unit pass; e2e pass (color/class names unchanged so specs are insulated).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/index.css tests/couture-design.spec.ts
@@ -153,7 +153,7 @@ git commit -m "feat(design): couture token surgery — warm stone remap, champag
 - Consumes: Task 1 tokens (`bg-onyx` = ink, `text-gold-light`).
 - Produces: `.btn-couture-ghost` class (reused by homepage CTA sections later); hero primary button has zero border/shadow/ring.
 
-- [ ] **Step 1: Write the failing assertions**
+- [x] **Step 1: Write the failing assertions**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -174,11 +174,11 @@ test('hero CTAs are borderless ink + ghost-underline, no boxes', async ({ page }
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL** (current primary has ring/shadow/bone bg)
+- [x] **Step 2: Run, verify FAIL** (current primary has ring/shadow/bone bg)
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line` → new test FAILS, Task 1 test passes.
 
-- [ ] **Step 3: Redefine the button classes in `src/index.css`**
+- [x] **Step 3: Redefine the button classes in `src/index.css`**
 
 Replace lines 133–149 (`.btn-luxury`, `.btn-luxury-outline` and both `:focus-visible` rules) with:
 
@@ -223,7 +223,7 @@ Replace lines 133–149 (`.btn-luxury`, `.btn-luxury-outline` and both `:focus-v
 
 Note: `.btn-couture-ghost` uses `text-bone` — on light backgrounds pair with `!text-stone-800` override only where needed (none in this phase; hero is dark).
 
-- [ ] **Step 4: Hero CTA block** — in `src/components/ui-21st/HeroSection.tsx` replace:
+- [x] **Step 4: Hero CTA block** — in `src/components/ui-21st/HeroSection.tsx` replace:
 
 ```tsx
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -265,12 +265,12 @@ with:
         </div>
 ```
 
-- [ ] **Step 5: Run e2e (PASS) + homepage/nav specs**
+- [x] **Step 5: Run e2e (PASS) + homepage/nav specs**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/homepage.spec.ts --reporter=line`
 Expected: all PASS (homepage spec has no assertions on the removed secondary-box classes — if it fails, fix the spec to the new ghost, do not restore boxes).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/index.css src/components/ui-21st/HeroSection.tsx tests/couture-design.spec.ts
@@ -289,7 +289,7 @@ git commit -m "feat(ui): couture button system — ink solid + ghost underline, 
 - Consumes: stone-300 warm hairline (Task 1), gold tokens.
 - Produces: bottom-border inputs for all unstyled form controls; utility-classed inputs elsewhere keep their box but render warm (already fixed by Task 1) — full per-page input cleanup is Phase 2 by design.
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -312,9 +312,9 @@ test('form inputs are hairline, not boxed', async ({ page }) => {
 
 Pick a route that definitely has an input: run `npx playwright test` once; if `/journal` has none, switch the URL in this test to `/contact` and keep assertions identical.
 
-- [ ] **Step 2: Run, verify FAIL** (current inputs are fully boxed)
+- [x] **Step 2: Run, verify FAIL** (current inputs are fully boxed)
 
-- [ ] **Step 3: Add the base rule** — append inside `@layer base { ... }` in `src/index.css` (before its closing brace):
+- [x] **Step 3: Add the base rule** — append inside `@layer base { ... }` in `src/index.css` (before its closing brace):
 
 ```css
   /* Couture hairline fields: bottom rule only, gold focus. Utility-classed
@@ -347,12 +347,12 @@ Pick a route that definitely has an input: run `npx playwright test` once; if `/
 
 The `:not([class*="border"])` guard prevents fighting the 200+ inputs that already declare Tailwind border utilities (those inherit warmth from Task 1 only).
 
-- [ ] **Step 4: Run spec + auth smoke**
+- [x] **Step 4: Run spec + auth smoke**
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line && npx playwright test e2e/smoke.spec.ts --reporter=line`
 Expected: PASS both.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/index.css tests/couture-design.spec.ts
@@ -373,7 +373,7 @@ git commit -m "feat(ui): couture hairline form fields (bottom-rule inputs, gold 
 - Consumes: `.ken-burns` CSS class, token system, `t('atelier.quote')` + `t('chapter.atelier')` (existing keys — no new copy).
 - Produces: homepage dark interstitial `<section class="couture-interstitial">`.
 
-- [ ] **Step 1: Failing structural test**
+- [x] **Step 1: Failing structural test**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -390,9 +390,9 @@ test('homepage has dark Ken Burns interstitial with the atelier quote', async ({
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL** (`section.couture-interstitial` not found)
+- [x] **Step 2: Run, verify FAIL** (`section.couture-interstitial` not found)
 
-- [ ] **Step 3: Ken Burns CSS** — append to `src/index.css` (after the `.section-padding` component block):
+- [x] **Step 3: Ken Burns CSS** — append to `src/index.css` (after the `.section-padding` component block):
 
 ```css
   @keyframes ken-burns {
@@ -408,7 +408,7 @@ test('homepage has dark Ken Burns interstitial with the atelier quote', async ({
   }
 ```
 
-- [ ] **Step 4: Insert interstitial in `src/pages/Index.tsx`** — directly AFTER the atelier `</section>` and BEFORE the first `<InvitationRule …>`:
+- [x] **Step 4: Insert interstitial in `src/pages/Index.tsx`** — directly AFTER the atelier `</section>` and BEFORE the first `<InvitationRule …>`:
 
 ```tsx
       {/* Dark couture interstitial — full-bleed atelier imagery, slow Ken Burns */}
@@ -450,7 +450,7 @@ Also in the same edit: remove the `ScrollReveal delay={0.1}` quote block from th
 
 (the old quote `<ScrollReveal delay={0.1}>…{t('atelier.quote')}…</ScrollReveal>` is deleted; body moves to `delay={0.1}`).
 
-- [ ] **Step 5: ChapterLabel watermark** — replace file contents:
+- [x] **Step 5: ChapterLabel watermark** — replace file contents:
 
 ```tsx
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -479,14 +479,14 @@ export default function ChapterLabel({ numeral, titleKey }: ChapterLabelProps) {
 }
 ```
 
-- [ ] **Step 6: Atelier section breathing** — in `src/pages/Index.tsx` change the atelier section classes `"bg-bone py-24 md:py-36 …"` → `"bg-bone py-28 md:py-40 …"` (leave other sections for the polish pass; do not restyle more than this in Task 4 to keep reviewable).
+- [x] **Step 6: Atelier section breathing** — in `src/pages/Index.tsx` change the atelier section classes `"bg-bone py-24 md:py-36 …"` → `"bg-bone py-28 md:py-40 …"` (leave other sections for the polish pass; do not restyle more than this in Task 4 to keep reviewable).
 
-- [ ] **Step 7: Run tests**
+- [x] **Step 7: Run tests**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/homepage.spec.ts --reporter=line`
 Expected: PASS. Then full safety: `npm run lint && npm test`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/index.css src/pages/Index.tsx src/components/salon/ChapterLabel.tsx tests/couture-design.spec.ts
@@ -499,11 +499,11 @@ git commit -m "feat(home): couture interstitial with Ken Burns, Prata chapter nu
 
 **Files:** none new.
 
-- [ ] **Step 1:** `npm run lint && npm test` → tsc clean, 195 unit PASS.
-- [ ] **Step 2:** `npx playwright test tests/couture-design.spec.ts tests/header-logo-clearance.spec.ts e2e/smoke.spec.ts e2e/homepage.spec.ts e2e/navigation.spec.ts e2e/collection.spec.ts e2e/product-detail.spec.ts --reporter=line` → all PASS (1024 clearance still enforced).
-- [ ] **Step 3:** Build: `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS within ±2KB of 757KB; CSS delta < +3KB; prerendered page count 57.
-- [ ] **Step 4:** Geometry/contrast probes (node + Playwright, model can't see images): viewport matrix 375/768/1024/1440 EN — assert no `overflowX`, h1 font Prata everywhere present, `--color-gold` computed on 3 sampled elements = `#b08d57`, ken-burns off under `reducedMotion:'reduce'`.
-- [ ] **Step 5:** Ask owner to visually inspect `http://localhost:3001` (hard refresh) and confirm before anything else ships.
+- [x] **Step 1:** `npm run lint && npm test` → tsc clean, 195 unit PASS.
+- [x] **Step 2:** `npx playwright test tests/couture-design.spec.ts tests/header-logo-clearance.spec.ts e2e/smoke.spec.ts e2e/homepage.spec.ts e2e/navigation.spec.ts e2e/collection.spec.ts e2e/product-detail.spec.ts --reporter=line` → all PASS (1024 clearance still enforced).
+- [x] **Step 3:** Build: `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS within ±2KB of 757KB; CSS delta < +3KB; prerendered page count 57.
+- [x] **Step 4:** Geometry/contrast probes (node + Playwright, model can't see images): viewport matrix 375/768/1024/1440 EN — assert no `overflowX`, h1 font Prata everywhere present, `--color-gold` computed on 3 sampled elements = `#b08d57`, ken-burns off under `reducedMotion:'reduce'`.
+- [x] **Step 5:** Ask owner to visually inspect `http://localhost:3001` (hard refresh) and confirm before anything else ships.
 
 ## Self-Review (completed at write time)
 
