@@ -29,7 +29,7 @@
 - Consumes: Phase 1 tokens (`--color-stone-300`, `--color-gold`, easing).
 - Produces: `.card-couture` (wrapper; borderless, no plate, img hover zoom 1.04/1.2s, reduced-motion off) and `.field-couture` (control; transparent, 1px stone-300 bottom rule, gold focus). Used verbatim by Tasks 3–5.
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -71,12 +71,12 @@ test('phase 2: .card-couture and .field-couture classes are live in the bundle',
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL**
+- [x] **Step 2: Run, verify FAIL**
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line`
 Expected: new test FAILS (cardOverflow `visible`, fieldBottom `0px` or browser default — classes don't exist yet); all Phase 1 tests pass.
 
-- [ ] **Step 3: Add the classes**
+- [x] **Step 3: Add the classes**
 
 In `src/index.css`, insert after the reduced-motion Ken Burns block (the `}` closing the `@media` at line ~232) and BEFORE `.divider-gold {`:
 
@@ -121,11 +121,11 @@ In `src/index.css`, insert after the reduced-motion Ken Burns block (the `}` clo
   }
 ```
 
-- [ ] **Step 4: Run, verify PASS**
+- [x] **Step 4: Run, verify PASS**
 
 Run: `npx playwright test tests/couture-design.spec.ts --reporter=line` → all PASS.
 
-- [ ] **Step 5: Guards + commit**
+- [x] **Step 5: Guards + commit**
 
 Run: `npm run lint && npm test` → clean, 195.
 
@@ -146,7 +146,7 @@ git commit -m "feat(design): phase-2 couture vocabulary — card-couture + field
 - Consumes: tokens `bg-onyx`, `text-bone`, `gold-light`.
 - Produces: bottom-nav ink band (no later task depends on it).
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -169,9 +169,9 @@ test('phase 2: mobile bottom-nav is an ink band with gold active state', async (
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL** (current bg is bone `rgb(239, 234, 226)`)
+- [x] **Step 2: Run, verify FAIL** (current bg is bone `rgb(239, 234, 226)`)
 
-- [ ] **Step 3: Restyle the nav** — replace lines 20–45 (`return ( ... );` body) with:
+- [x] **Step 3: Restyle the nav** — replace lines 20–45 (`return ( ... );` body) with:
 
 ```tsx
   return (
@@ -205,11 +205,11 @@ test('phase 2: mobile bottom-nav is an ink band with gold active state', async (
 
 (Unchanged: navItems, imports, hook logic, grid/links/behavior. Badge is now the champagne dot: gold-light bg + stone-950 text.)
 
-- [ ] **Step 4: Run probe + smoke PASS**
+- [x] **Step 4: Run probe + smoke PASS**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/smoke.spec.ts --reporter=line` → all PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/MobileBottomNav.tsx tests/couture-design.spec.ts
@@ -231,7 +231,7 @@ git commit -m "feat(ui): mobile bottom-nav couture ink band with gold-light acti
 - Consumes: Task 1 `.card-couture`.
 - Produces: cards render borderless site-wide (CollectionPage picks this up automatically via shared ProductCard).
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -251,9 +251,9 @@ test('phase 2: collections page renders borderless couture cards', async ({ page
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL** (0 `.card-couture` elements)
+- [x] **Step 2: Run, verify FAIL** (0 `.card-couture` elements)
 
-- [ ] **Step 3: ProductCard — drop the two decorative borders**
+- [x] **Step 3: ProductCard — drop the two decorative borders**
 
 `src/components/ProductCard.tsx` line 123, on the 3D badge span remove `border border-onyx/10`:
 
@@ -270,7 +270,7 @@ Delete the expanding gold-frame span at lines 247–248 entirely (the comment li
 
 KEEP (functional/contract): image wrapper's existing hover zoom utilities (104), size-chip `border-gold` selected state (175–178), quick-bar `border-t border-gold/20` (190).
 
-- [ ] **Step 4: Page grids → `.card-couture`**
+- [x] **Step 4: Page grids → `.card-couture`**
 
 `src/pages/JournalPage.tsx:152`:
 
@@ -302,11 +302,11 @@ KEEP (functional/contract): image wrapper's existing hover zoom utilities (104),
           <div className="text-center py-32">
 ```
 
-- [ ] **Step 5: Run probes + affected e2e**
+- [x] **Step 5: Run probes + affected e2e**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/collection.spec.ts e2e/homepage.spec.ts --reporter=line` → all PASS.
 
-- [ ] **Step 6: Guards + commit**
+- [x] **Step 6: Guards + commit**
 
 Run: `npm run lint && npm test`
 
@@ -327,7 +327,7 @@ git commit -m "feat(ui): borderless couture cards — card-couture on journal/co
 - Consumes: Task 1 `.field-couture`.
 - Produces: hairline controls on all public forms; boxed `bg-stone-50 border border-stone-100` panel plates removed.
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -348,9 +348,9 @@ test('phase 2: contact form controls are hairline .field-couture', async ({ page
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL**
+- [x] **Step 2: Run, verify FAIL**
 
-- [ ] **Step 3: Replace control class chains** (exact old → new, per occurrence)
+- [x] **Step 3: Replace control class chains** (exact old → new, per occurrence)
 
 `ContactPage.tsx:123` (+139 name/email inputs, 156 phone — same string):
 
@@ -396,7 +396,7 @@ className="field-couture p-8 ps-16 text-sm tracking-[0.2em] uppercase"
 
 (`p-4`/`p-8` utilities win over the class padding — same layering as Phase 1.)
 
-- [ ] **Step 4: De-box panels, plates, ghost buttons**
+- [x] **Step 4: De-box panels, plates, ghost buttons**
 
 | File:line | Now | Becomes |
 |---|---|---|
@@ -421,11 +421,11 @@ className="field-couture p-8 ps-16 text-sm tracking-[0.2em] uppercase"
 
 KEEP (functional): `FaqPage.tsx:50` icon `ps-14`, `:62/:87` hairlines; Appointment `171` step circles + `190` gown callout + `262` time-slot chips incl. `border-gold` active; Profile `164` tab active `border-gold`; all `border-rose-*` wishlist-heart states.
 
-- [ ] **Step 5: Run probe + affected specs**
+- [x] **Step 5: Run probe + affected specs**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/smoke.spec.ts --reporter=line` → all PASS.
 
-- [ ] **Step 6: Guards + commit**
+- [x] **Step 6: Guards + commit**
 
 Run: `npm run lint && npm test`
 
@@ -446,7 +446,7 @@ git commit -m "feat(ui): hairline .field-couture on all public forms + de-box pa
 - Consumes: Task 1 `.field-couture`.
 - Produces: product page free of plate borders; review controls hairline.
 
-- [ ] **Step 1: Write the failing probe**
+- [x] **Step 1: Write the failing probe**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -476,9 +476,9 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL**
+- [x] **Step 2: Run, verify FAIL**
 
-- [ ] **Step 3: Apply the line-by-line audit** (replace by string match, top-to-bottom list)
+- [x] **Step 3: Apply the line-by-line audit** (replace by string match, top-to-bottom list)
 
 | Line | Element | Action |
 |---|---|---|
@@ -499,12 +499,12 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
 | 750 | upload button `"flex items-center gap-2 px-4 py-3 border border-stone-200 text-micro tracking-widest uppercase text-stone-600 hover:border-gold hover:text-gold transition-colors"` | → `"btn-couture-ghost !text-stone-800"` |
 | 848 | rental modal `"bg-ivory max-w-lg w-full p-8 md:p-12 relative border border-stone-200 max-h-[90vh] overflow-y-auto"` | drop `border border-stone-200 ` |
 
-- [ ] **Step 4: Run probe + product e2e (critical)**
+- [x] **Step 4: Run probe + product e2e (critical)**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/product-detail.spec.ts --reporter=line`
 Expected: all PASS — size-chip `border-gold` contract preserved at 461; if the spec's add-to-cart flow touches a moved class, fix the SPEC selector, not the UI.
 
-- [ ] **Step 5: Guards + commit**
+- [x] **Step 5: Guards + commit**
 
 Run: `npm run lint && npm test`
 
@@ -519,11 +519,11 @@ git commit -m "feat(ui): product detail plate sweep — borderless panels, hairl
 
 **Files:** none new.
 
-- [ ] **Step 1:** `npm run lint && npm test` → clean, 195.
-- [ ] **Step 2:** `npx playwright test tests/ e2e/ --reporter=line` → FULL suite PASS.
-- [ ] **Step 3:** `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS 757 kB ±2; CSS vs 130.33 kB baseline delta ≤ +3 kB; 57 prerendered pages.
-- [ ] **Step 4:** viewport probe (node script, then delete): 375/768/1024/1440 EN — no `overflowX`; bottom-nav ink only `<md`; `.field-couture` computed hairline on /contact at each width; reduced-motion → card hover transform `none`.
-- [ ] **Step 5:** Update this plan's checkboxes, commit plan.
+- [x] **Step 1:** `npm run lint && npm test` → clean, 195.
+- [x] **Step 2:** `npx playwright test tests/ e2e/ --reporter=line` → FULL suite PASS.
+- [x] **Step 3:** `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS 757 kB ±2; CSS vs 130.33 kB baseline delta ≤ +3 kB; 57 prerendered pages.
+- [x] **Step 4:** viewport probe (node script, then delete): 375/768/1024/1440 EN — no `overflowX`; bottom-nav ink only `<md`; `.field-couture` computed hairline on /contact at each width; reduced-motion → card hover transform `none`.
+- [x] **Step 5:** Update this plan's checkboxes, commit plan.
 - [ ] **Step 6:** Owner visual sign-off on `http://localhost:3001` (hard refresh) before anything ships.
 
 ## Self-Review (at write time)
