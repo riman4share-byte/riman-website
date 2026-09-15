@@ -62,3 +62,14 @@ test('couture hairline form-field base rule is active', async ({ page }) => {
   expect(styles.radius).toBe('0px');
   expect(styles.bottomColor).toBe('rgb(210, 200, 182)'); // warm stone-300 hairline
 });
+
+test('homepage has dark Ken Burns interstitial with the atelier quote', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const band = page.locator('section.couture-interstitial');
+  await expect(band).toHaveCount(1);
+  await expect(band.locator('img')).toHaveCount(1);
+  await expect(band.locator('p')).toContainText('tension');
+  const anim = await band.locator('.ken-burns img').evaluate((el) => getComputedStyle(el).animationName);
+  expect(anim).toBe('ken-burns');
+});

@@ -30,7 +30,7 @@ export default function Index() {
     <main className="film-grain">
       <HeroSection21st />
 
-      <section id="atelier" className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
+      <section id="atelier" className="bg-bone py-28 md:py-40 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 md:gap-16">
           <div className="md:col-span-4">
             <div className="md:sticky md:top-40">
@@ -44,14 +44,32 @@ export default function Index() {
               </h3>
             </ScrollReveal>
             <ScrollReveal delay={0.1}>
-              <p className="font-editorial italic text-xl md:text-2xl text-gold-dark leading-relaxed max-w-2xl">
-                {t('atelier.quote')}
-              </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.2}>
               <p className="font-body text-stone-600 leading-loose max-w-2xl">{t('atelier.body')}</p>
             </ScrollReveal>
           </div>
+        </div>
+      </section>
+
+      {/* Dark couture interstitial — full-bleed atelier imagery, slow Ken Burns */}
+      <section className="couture-interstitial relative isolate overflow-hidden bg-onyx">
+        <div className="ken-burns absolute inset-0">
+          <img
+            src="/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="h-full w-full object-cover object-[center_30%] opacity-45"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-onyx/70 via-onyx/10 to-onyx/80" aria-hidden="true" />
+        <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center gap-10 px-6 py-24 text-center">
+          <span className="h-px w-16 bg-gold/50" aria-hidden="true" />
+          <p className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]">
+            {t('atelier.quote')}
+          </p>
+          <span className="font-label text-[10px] uppercase tracking-[0.45em] text-gold-light">
+            {t('chapter.atelier')}
+          </span>
         </div>
       </section>
 
