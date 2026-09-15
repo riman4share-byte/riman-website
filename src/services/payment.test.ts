@@ -3,6 +3,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 beforeEach(() => {
   vi.restoreAllMocks();
   vi.resetModules();
+  vi.unstubAllEnvs();
+  // Baseline: no Supabase project → the derived edge-function default stays
+  // off unless a test opts in, so "not configured" paths are deterministic.
+  vi.stubEnv('VITE_SUPABASE_URL', '');
+  vi.stubEnv('VITE_SUPABASE_ANON_KEY', '');
   global.fetch = vi.fn();
 });
 
@@ -78,15 +83,42 @@ describe('createCheckoutSession', () => {
     expect(sentBody().returnOrigin).toBeUndefined();
   });
 
-  it('returns null on API error (server rejected the request)', async () => {
+  it('throws with the server error message on API rejection (no silent fallback)', async () => {
     vi.stubEnv('VITE_STRIPE_CHECKOUT_ENDPOINT', 'https://example.com/create-checkout');
     (global.fetch as any).mockResolvedValue({
       ok: false,
-      text: () => Promise.resolve('Service unavailable'),
+      status: 409,
+      json: () => Promise.resolve({ error: 'Product "Fleur" is not available for those dates' }),
+      text: () => Promise.resolve('{"error":"Product \\"Fleur\\" is not available for those dates"}'),
     });
     const { createCheckoutSession } = await import('./payment');
-    const result = await createCheckoutSession(baseInput);
-    expect(result).toBeNull();
+    await expect(createCheckoutSession(baseInput)).rejects.toThrow(/not available for those dates/);
+  });
+
+  it('sends the Supabase apikey header when an anon key is configured', async () => {
+    vi.stubEnv('VITE_STRIPE_CHECKOUT_ENDPOINT', 'https://example.com/create-checkout');
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-test-key');
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: 'https://checkout.stripe.com/s' }),
+    });
+    const { createCheckoutSession } = await import('./payment');
+    await createCheckoutSession(baseInput);
+    const headers = (global.fetch as any).mock.calls[0][1].headers;
+    expect(headers.apikey).toBe('anon-test-key');
+  });
+
+  it('derives the endpoint from the Supabase project URL when no explicit endpoint is set', async () => {
+    vi.stubEnv('VITE_STRIPE_CHECKOUT_ENDPOINT', '');
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://ref.supabase.co');
+    (global.fetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ url: 'https://checkout.stripe.com/s' }),
+    });
+    const { createCheckoutSession, isStripeConfigured } = await import('./payment');
+    expect(isStripeConfigured()).toBe(true);
+    await createCheckoutSession(baseInput);
+    expect(String((global.fetch as any).mock.calls[0][0])).toBe('https://ref.supabase.co/functions/v1/create-checkout');
   });
 });
 

@@ -12,12 +12,18 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {
   parseCheckoutRequest,
   deriveTrustedLines,
+  isAllowedOrigin,
   parseAllowedOrigins,
   type ProductRow,
 } from '../_shared/checkoutValidation.ts';
+import { verifyTurnstileToken } from '../_shared/turnstile.ts';
+import { clientIp } from '../_shared/httpGuards.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+const TURNSTILE_SECRET_KEY = Deno.env.get('TURNSTILE_SECRET_KEY') || '';
+const RATE_LIMIT_MAX = Number(Deno.env.get('ORDER_RATE_LIMIT_MAX') || 15);
+const RATE_LIMIT_WINDOW_S = Number(Deno.env.get('ORDER_RATE_LIMIT_WINDOW_S') || 600);
 
 const ALLOWED_ORIGINS = parseAllowedOrigins(Deno.env);
 const corsHeaders = {
@@ -37,6 +43,15 @@ serve(async (req) => {
   }
 
   try {
+    // --- 0. Abuse gates: per-IP budget + optional server-verified captcha ---
+    const origin = req.headers.get('origin');
+    if (origin && !isAllowedOrigin(origin, ALLOWED_ORIGINS)) {
+      return json({ error: 'Origin not allowed' }, 403);
+    }
+    if (!(await withinRateLimit(req))) {
+      return json({ error: 'Too many requests' }, 429);
+    }
+
     // --- 1. Strict schema (rejects unknown fields / prices / totals) ---
     let parsed;
     try {
@@ -46,6 +61,15 @@ serve(async (req) => {
     }
     if (!parsed.ok) return json({ error: parsed.error }, 400);
     const payload = parsed.value;
+
+    if (TURNSTILE_SECRET_KEY) {
+      const captchaOk = await verifyTurnstileToken({
+        token: payload.captchaToken,
+        secret: TURNSTILE_SECRET_KEY,
+        ip: clientIp(req.headers),
+      });
+      if (!captchaOk) return json({ error: 'Please complete the security check.' }, 400);
+    }
 
     // --- 2. Shipping details (authoritative validation) ---
     if (
@@ -138,7 +162,7 @@ serve(async (req) => {
 
     for (const item of insertedItems ?? []) {
       if (item.rental_start_date && item.rental_end_date) {
-        await supabase.from('rental_bookings').insert({
+        const { error: bookingError } = await supabase.from('rental_bookings').insert({
           order_item_id: item.id,
           product_id: item.product_id,
           customer_name: payload.customerName,
@@ -149,6 +173,16 @@ serve(async (req) => {
           status: 'confirmed',
           deposit_collected: item.security_deposit || 0,
         });
+        if (bookingError) {
+          // The exclusion constraint caught a double-book race (23P01) —
+          // roll the order back and tell the client exactly what happened.
+          console.error('rental booking failed:', bookingError.code ?? bookingError.message);
+          await supabase.from('orders').delete().eq('id', order.id);
+          if (bookingError.code === '23P01' || bookingError.code === '23505') {
+            return json({ error: 'A rented piece is no longer available for those dates' }, 409);
+          }
+          return json({ error: 'Order creation is currently unavailable' }, 500);
+        }
       }
     }
 
@@ -158,6 +192,27 @@ serve(async (req) => {
     return json({ error: 'Order creation is currently unavailable' }, 500);
   }
 });
+
+async function withinRateLimit(req: Request): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('try_rate_limit', {
+      p_bucket: 'create_order',
+      p_scope_key: clientIp(req.headers),
+      p_limit: RATE_LIMIT_MAX,
+      p_window_seconds: RATE_LIMIT_WINDOW_S,
+    });
+    if (error) {
+      // Fail open but LOUD — a not-yet-applied migration must not break the
+      // in-atelier flow; this log line is the alarm.
+      console.error('rate limit rpc failed (failing open):', error.message);
+      return true;
+    }
+    return data === true;
+  } catch (err) {
+    console.error('rate limit check threw (failing open):', err);
+    return true;
+  }
+}
 
 function json(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {

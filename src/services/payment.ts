@@ -8,6 +8,8 @@
  * strict schema.
  */
 
+import { edgeFunctionsBase, supabaseAnonKey } from './supabase';
+
 export interface CheckoutLine {
   product_id: string;
   quantity: number;
@@ -35,7 +37,12 @@ export interface CheckoutResult {
 }
 
 function getEndpoint(): string {
-  return import.meta.env.VITE_STRIPE_CHECKOUT_ENDPOINT || '';
+  return import.meta.env.VITE_STRIPE_CHECKOUT_ENDPOINT ||
+    (edgeFunctionsBase ? `${edgeFunctionsBase}/create-checkout` : '');
+}
+
+function gatewayHeaders(): Record<string, string> {
+  return supabaseAnonKey ? { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` } : {};
 }
 
 /** Normalize to an origin only (drops path/query so nothing extra leaks). */
@@ -76,22 +83,27 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Check
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...gatewayHeaders() },
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      console.error('[Riman] Checkout session creation failed:', err);
-      return null;
+      // Surface the server's reason (dates conflict, rate limit, captcha…)
+      // instead of silently falling back to a different order flow.
+      const raw = await response.text().catch(() => '');
+      let message = '';
+      try { message = JSON.parse(raw)?.error || ''; } catch { /* non-json body */ }
+      console.error('[Riman] Checkout session rejected:', response.status, raw);
+      throw new Error(message || 'Payment is temporarily unavailable. Please try again or pay at the atelier.');
     }
 
     const { url, orderId } = await response.json();
     if (!url) return null;
     return { url, ...(orderId ? { orderId } : {}) };
   } catch (err) {
+    if (err instanceof Error && !(err instanceof TypeError)) throw err;
     console.error('[Riman] Failed to create checkout session:', err);
-    return null;
+    throw new Error('Payment is temporarily unavailable. Please try again or pay at the atelier.');
   }
 }
 
@@ -104,7 +116,9 @@ export async function verifyCheckoutSession(sessionId: string): Promise<{
   if (!endpoint) return null;
 
   try {
-    const response = await fetch(`${endpoint}?session_id=${encodeURIComponent(sessionId)}`);
+    const response = await fetch(`${endpoint}?session_id=${encodeURIComponent(sessionId)}`, {
+      headers: gatewayHeaders(),
+    });
     if (!response.ok) return null;
     return await response.json();
   } catch {

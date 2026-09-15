@@ -12,7 +12,7 @@ import {
   type ProductRow,
   type CheckoutLineInput,
 } from '../../supabase/functions/_shared/checkoutValidation';
-import { verifyStripeSignature, processOnce } from '../../supabase/functions/_shared/stripeSignature';
+import { verifyStripeSignature, processOnce, type WebhookClaimGate } from '../../supabase/functions/_shared/stripeSignature';
 
 const product = (over: Partial<ProductRow> = {}): ProductRow => ({
   id: 'p1',
@@ -87,9 +87,17 @@ describe('parseCheckoutRequest — strict schema', () => {
     const bad = parseCheckoutRequest(baseRequest([line({
       intent: 'rent',
       rental_start_date: '2025-13-45',
-      rental_end_date: '2025-01-01',
+      rental_end_date: '2026-01-01',
     })]));
     expect(bad.ok).toBe(false);
+  });
+
+  it('accepts an optional captchaToken string, rejects wrong types/size', () => {
+    expect(parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 'tok123' }).ok).toBe(true);
+    expect(parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 42 }).ok).toBe(false);
+    expect(parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 'x'.repeat(5000) }).ok).toBe(false);
+    const r = parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 'tok123' }) as { value: { captchaToken?: string } };
+    expect(r.value.captchaToken).toBe('tok123');
   });
 });
 
@@ -217,24 +225,51 @@ describe('stripe webhook — forged signatures and replay', () => {
     expect(result.event.id).toBe('evt_ok');
   });
 
-  it('the same webhook event cannot be processed twice (unique claim)', async () => {
-    const claimed = new Set<string>();
-    const claim = async (id: string) => {
-      if (claimed.has(id)) return false;
-      claimed.add(id);
-      return true;
-    };
+  it('runs work exactly once for duplicate deliveries (claim gate)', async () => {
+    const settled: Array<{ ok: boolean; error?: string }> = [];
+    const gate = (claimedOnce: { v: boolean }): WebhookClaimGate => ({
+      claim: async () => { if (claimedOnce.v) return false; claimedOnce.v = true; return true; },
+      settle: async (_id, ok, error) => { settled.push({ ok, error }); },
+    });
+    const won = { v: false };
     let fulfillments = 0;
     const work = async () => { fulfillments += 1; };
 
-    const first = await processOnce('evt_abc', claim, work);
-    const second = await processOnce('evt_abc', claim, work);
-    const third = await processOnce('evt_abc', claim, work);
-
-    expect(first).toBe('processed');
-    expect(second).toBe('duplicate');
-    expect(third).toBe('duplicate');
+    expect(await processOnce('evt_abc', gate(won), work)).toBe('processed');
+    expect(await processOnce('evt_abc', gate(won), work)).toBe('duplicate');
+    expect(await processOnce('evt_abc', gate(won), work)).toBe('duplicate');
     expect(fulfillments).toBe(1);
+    expect(settled).toEqual([{ ok: true, error: undefined }]);
+  });
+
+  it('a failed work is settled as failed and RETRIED (not silently swallowed)', async () => {
+    // Regression: claim-before-work meant a crashed fulfillment was recorded
+    // as processed; every Stripe retry then no-op'd and the order never
+    // flipped to paid. Failed work must release the claim for re-claim.
+    const state = { status: 'idle' as 'idle' | 'processing' | 'processed' | 'failed' };
+    const gate: WebhookClaimGate = {
+      claim: async () => {
+        if (state.status === 'idle') { state.status = 'processing'; return true; }
+        return false;
+      },
+      settle: async (_id, ok) => { state.status = ok ? 'processed' : 'failed'; },
+    };
+
+    let attempts = 0;
+    const flakyWork = async () => { attempts += 1; if (attempts === 1) throw new Error('db hiccup'); };
+
+    expect(await processOnce('evt_fail', gate, flakyWork)).toBe('failed');
+    expect(state.status).toBe('failed');
+    expect(attempts).toBe(1);
+
+    // Stripe retry: the failed claim is reclaimable.
+    gate.claim = async () => {
+      if (state.status === 'failed') { state.status = 'processing'; return true; }
+      return false;
+    };
+    expect(await processOnce('evt_fail', gate, flakyWork)).toBe('processed');
+    expect(attempts).toBe(2);
+    expect(state.status).toBe('processed');
   });
 
   it('extractWebhookOrderRef ignores unrelated events and rejects missing metadata', () => {

@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShieldCheck, ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, X, Truck, Calendar, MessageSquare, CreditCard, Building2, Lock, RotateCcw, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { deriveOrderType, validateCheckoutStep } from '../lib/checkout';
+import { validateCheckoutStep } from '../lib/checkout';
 import { getItemUnitPrice } from '../lib/pricing';
-import { createOrder, createOrderViaEdge } from '../services/orders';
+import { createOrderViaEdge } from '../services/orders';
 import { isSupabaseConfigured } from '../services/supabase';
 import { createCheckoutSession, isStripeConfigured } from '../services/payment';
 import { sendOrderConfirmationEmail, sendAdminOrderAlert } from '../lib/email';
@@ -137,16 +137,6 @@ export default function Checkout() {
         security_deposit: item.securityDeposit,
       }));
 
-      const orderType = deriveOrderType(
-        items.map(i => ({
-          id: i.id,
-          name: i.name,
-          productType: i.productType,
-          quantity: i.quantity,
-          intent: i.intent,
-        })),
-      );
-
       // Server-trusted line contract: ids, quantities, intents, dates only.
       // Prices/names/totals are derived by the edge functions from the DB.
       const checkoutLines = items.map(i => ({
@@ -181,7 +171,10 @@ export default function Checkout() {
       }
 
       if (isSupabaseConfigured) {
-        const edgeOrderId = await createOrderViaEdge({
+        // Single trusted path: the create-order edge function derives all
+        // money from the DB. On failure this THROWS (caught below) — no
+        // client-side order creation fallback exists anymore.
+        orderId = await createOrderViaEdge({
           lines: checkoutLines,
           customerName: `${formData.firstName} ${formData.lastName}`,
           customerEmail: formData.email,
@@ -191,24 +184,6 @@ export default function Checkout() {
           customerCountry: formData.country,
           notes: orderNotes,
         });
-
-        if (!edgeOrderId) {
-          const createdOrder = await createOrder({
-            status: 'pending',
-            type: orderType,
-            subtotal,
-            notes: orderNotes,
-            customer_name: `${formData.firstName} ${formData.lastName}`,
-            customer_email: formData.email,
-            customer_phone: formData.phone,
-            customer_address: formData.address,
-            customer_city: formData.city,
-            customer_country: formData.country,
-          }, orderItems);
-          orderId = createdOrder.id ?? null;
-        } else {
-          orderId = edgeOrderId ?? null;
-        }
       } else {
         await new Promise(resolve => setTimeout(resolve, 2000));
       }

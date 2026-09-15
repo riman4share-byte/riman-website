@@ -73,17 +73,38 @@ export async function verifyStripeSignature(
 }
 
 /**
- * Idempotency gate for webhook processing. Production passes a `claim` backed
- * by a UNIQUE primary-key insert (stripe_processed_events); exactly one
- * concurrent/duplicate delivery wins.
+ * Idempotency gate for webhook processing. Production backs this with the
+ * `stripe_processed_events` table (UNIQUE event_id primary key): exactly one
+ * concurrent/duplicate delivery wins the claim.
+ *
+ * CRITICAL (fixed failure mode): the original design recorded the claim
+ * BEFORE running work and never revised it — if fulfillment threw, the row
+ * stayed, every Stripe retry returned "duplicate", and the order was never
+ * fulfilled, silently. Now: claim → work → SETTLE. Failed work releases the
+ * claim (status 'failed') so the next retry re-claims and re-runs. A crashed
+ * worker's stale 'processing' claim is reclaimable after the takeover window.
  */
+export interface WebhookClaimGate {
+  /** Win (or re-win after failure) the right to process this event id. */
+  claim(eventId: string): Promise<boolean>;
+  /** Record the terminal outcome of the claimed attempt. */
+  settle(eventId: string, ok: boolean, error?: string): Promise<void>;
+}
+
+export type ProcessOutcome = 'processed' | 'duplicate' | 'failed';
+
 export async function processOnce(
   eventId: string,
-  claim: (eventId: string) => Promise<boolean>,
+  gate: WebhookClaimGate,
   work: () => Promise<void>,
-): Promise<'processed' | 'duplicate'> {
-  const won = await claim(eventId);
-  if (!won) return 'duplicate';
-  await work();
+): Promise<ProcessOutcome> {
+  if (!(await gate.claim(eventId))) return 'duplicate';
+  try {
+    await work();
+  } catch (err) {
+    await gate.settle(eventId, false, err instanceof Error ? err.message : String(err));
+    return 'failed';
+  }
+  await gate.settle(eventId, true);
   return 'processed';
 }

@@ -153,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string, captchaToken?: string) => {
     setError(null);
+    email = email.trim().toLowerCase();
 
     if (!isSupabaseConfigured) {
       return localSignIn(email, password);
@@ -171,6 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, name: string, password: string, captchaToken?: string) => {
     setError(null);
+    email = email.trim().toLowerCase();
 
     if (!isSupabaseConfigured) {
       return localSignUp(email, name, password);

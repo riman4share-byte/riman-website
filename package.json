@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "verify:env": "node scripts/verify-supabase-env.mjs",
     "test": "vitest run",
     "mcp": "npx @playwright/mcp --port 8939"
   },

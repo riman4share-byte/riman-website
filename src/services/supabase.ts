@@ -3,6 +3,9 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
+export const edgeFunctionsBase = supabaseUrl ? `${supabaseUrl.replace(/\/+$/, '')}/functions/v1` : '';
+export { supabaseUrl, supabaseAnonKey };
+
 const isConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 export const supabase: SupabaseClient = isConfigured

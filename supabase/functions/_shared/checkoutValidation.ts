@@ -40,6 +40,7 @@ export interface CheckoutRequest {
   customerCity?: string;
   customerCountry?: string;
   notes?: string;
+  captchaToken?: string;
 }
 
 export interface ProductRow {
@@ -87,7 +88,7 @@ function assertNoUnknownKeys(obj: Record<string, unknown>, allowed: string[], la
 const LINE_KEYS = ['product_id', 'quantity', 'intent', 'rental_start_date', 'rental_end_date', 'size'];
 const REQUEST_KEYS = [
   'lines', 'returnOrigin', 'customerName', 'customerEmail', 'customerPhone',
-  'customerAddress', 'customerCity', 'customerCountry', 'notes',
+  'customerAddress', 'customerCity', 'customerCountry', 'notes', 'captchaToken',
 ];
 
 function isValidDateOnly(value: string): boolean {
@@ -114,6 +115,8 @@ export function parseCheckoutRequest(raw: unknown): Validated<CheckoutRequest> {
     if (value !== undefined && (typeof value !== 'string' || (value as string).length > 500)) return fail(`Invalid ${key}`);
   }
   if (returnOrigin !== undefined && typeof returnOrigin !== 'string') return fail('Invalid returnOrigin');
+  const { captchaToken } = raw;
+  if (captchaToken !== undefined && (typeof captchaToken !== 'string' || captchaToken.length > 4096 || !captchaToken.trim())) return fail('Invalid captchaToken');
 
   const parsedLines: CheckoutLineInput[] = [];
   const seen = new Set<string>();
@@ -166,6 +169,7 @@ export function parseCheckoutRequest(raw: unknown): Validated<CheckoutRequest> {
       ...(typeof customerCity === 'string' ? { customerCity } : {}),
       ...(typeof customerCountry === 'string' ? { customerCountry } : {}),
       ...(typeof notes === 'string' ? { notes } : {}),
+      ...(typeof captchaToken === 'string' ? { captchaToken } : {}),
     },
   };
 }

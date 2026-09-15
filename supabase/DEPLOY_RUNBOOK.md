@@ -1,80 +1,94 @@
-# Supabase Edge Functions — Deploy Runbook
+# Supabase Backend — Deploy & Operations Runbook
 
-Use this when you have **Stripe** and **Resend** accounts and their API keys.
-Until then, checkout/orders still work (client-side) and emails are no-ops — the
-site is fully usable without this step.
+## 2026-09-16 hardening — apply in THIS ORDER
+1. **Migrations** (5 new files in `supabase/migrations/`, dated 20260916…):
+   webhook claim states → rental overlap exclusion → rate limiting → outbox +
+   `needs_review` → orders server-created-only.
+   Dashboard → SQL Editor, run each file top-to-bottom in filename order.
+   (`20260916000002` needs `btree_gist` — Supabase allows enabling it.)
+2. **Deploy functions** (Step B below) — `create-checkout` and `stripe-webhook`
+   call `try_rate_limit`/`claim_stripe_event`; they fail OPEN with loud logs if
+   migrations aren't applied yet, but don't linger in that state.
+3. Set new secrets (Step C), then Stripe webhook events (Step D).
 
-## What gets deployed
-| Function            | Purpose                                  | Required secrets (you set)        |
-|---------------------|------------------------------------------|-----------------------------------|
-| `create-checkout`   | Creates a Stripe Checkout session        | `STRIPE_SECRET_KEY`, `APP_URL`    |
-| `create-order`      | Writes the order to the DB (server-side) | *(none extra — uses project keys)*|
-| `send-notification` | Sends confirmation emails via Resend     | `RESEND_API_KEY`                  |
-| `stripe-webhook`    | Verifies Stripe events, updates status   | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` |
+> **Orders are now server-created ONLY.** RLS rejects client INSERT on `orders`
+> (migration 000005) and the frontend no longer falls back to client-side order
+> creation. Before this runbook is complete on a given project, checkout of
+> in-atelier-payment orders will ERROR (by design — never silently downgrade).
 
-`SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are **auto-injected** by Supabase
-for every function — you do NOT set those.
+## A. Architecture (trust model)
+| Piece | Who may write | Notes |
+|---|---|---|
+| `orders`, `order_items` | service_role only (edge functions) | prices derived from DB; browser sends ids/qty/intent/dates only |
+| `rental_bookings` | service_role + admins | `rental_bookings_no_overlap` EXCLUDE constraint blocks double-booking at the DB; card checkouts HOLD windows as `pending_payment` (webhook confirms, `checkout.session.expired` releases) |
+| `stripe_processed_events` | service_role only | claim → work → settle; failed work is RETRIED by Stripe (reclaimable), stale crashed claims taken over after 5 min |
+| `notification_outbox` | service_role only | transactional emails queued durably; drained by `process-outbox` |
+| `function_rate_limits` | service_role only | fixed-window per-IP budget for public functions |
 
-Your function URLs will all be:
-`https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/<function-name>`
-
----
-
-## Step 1 — Get the keys
-- **Stripe**: stripe.com → Developers → API keys → copy **Secret key** (`sk_live_...`).
-  Also create a **webhook** (Developers → Webhooks → Add endpoint) pointing at the
-  `stripe-webhook` URL from Step 3, listening to `checkout.session.completed`;
-  copy its **Signing secret** (`whsec_...`).
-- **Resend**: resend.com → API Keys → create key (`re_...`).
-
-## Step 2 — Deploy the 4 functions
-**Dashboard method (no CLI needed):**
-1. Supabase dashboard → **Edge Functions** (left sidebar).
-2. Click **New function**, name it exactly `create-checkout`, paste the contents of
-   `supabase/functions/create-checkout/index.ts`, click **Deploy**.
-3. Repeat for `create-order`, `send-notification`, `stripe-webhook`
-   (paste each `supabase/functions/<name>/index.ts`).
-> If a function fails to deploy because it imports a shared file, use the CLI instead
-> (below). Single-file paste works for these four as written.
-
-**CLI method (if dashboard paste fails):** on any machine with the Supabase CLI:
+## B. Deploy the 5 functions
+Folder upload REQUIRED — every function imports `_shared/*` (single-file
+dashboard paste no longer works):
 ```
 supabase login
-supabase link --project-ref vbuavhnpemnfsuguglqn
-supabase functions deploy create-checkout
-supabase functions deploy create-order
-supabase functions deploy send-notification
-supabase functions deploy stripe-webhook
+supabase link --project-ref <your-project-ref>
+supabase functions deploy create-checkout --no-verify-jwt
+supabase functions deploy create-order --no-verify-jwt
+supabase functions deploy stripe-webhook --no-verify-jwt
+supabase functions deploy process-outbox --no-verify-jwt
+supabase functions deploy send-notification          # KEEP JWT verification
 ```
 
-## Step 3 — Set the secrets
-Dashboard → **Settings** → **API** → **Edge Functions Secrets** → **Add secret** for each:
-- `STRIPE_SECRET_KEY` = your Stripe secret key
-- `STRIPE_WEBHOOK_SECRET` = your Stripe webhook signing secret
-- `RESEND_API_KEY` = your Resend key
-- `APP_URL` = `https://your-domain.com` (or `http://localhost:3001` for testing)
+## C. Secrets (Dashboard → Settings → API Keys → Edge Functions secrets)
+Required:
+- `STRIPE_SECRET_KEY` (sk_live_… / sk_test_…)
+- `STRIPE_WEBHOOK_SECRET` (whsec_… — from Step D)
+- `RESEND_API_KEY`
+- `SITE_URL` = `https://riman.ae` — success/cancel URLs + CORS are built from
+  this; it is NEVER taken from the request body.
+- `ADMIN_ALERT_EMAIL` (defaults to hello@riman.ae if unset)
+- `OUTBOX_WORKER_SECRET` = long random string (cron → process-outbox auth)
+Optional hardening:
+- `ALLOWED_SITE_ORIGINS` = comma list (staging, www)
+- `TURNSTILE_SITE_KEY`/`TURNSTILE_SECRET_KEY` — when the secret is set, BOTH
+  public checkout functions require a server-verified captcha token.
+- `CHECKOUT_RATE_LIMIT_MAX` / `CHECKOUT_RATE_LIMIT_WINDOW_S` (default 10/600s),
+  `ORDER_RATE_LIMIT_MAX` / `ORDER_RATE_LIMIT_WINDOW_S` (default 15/600s)
 
-## Step 4 — Point Stripe webhook at the function
-In Stripe (Developers → Webhooks), set the endpoint URL to:
-`https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/stripe-webhook`
+## D. Stripe webhook
+Endpoint: `https://<ref>.supabase.co/functions/v1/stripe-webhook`
+Events: `checkout.session.completed`, `checkout.session.expired`
+(the expired event is what releases pending_payment rental holds — subscribe).
 
-## Step 5 — Wire the app endpoints
-In your project's `.env`, set:
+## E. Outbox drain (cron)
+Dashboard → Database → Extensions → enable `pg_cron` + `pg_net`, then:
+```sql
+SELECT cron.schedule('outbox-drain', '*/5 * * * *', $$
+  SELECT net.http_post(
+    url := 'https://<ref>.supabase.co/functions/v1/process-outbox',
+    headers := '{"Content-Type":"application/json","x-outbox-secret":"<OUTBOX_WORKER_SECRET>"}'::jsonb,
+    body := '{}'::jsonb
+  );
+$$);
 ```
-VITE_STRIPE_CHECKOUT_ENDPOINT=https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/create-checkout
-VITE_CREATE_ORDER_ENDPOINT=https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/create-order
-VITE_NOTIFICATION_WEBHOOK=https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/send-notification
+
+## F. The frontend needs NO endpoint env vars anymore
+`create-checkout` / `create-order` URLs are derived from `VITE_SUPABASE_URL`
+(`/functions/v1/...`). Explicit `VITE_STRIPE_CHECKOUT_ENDPOINT` /
+`VITE_CREATE_ORDER_ENDPOINT` still win if set.
+
+## G. Verify (after every deploy/config change)
 ```
-Then **restart the dev server** (`npm run dev`).
-
-## Step 6 — Verify
-1. Log in as admin → add a product, confirm it persists (DB-backed).
-2. As a customer, place a test order → you should get a confirmation email and the
-   order should appear in `/admin/orders`.
-
----
+npm run verify:env        # URL+anon key are a live matching pair (would have
+                          # caught the 2026-09-16 corrupted-.env outage)
+```
+Then, in the app: place a card order → money derives server-side; return to
+Stripe success page → order flips to paid (webhook or verify, exactly once) →
+confirmation mail from outbox within ~5 min → rental dates show blocked in
+admin; complete a second checkout overlapping the first paid rental → 409.
 
 ## Notes
-- Catalog is already seeded (16 products) — no action needed for that.
-- If you ever expose the service-role key (used only for seeding), rotate it:
-  Dashboard → Settings → API → service_role key → **Roll**.
+- If the service-role key ever leaks: Dashboard → Settings → API Keys → Roll,
+  then re-set `SUPABASE_SERVICE_ROLE_KEY` is NOT needed (auto-injected per
+  function), but REDEPLOY nothing persists the old key — it's read at runtime.
+- Stripe test mode end-to-end: `stripe listen --forward-to localhost function`
+  per Stripe docs, with a test `STRIPE_WEBHOOK_SECRET`.

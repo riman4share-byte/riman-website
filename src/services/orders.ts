@@ -1,5 +1,4 @@
-import { supabase } from './supabase';
-import { verifyOrderItems, isVerifyError, type ClientOrderItem, type DbProduct } from '../lib/orderPricing';
+import { supabase, edgeFunctionsBase, supabaseAnonKey } from './supabase';
 
 export interface OrderItem {
   id?: string;
@@ -41,111 +40,12 @@ export interface Order {
   customer_country?: string;
 }
 
-export async function createOrder(order: Order, items: OrderItem[]): Promise<Order> {
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Server-side price verification: never trust client-computed prices.
-  const clientItems: ClientOrderItem[] = items.map(item => ({
-    product_id: item.product_id,
-    intent: item.intent ?? 'sale',
-    quantity: item.quantity,
-    size: item.size,
-    rental_start_date: item.rental_start_date,
-    rental_end_date: item.rental_end_date,
-    security_deposit: item.security_deposit,
-  }));
-
-  const { data: dbProducts, error: prodError } = await supabase
-    .from('products')
-    .select('id, name, product_type, sale_price, rental_price, is_active')
-    .in('id', [...new Set(clientItems.map(i => i.product_id))]);
-
-  if (prodError) throw prodError;
-
-  const verification = verifyOrderItems(clientItems, (dbProducts ?? []) as DbProduct[]);
-  if (isVerifyError(verification)) throw new Error(verification.error);
-
-  const verifiedItems = verification.items;
-  const verifiedSubtotal = verification.subtotal;
-
-  let customerId: string | undefined;
-
-  const { data: existingCustomer } = await supabase
-    .from('customers')
-    .select('id')
-    .eq('email', order.customer_email || '')
-    .maybeSingle();
-
-  if (existingCustomer) {
-    customerId = existingCustomer.id;
-  } else if (order.customer_name && order.customer_email) {
-    const { data: newCustomer, error: customerError } = await supabase
-      .from('customers')
-      .insert({
-        name: order.customer_name,
-        email: order.customer_email,
-        phone: order.customer_phone,
-        address: order.customer_address,
-        city: order.customer_city,
-        country: order.customer_country || 'United Arab Emirates',
-      })
-      .select()
-      .single();
-
-    if (customerError) throw customerError;
-    customerId = newCustomer.id;
-  }
-
-  const { data: orderData, error: orderError } = await supabase
-    .from('orders')
-    .insert({
-      customer_id: customerId,
-      user_id: user?.id,
-      status: order.status || 'pending',
-      type: order.type,
-      subtotal: verifiedSubtotal,
-      notes: order.notes,
-    })
-    .select()
-    .single();
-
-  if (orderError) throw orderError;
-
-  const orderItems = verifiedItems.map(item => ({
-    ...item,
-    order_id: orderData.id,
-  }));
-
-  const { data: insertedItems, error: itemsError } = await supabase
-    .from('order_items')
-    .insert(orderItems)
-    .select();
-
-  if (itemsError) throw itemsError;
-
-  for (const item of insertedItems) {
-    if (item.rental_start_date && item.rental_end_date) {
-      await supabase.from('rental_bookings').insert({
-        order_item_id: item.id,
-        product_id: item.product_id,
-        user_id: user?.id,
-        customer_name: order.customer_name || '',
-        customer_email: order.customer_email || '',
-        customer_phone: order.customer_phone,
-        start_date: item.rental_start_date,
-        end_date: item.rental_end_date,
-        status: 'confirmed',
-        deposit_collected: item.security_deposit || 0,
-      });
-    }
-  }
-
-  return { ...orderData, items: insertedItems };
-}
-
+// Server-trusted order creation ONLY. Direct client-side order inserts were
+// removed (2026-09-16 hardening): RLS now denies user INSERT on `orders`, so
+// every atelier-payment order must go through the create-order edge function,
+// which derives prices/order type from the database. Failures THROW — they
+// must never silently downgrade to a client-computed order.
 export async function createOrderViaEdge(payload: {
-  // Server-trusted contract: ids/quantities/intents only. Prices and order
-  // type are derived from the database by the create-order function.
   lines: Array<{
     product_id: string;
     intent: 'sale' | 'rent';
@@ -160,31 +60,42 @@ export async function createOrderViaEdge(payload: {
   customerCity?: string;
   customerCountry?: string;
   notes?: string;
-}): Promise<string | null> {
-  const endpoint = import.meta.env.VITE_CREATE_ORDER_ENDPOINT || '';
+  captchaToken?: string;
+}): Promise<string> {
+  const endpoint = import.meta.env.VITE_CREATE_ORDER_ENDPOINT ||
+    (edgeFunctionsBase ? `${edgeFunctionsBase}/create-order` : '');
   if (!endpoint) {
-    console.info('[Riman] create-order endpoint not configured — falling back to client createOrder');
-    return null;
+    throw new Error('The order service is not configured. Please contact the atelier to book payment.');
   }
+
+  const body = { ...payload, customerEmail: payload.customerEmail.trim().toLowerCase() };
+  const gatewayHeaders: Record<string, string> = supabaseAnonKey
+    ? { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` }
+    : {};
 
   try {
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json', ...gatewayHeaders },
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      const err = await response.text();
-      console.error('[Riman] create-order failed:', err);
-      return null;
+      const raw = await response.text().catch(() => '');
+      let message = '';
+      try { message = JSON.parse(raw)?.error || ''; } catch { /* non-json body */ }
+      console.error('[Riman] create-order rejected:', response.status, raw);
+      throw new Error(message || 'The order service is temporarily unavailable. Please try again.');
     }
 
     const { orderId } = await response.json();
-    return orderId || null;
+    if (!orderId) throw new Error('The order service returned no order id.');
+    return orderId;
   } catch (err) {
-    console.error('[Riman] Failed to create order via edge:', err);
-    return null;
+    if (err instanceof TypeError) {
+      throw new Error('Could not reach the order service. Check your connection and try again.');
+    }
+    throw err;
   }
 }
 

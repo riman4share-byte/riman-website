@@ -4,6 +4,7 @@
 //          supabase secrets set RESEND_API_KEY=re_xxx
 //          supabase secrets set SITE_URL=https://riman.ae
 //          supabase secrets set ALLOWED_SITE_ORIGINS=https://riman.ae,https://staging.riman.ae
+//          (optional) supabase secrets set TURNSTILE_SECRET_KEY=0x...  ← server-side captcha
 //
 // SECURITY MODEL:
 //  - The browser sends ONLY product ids, quantities, intents and rental dates.
@@ -12,6 +13,12 @@
 //    schema error, not an input.
 //  - success_url / cancel_url come only from the SITE_URL / ALLOWED_SITE_ORIGINS
 //    allowlist — never from the request body.
+//  - Public endpoint ⇒ per-IP rate limit (try_rate_limit RPC) and, when
+//    TURNSTILE_SECRET_KEY is set, a server-verified captcha token.
+//  - Rental windows are HELD from the moment the order row exists: booking
+//    rows are created 'pending_payment' and flipped to 'confirmed' by the
+//    webhook (the DB exclusion constraint makes double-selling impossible;
+//    checkout.session.expired releases the hold).
 //  - Errors returned to clients are generic; details are logged server-side.
 
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
@@ -25,14 +32,18 @@ import {
   CURRENCY,
   type ProductRow,
 } from '../_shared/checkoutValidation.ts';
+import { verifyTurnstileToken } from '../_shared/turnstile.ts';
+import { clientIp } from '../_shared/httpGuards.ts';
+import { confirmationEmailHtml } from '../_shared/emailTemplates.ts';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const FROM_EMAIL = 'Atelier Riman <orders@riman.ae>';
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
 const ALLOWED_ORIGINS = parseAllowedOrigins(Deno.env);
 const SITE_URL = (Deno.env.get('SITE_URL') || ALLOWED_ORIGINS[0] || '').replace(/\/+$/, '');
+const TURNSTILE_SECRET_KEY = Deno.env.get('TURNSTILE_SECRET_KEY') || '';
+const RATE_LIMIT_MAX = Number(Deno.env.get('CHECKOUT_RATE_LIMIT_MAX') || 10);
+const RATE_LIMIT_WINDOW_S = Number(Deno.env.get('CHECKOUT_RATE_LIMIT_WINDOW_S') || 600);
 
 function corsFor(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') || '';
@@ -65,6 +76,9 @@ serve(async (req) => {
     if (!sessionId || !/^cs_[A-Za-z0-9_-]{10,255}$/.test(sessionId)) {
       return json({ paid: false }, 400, req);
     }
+    if (!(await withinRateLimit('checkout_verify', req, 60, 600))) {
+      return json({ error: 'Too many requests' }, 429, req);
+    }
     try {
       return await handleVerify(sessionId);
     } catch (err) {
@@ -78,6 +92,15 @@ serve(async (req) => {
   }
 
   try {
+    // --- 0. Abuse gates: per-IP budget + optional server-verified captcha ---
+    const origin = req.headers.get('origin');
+    if (origin && !isAllowedOrigin(origin, ALLOWED_ORIGINS)) {
+      return json({ error: 'Origin not allowed' }, 403, req);
+    }
+    if (!(await withinRateLimit('create_checkout', req, RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_S))) {
+      return json({ error: 'Too many requests' }, 429, req);
+    }
+
     // --- 1. Strict schema validation (rejects unknown fields incl. prices) ---
     let parsed;
     try {
@@ -87,6 +110,15 @@ serve(async (req) => {
     }
     if (!parsed.ok) return json({ error: parsed.error }, 400, req);
     const payload = parsed.value;
+
+    if (TURNSTILE_SECRET_KEY) {
+      const captchaOk = await verifyTurnstileToken({
+        token: payload.captchaToken,
+        secret: TURNSTILE_SECRET_KEY,
+        ip: clientIp(req.headers),
+      });
+      if (!captchaOk) return json({ error: 'Please complete the security check.' }, 400, req);
+    }
 
     if (!STRIPE_SECRET_KEY) {
       return json({ error: 'Checkout is currently unavailable' }, 503, req);
@@ -117,14 +149,14 @@ serve(async (req) => {
     if (!derived.ok) return json({ error: derived.error }, 400, req);
     const { trusted, subtotalAed, subtotalCents, orderType } = derived.value;
 
-    // --- 4. Rental availability (date-window overlap) ---
+    // --- 4. Rental availability (pre-check; the DB constraint is the boss) ---
     for (const item of trusted) {
       if (item.intent === 'rent' && item.rental_start_date && item.rental_end_date) {
         const { data: bookings, error: bookErr } = await supabase
           .from('rental_bookings')
           .select('start_date, end_date')
           .eq('product_id', item.product_id)
-          .in('status', ['confirmed', 'active', 'overdue'])
+          .in('status', ['confirmed', 'active', 'overdue', 'pending_payment'])
           .lt('start_date', item.rental_end_date)
           .gt('end_date', item.rental_start_date);
         if (bookErr) {
@@ -132,7 +164,7 @@ serve(async (req) => {
           return json({ error: 'Checkout is currently unavailable' }, 500, req);
         }
         if (!rentalPeriodIsFree(bookings ?? [], item.rental_start_date, item.rental_end_date)) {
-          return json({ error: `Product "${item.product_name}" is not available for those dates` }, 400, req);
+          return json({ error: `Product "${item.product_name}" is not available for those dates` }, 409, req);
         }
       }
     }
@@ -182,7 +214,7 @@ serve(async (req) => {
     }
 
     // Line snapshot from trusted rows only (names/prices frozen at order time).
-    const { error: itemsError } = await supabase.from('order_items').insert(
+    const { data: insertedItems, error: itemsError } = await supabase.from('order_items').insert(
       trusted.map((item) => ({
         order_id: order.id,
         product_id: item.product_id,
@@ -195,11 +227,21 @@ serve(async (req) => {
         rental_start_date: item.rental_start_date,
         rental_end_date: item.rental_end_date,
       })),
-    );
+    ).select('id, product_id, product_name, quantity, security_deposit, rental_start_date, rental_end_date');
     if (itemsError) {
       console.error('order_items insert failed:', itemsError);
       await supabase.from('orders').delete().eq('id', order.id);
       return json({ error: 'Checkout is currently unavailable' }, 500, req);
+    }
+
+    // --- 5b. HOLD rental windows (pending payment) ---
+    const holdFailed = await holdRentWindows(
+      insertedItems ?? [],
+      { name: payload.customerName, email: payload.customerEmail },
+    );
+    if (holdFailed) {
+      await rollbackOrder(order.id);
+      return json({ error: 'One of the selected pieces just became unavailable for those dates' }, 409, req);
     }
 
     // --- 6. Stripe session from trusted values; integer cents amounts ---
@@ -229,7 +271,7 @@ serve(async (req) => {
 
     if (!stripeRes.ok) {
       console.error('stripe session failed:', session?.error?.message);
-      await supabase.from('orders').delete().eq('id', order.id);
+      await rollbackOrder(order.id);
       return json({ error: 'Checkout is currently unavailable' }, 502, req);
     }
 
@@ -244,6 +286,49 @@ serve(async (req) => {
     return json({ error: 'Checkout is currently unavailable' }, 500, req);
   }
 });
+
+interface InsertedItemRow {
+  id: string;
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  security_deposit: number | null;
+  rental_start_date: string | null;
+  rental_end_date: string | null;
+}
+
+/** Create pending_payment booking rows for rental lines. Returns true on a
+ * date-conflict (exclusion violation) or transient DB failure. */
+async function holdRentWindows(
+  rows: InsertedItemRow[],
+  customer: { name: string; email: string },
+): Promise<boolean> {
+  const holds = rows.filter((r) => r.rental_start_date && r.rental_end_date);
+  for (const r of holds) {
+    const { error } = await supabase.from('rental_bookings').insert({
+      order_item_id: r.id,
+      product_id: r.product_id,
+      customer_name: customer.name,
+      customer_email: customer.email,
+      start_date: r.rental_start_date,
+      end_date: r.rental_end_date,
+      status: 'pending_payment',
+      deposit_collected: r.security_deposit || 0,
+    });
+    if (error) {
+      console.error('rent hold failed:', error.code === '23P01' ? 'date conflict' : error.message);
+      return true;
+    }
+  }
+  return false;
+}
+
+async function rollbackOrder(orderId: string) {
+  // Bookings/order_items cascade from the order; deleting the order unwinds
+  // the whole snapshot including any holds that were just placed.
+  const { error } = await supabase.from('orders').delete().eq('id', orderId);
+  if (error) console.error('order rollback failed (manual cleanup needed):', error);
+}
 
 // ─── Verification (GET) ─────────────────────────────────────────────
 // Session state is read back FROM STRIPE. An order is only marked paid when
@@ -263,24 +348,24 @@ async function handleVerify(sessionId: string) {
   const orderId = session.metadata?.order_id;
 
   let customerEmail = session.customer_details?.email || '';
-  let orderData = null;
 
   if (orderId) {
-    const { data } = await supabase
+    const { data: orderData } = await supabase
       .from('orders')
-      .select('*, customers!inner(email)')
+      .select('id, payment_status, customer_name, subtotal, customers!inner(email)')
       .eq('id', orderId)
       .single();
-    orderData = data;
 
     const sessionEmail = (session.customer_details?.email || '').toLowerCase();
-    const orderEmail = (orderData?.customers?.email || '').toLowerCase();
+    const orderEmail = ((orderData as { customers?: { email?: string } } | null)?.customers?.email || '').toLowerCase();
     const belongsToOrder = orderData && (!sessionEmail || !orderEmail || sessionEmail === orderEmail);
 
     customerEmail = orderEmail || sessionEmail;
 
-    if (paid && orderData?.payment_status !== 'paid' && belongsToOrder) {
-      await supabase
+    if (paid && orderData && belongsToOrder) {
+      // Guarded flip: exactly ONE of (webhook, verify) wins this transition,
+      // and only the winner queues the confirmation email.
+      const { data: flipped } = await supabase
         .from('orders')
         .update({
           payment_status: 'paid',
@@ -288,17 +373,70 @@ async function handleVerify(sessionId: string) {
           updated_at: new Date().toISOString(),
         })
         .eq('id', orderId)
-        .eq('payment_status', 'processing'); // idempotent single transition
-    } else if (paid && orderData?.payment_status !== 'paid' && !belongsToOrder) {
-      console.warn('verify: session/order customer mismatch, not marking paid', { orderId });
-    }
+        .eq('payment_status', 'processing')
+        .select('id');
 
-    if (paid && orderData && RESEND_API_KEY && orderData.payment_status !== 'paid') {
-      await sendConfirmationEmail(orderId, orderData, customerEmail);
+      if (flipped?.length) {
+        await supabase
+          .from('rental_bookings')
+          .update({ status: 'confirmed', updated_at: new Date().toISOString() })
+          .in('order_item_id', await rentalItemIds(orderId))
+          .eq('status', 'pending_payment');
+
+        const o = orderData as { customer_name?: string | null; subtotal?: number | null };
+        if (orderEmail) {
+          await enqueue(
+            'order_confirmed',
+            orderEmail,
+            `Payment Confirmed — ${String(orderId).slice(0, 8)} | Atelier Riman`,
+            confirmationEmailHtml(o, String(orderId)),
+          );
+        }
+      }
+    } else if (paid && orderData && !belongsToOrder) {
+      console.warn('verify: session/order customer mismatch, not marking paid', { orderId });
     }
   }
 
   return jsonStatic({ paid, orderId: orderId || undefined, customerEmail }, 200);
+}
+
+async function rentalItemIds(orderId: string): Promise<string[]> {
+  const { data } = await supabase
+    .from('order_items')
+    .select('id')
+    .eq('order_id', orderId)
+    .not('rental_start_date', 'is', null);
+  return (data ?? []).map((i: { id: string }) => i.id);
+}
+
+async function withinRateLimit(bucket: string, req: Request, limit: number, windowSeconds: number): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('try_rate_limit', {
+      p_bucket: bucket,
+      p_scope_key: clientIp(req.headers),
+      p_limit: limit,
+      p_window_seconds: windowSeconds,
+    });
+    if (error) {
+      // Fail open but LOUD: a missing migration must not take checkout down;
+      // the log line is the alarm.
+      console.error('rate limit rpc failed (failing open):', error.message);
+      return true;
+    }
+    return data === true;
+  } catch (err) {
+    console.error('rate limit check threw (failing open):', err);
+    return true;
+  }
+}
+
+async function enqueue(kind: string, to: string, subject: string, html: string) {
+  try {
+    await supabase.from('notification_outbox').insert({ kind, to_email: to, subject, html });
+  } catch (err) {
+    console.error('outbox enqueue failed:', err);
+  }
 }
 
 function jsonStatic(body: unknown, status: number) {
@@ -306,50 +444,4 @@ function jsonStatic(body: unknown, status: number) {
     status,
     headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': ALLOWED_ORIGINS[0] || '', 'Vary': 'Origin' },
   });
-}
-
-async function sendConfirmationEmail(orderId: string, orderData: { customer_name?: string; subtotal?: number }, customerEmail: string) {
-  try {
-    const htmlBody = `
-      <!DOCTYPE html>
-      <html>
-      <head><meta charset="utf-8"></head>
-      <body style="font-family: Georgia, serif; color: #1a1a1a; padding: 40px;">
-        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; padding: 40px;">
-          <h1 style="font-size: 20px; letter-spacing: 4px; text-transform: uppercase; color: #b8860b; margin-bottom: 30px; text-align: center;">Atelier Riman</h1>
-          <p>Dear ${escapeHtml(orderData.customer_name || 'Valued Client')},</p>
-          <p>Thank you for your order. Your payment has been received and your pieces are being prepared at our Sharjah atelier.</p>
-          <p><strong>Order ID:</strong> ${escapeHtml(orderId)}</p>
-          <p><strong>Total Paid:</strong> AED ${Number(orderData.subtotal || 0).toLocaleString()}</p>
-          <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
-          <p style="font-size: 12px; color: #666; text-align: center;">Al Zahra St, Sharjah, UAE | hello@riman.ae</p>
-        </div>
-      </body>
-      </html>
-    `;
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: customerEmail,
-        subject: `Payment Confirmed — ${orderId.slice(0, 8)} | Atelier Riman`,
-        html: htmlBody,
-      }),
-    });
-  } catch (emailErr) {
-    console.error('Failed to send confirmation email:', emailErr);
-  }
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
