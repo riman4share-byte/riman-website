@@ -31,7 +31,7 @@
 - Consumes: `useLanguage()` from `src/contexts/LanguageContext` (returns `{ language, t }`); `motion/react`.
 - Produces: `<KineticHeading text as className emphasisChars emphasisClassName delay />` and `<RevealWords text as className stagger />` used by Task 2. CSS class names emitted: `.kin-letter`, `.kin-word` (probes rely on them).
 
-- [ ] **Step 1: Write the failing unit tests**
+- [x] **Step 1: Write the failing unit tests**
 
 Create `src/test/kineticMotion.test.tsx`:
 
@@ -80,12 +80,12 @@ describe('RevealWords', () => {
 });
 ```
 
-- [ ] **Step 2: Run, verify FAIL**
+- [x] **Step 2: Run, verify FAIL**
 
 Run: `npx vitest run src/test/kineticMotion.test.tsx`
 Expected: FAIL — cannot resolve `../components/motion/KineticHeading`.
 
-- [ ] **Step 3: Create `src/components/motion/KineticHeading.tsx`**
+- [x] **Step 3: Create `src/components/motion/KineticHeading.tsx`**
 
 ```tsx
 import { useMemo } from 'react';
@@ -159,7 +159,7 @@ export default function KineticHeading({
 }
 ```
 
-- [ ] **Step 4: Create `src/components/motion/RevealWords.tsx`**
+- [x] **Step 4: Create `src/components/motion/RevealWords.tsx`**
 
 ```tsx
 import { useMemo } from 'react';
@@ -214,12 +214,12 @@ export default function RevealWords({ text, as = 'p', className = '', stagger = 
 }
 ```
 
-- [ ] **Step 5: Run tests, verify PASS + lint**
+- [x] **Step 5: Run tests, verify PASS + lint**
 
 Run: `npx vitest run src/test/kineticMotion.test.tsx && npm run lint`
 Expected: 4 passed; tsc clean.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/components/motion src/test/kineticMotion.test.tsx
@@ -243,7 +243,7 @@ git commit -m "feat(motion): KineticHeading + RevealWords — letter/word rise p
 - Consumes: Task 1 components; class hooks `.kin-letter`.
 - Produces: `.link-couture`, `.btn-luxury::before` (probed), fully wired homepage.
 
-- [ ] **Step 1: Write the failing probes**
+- [x] **Step 1: Write the failing probes**
 
 Append to `tests/couture-design.spec.ts`:
 
@@ -302,7 +302,7 @@ test('phase 3: link-couture underlines present on homepage', async ({ page }) =>
 
 Run: `npx playwright test tests/couture-design.spec.ts -g "phase 3" --reporter=line` → 3 FAIL.
 
-- [ ] **Step 2: CSS — sheen + underline in `src/index.css`**
+- [x] **Step 2: CSS — sheen + underline in `src/index.css`**
 
 2a. Extend the existing `.btn-luxury` rule (add `relative overflow-hidden`):
 
@@ -356,7 +356,7 @@ Run: `npx playwright test tests/couture-design.spec.ts -g "phase 3" --reporter=l
   }
 ```
 
-- [ ] **Step 3: Hero H1 → KineticHeading**
+- [x] **Step 3: Hero H1 → KineticHeading**
 
 `src/components/ui-21st/HeroSection.tsx` — add import:
 
@@ -375,7 +375,7 @@ Replace the h1 block (lines 61–68) with:
         />
 ```
 
-- [ ] **Step 4: ChapterLabel h2 → KineticHeading (numeral stays)**
+- [x] **Step 4: ChapterLabel h2 → KineticHeading (numeral stays)**
 
 `src/components/salon/ChapterLabel.tsx` — add `import KineticHeading from '../motion/KineticHeading';` and replace the h2 with:
 
@@ -402,7 +402,7 @@ Update `src/components/salon/ChapterLabel.test.tsx` (letter-spans break `getByTe
   });
 ```
 
-- [ ] **Step 5: CTA h2 → KineticHeading**
+- [x] **Step 5: CTA h2 → KineticHeading**
 
 `src/components/ui-21st/CallToAction21st.tsx` — add `import KineticHeading from '../motion/KineticHeading';` and replace line 13 with:
 
@@ -410,7 +410,7 @@ Update `src/components/salon/ChapterLabel.test.tsx` (letter-spans break `getByTe
           <KineticHeading as="h2" text="Ready to begin?" className="font-heading text-3xl md:text-5xl font-light text-stone-800 mb-4" />
 ```
 
-- [ ] **Step 6: Index — word reveals + discipline underline**
+- [x] **Step 6: Index — word reveals + discipline underline**
 
 `src/pages/Index.tsx` — add imports:
 
@@ -446,7 +446,7 @@ Replace the discipline label span (lines 131–133):
                   </span>
 ```
 
-- [ ] **Step 7: Footer links → link-couture**
+- [x] **Step 7: Footer links → link-couture**
 
 `src/components/ui-21st/FooterSection.tsx` line 32:
 
@@ -461,12 +461,12 @@ Lines 59–60:
           <Link to="/terms" className="link-couture hover:text-gold">Terms</Link>
 ```
 
-- [ ] **Step 8: Run probes + affected suites**
+- [x] **Step 8: Run probes + affected suites**
 
 Run: `npx playwright test tests/couture-design.spec.ts e2e/homepage.spec.ts --reporter=line` → all PASS.
 Run: `npm run lint && npm test -- --run` → clean; all green (199+).
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/index.css src/components/ui-21st/HeroSection.tsx src/components/salon/ChapterLabel.tsx src/components/salon/ChapterLabel.test.tsx src/components/ui-21st/CallToAction21st.tsx src/pages/Index.tsx src/components/ui-21st/FooterSection.tsx tests/couture-design.spec.ts
@@ -479,11 +479,11 @@ git commit -m "feat(motion): couture micro-motion wired — hero/chapter letter-
 
 **Files:** none new.
 
-- [ ] **Step 1:** `npm run lint && npm test -- --run` → tsc clean, all unit PASS.
-- [ ] **Step 2:** `npx playwright test tests/ e2e/ --reporter=line` → FULL suite PASS.
-- [ ] **Step 3:** `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS 757 kB ±2; CSS ≤ 132.0 kB (Phase 2 end-state 131.48 + ≤0.5 budget for this pass is included in the ≤ +1.5 kB total since Phase 1's 130.33 — check absolute); 57 prerendered pages; `dist/index.html` contains full hero text (textContent parity across splits).
-- [ ] **Step 4:** node probe (write, run, delete): 375/768/1024/1440 EN — no overflowX; `reducedMotion:'reduce'` → `.kin-letter` count 0 and sheen `::before` transitionDuration collapses (global 0.01ms rule) on `/`.
-- [ ] **Step 5:** Check this plan's boxes; commit plan.
+- [x] **Step 1:** `npm run lint && npm test -- --run` → tsc clean, all unit PASS.
+- [x] **Step 2:** `npx playwright test tests/ e2e/ --reporter=line` → FULL suite PASS.
+- [x] **Step 3:** `$env:SITE_URL="https://riman.ae"; npm run build` → success; entry JS 757 kB ±2; CSS ≤ 132.0 kB (Phase 2 end-state 131.48 + ≤0.5 budget for this pass is included in the ≤ +1.5 kB total since Phase 1's 130.33 — check absolute); 57 prerendered pages; `dist/index.html` contains full hero text (textContent parity across splits).
+- [x] **Step 4:** node probe (write, run, delete): 375/768/1024/1440 EN — no overflowX; `reducedMotion:'reduce'` → `.kin-letter` count 0 and sheen `::before` transitionDuration collapses (global 0.01ms rule) on `/`.
+- [x] **Step 5:** Check this plan's boxes; commit plan.
 - [ ] **Step 6:** Owner visual sign-off at `http://localhost:3001` (hard refresh) — hover a primary button, scroll the hero + chapters.
 
 ## Self-Review (at write time)
