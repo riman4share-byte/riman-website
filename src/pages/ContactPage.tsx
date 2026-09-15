@@ -95,7 +95,7 @@ export default function ContactPage() {
                 title={t('contact.hours')}
                 content={settings.contact.hours || t('contact.hours_detail')}
               />
-              <div className="bg-stone-50 p-6 border border-stone-100 flex flex-col justify-center">
+              <div className="bg-stone-50 p-6 flex flex-col justify-center">
                 <p className="font-body text-micro text-stone-600 uppercase tracking-widest mb-2 italic">{t('contact.special_note')}</p>
                 <p className="font-body text-xs text-stone-600 leading-relaxed">{t('contact.special_note_desc')}</p>
               </div>
@@ -120,7 +120,7 @@ export default function ContactPage() {
                           {...register('name')}
                           disabled={isSubmitted}
                           className={cn(
-                            "bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-gold outline-none p-4 text-sm transition-all",
+                            "field-couture p-4 text-sm transition-all",
                             errors.name && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )} 
@@ -136,7 +136,7 @@ export default function ContactPage() {
                           type="email" 
                           disabled={isSubmitted}
                           className={cn(
-                            "bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-gold outline-none p-4 text-sm transition-all",
+                            "field-couture p-4 text-sm transition-all",
                             errors.email && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
@@ -153,7 +153,7 @@ export default function ContactPage() {
                         type="tel" 
                         disabled={isSubmitted}
                         className={cn(
-                          "bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-gold outline-none p-4 text-sm transition-all",
+                          "field-couture p-4 text-sm transition-all",
                           errors.phone && "border-red-300",
                           isSubmitted && "opacity-50 cursor-not-allowed"
                         )}
@@ -189,7 +189,7 @@ export default function ContactPage() {
                         rows={4} 
                         disabled={isSubmitted}
                         className={cn(
-                          "bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-gold outline-none p-4 text-sm transition-all resize-none",
+                          "field-couture p-4 text-sm transition-all resize-none",
                           errors.message && "border-red-300",
                           isSubmitted && "opacity-50 cursor-not-allowed"
                         )}
@@ -272,7 +272,7 @@ export default function ContactPage() {
 function ContactInfoItem({ icon, title, content }: { icon: React.ReactNode, title: string, content: React.ReactNode }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-12 h-12 bg-ivory border border-stone-100 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all duration-500 rounded-sm shrink-0">
+      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all duration-500 shrink-0">
         {icon}
       </div>
       <div>

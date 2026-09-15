@@ -44,7 +44,7 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-lg bg-ivory border border-stone-100 max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-lg bg-ivory max-h-[90vh] overflow-y-auto"
             role="dialog"
             aria-modal="true"
           >
@@ -101,7 +101,7 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-gold/5 border border-gold/20">
+              <div className="mt-6 p-4 bg-gold/5">
                 <p className="font-body text-stone-600 text-sm leading-relaxed">
                   <span className="font-bold text-gold">{t('size_guide.alterations_title')}</span> {t('size_guide.alterations_desc')}
                 </p>

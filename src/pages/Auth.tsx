@@ -76,7 +76,7 @@ export default function Auth() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-ivory p-10 md:p-12 border border-stone-100 relative overflow-hidden"
+        className="max-w-md w-full bg-ivory p-10 md:p-12 relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
 
@@ -125,7 +125,7 @@ export default function Auth() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-stone-50 border-stone-100 p-4 text-xs tracking-widest outline-none focus:bg-ivory focus:border-gold transition-all"
+                    className="field-couture p-4 text-xs tracking-widest"
                     placeholder={t('auth.name_placeholder')}
                   />
                 </div>
@@ -140,7 +140,7 @@ export default function Auth() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-stone-50 border-stone-100 p-4 text-xs tracking-widest outline-none focus:bg-ivory focus:border-gold transition-all"
+                  className="field-couture p-4 text-xs tracking-widest"
                   placeholder={t('auth.email_placeholder')}
                 />
               </div>
@@ -155,7 +155,7 @@ export default function Auth() {
                   minLength={6}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-stone-50 border-stone-100 p-4 text-xs tracking-widest outline-none focus:bg-ivory focus:border-gold transition-all"
+                  className="field-couture p-4 text-xs tracking-widest"
                   placeholder={t('auth.password_placeholder')}
                 />
               </div>

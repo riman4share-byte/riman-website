@@ -181,7 +181,7 @@ export default function AppointmentPage() {
 
           <AnimatePresence mode="wait">
             {step === 1 && (
-              <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12 border border-stone-100">
+              <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
                   <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.your_details')}</h2>
                   <div className="w-8 h-px bg-gold mt-3" />
@@ -234,7 +234,7 @@ export default function AppointmentPage() {
             )}
 
             {step === 2 && (
-              <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12 border border-stone-100">
+              <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
                   <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.choose_datetime')}</h2>
                   <div className="w-8 h-px bg-gold mt-3" />
@@ -283,12 +283,12 @@ export default function AppointmentPage() {
             )}
 
             {step === 3 && (
-              <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12 border border-stone-100">
+              <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
                   <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.review_confirm')}</h2>
                   <div className="w-8 h-px bg-gold mt-3" />
                 </div>
-                <div className="bg-ivory p-8 border border-stone-100 mb-8">
+                <div className="bg-ivory p-8 mb-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <p className="text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-1">{t('appointment.name')}</p>

@@ -342,7 +342,7 @@ export default function Checkout() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Main form area */}
           <div className="lg:col-span-7 order-2 lg:order-1">
-            <div className="bg-ivory p-6 md:p-10 border border-stone-100">
+             <div className="bg-ivory p-6 md:p-10">
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div
@@ -487,7 +487,7 @@ export default function Checkout() {
                     <div className="space-y-3">
                       <h3 className="font-heading text-xs tracking-[0.2em] uppercase text-stone-600">{t('checkout.your_selections')}</h3>
                       {items.map((item) => (
-                        <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4 items-center p-3 border border-stone-100">
+                        <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4 items-center p-3 border-b border-stone-200">
                           <div className="w-14 h-18 bg-stone-100 flex-shrink-0 overflow-hidden">
                             <img src={item.images?.[0]} className="w-full h-full object-cover" alt={item.name} />
                           </div>
@@ -527,7 +527,7 @@ export default function Checkout() {
                         value={orderNotes}
                         onChange={(e) => setOrderNotes(e.target.value)}
                         rows={3}
-                        className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest outline-none focus:border-gold transition-all resize-none"
+                        className="field-couture p-4 text-xs tracking-widest resize-none"
                         placeholder={t('checkout.notes_placeholder')}
                       />
                     </div>
@@ -591,7 +591,7 @@ export default function Checkout() {
                       href={`https://wa.me/${WHATSAPP_NUMBER}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 py-3 border border-stone-200 text-micro tracking-[0.2em] uppercase text-stone-600 font-bold hover:border-gold/30 hover:text-gold transition-all"
+                      className="btn-couture-ghost !text-stone-800 w-full justify-center gap-2"
                     >
                       <MessageCircle className="w-3.5 h-3.5" />
                       {t('checkout.whatsapp_support')}
@@ -764,7 +764,7 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
   language: 'en' | 'ar';
 }) {
   return (
-    <div className="bg-onyx text-white p-6 border border-stone-800">
+    <div className="bg-onyx text-white p-6">
       <div className="flex items-center gap-3 mb-6 pb-4 border-b border-stone-800">
         <div className="w-1 h-6 bg-gold" />
         <h3 className="font-heading text-base tracking-[0.2em] uppercase">{t('checkout.bag_summary')}</h3>

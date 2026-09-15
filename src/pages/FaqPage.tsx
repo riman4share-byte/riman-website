@@ -47,7 +47,7 @@ export default function FaqPage() {
               id="faq-search"
               type="text"
               placeholder={t('faq.search_placeholder')}
-              className="w-full bg-ivory border border-stone-100 p-6 ps-14 text-xs tracking-widest outline-none focus:border-gold transition-all"
+               className="field-couture ps-14 text-xs tracking-widest"
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
@@ -68,7 +68,7 @@ export default function FaqPage() {
                   if (searchTerm && !t(faq.qKey).toLowerCase().includes(searchTerm.toLowerCase())) return null;
 
                   return (
-                    <div key={id} className="border border-stone-50 bg-ivory hover:border-gold/20 transition-all">
+                     <div key={id} className="bg-ivory border-b border-stone-200 transition-all">
                       <button 
                         onClick={() => setActiveIdx(isOpen ? null : id)}
                         className="w-full p-6 flex justify-between items-center text-start"

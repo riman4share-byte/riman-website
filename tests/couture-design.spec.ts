@@ -140,3 +140,18 @@ test('phase 2: collections page renders borderless couture cards', async ({ page
   expect(styles.radius).toBe('0px');
   expect(styles.overflow).toBe('hidden');
 });
+
+test('phase 2: contact form controls are hairline .field-couture', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/contact', { waitUntil: 'domcontentloaded' });
+  const field = page.locator('main .field-couture').first();
+  await expect(field).toBeVisible({ timeout: 45000 });
+  const styles = await field.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { top: cs.borderTopWidth, bottom: cs.borderBottomWidth, radius: cs.borderTopLeftRadius, bg: cs.backgroundColor };
+  });
+  expect(styles.top).toBe('0px');
+  expect(styles.bottom).toBe('1px');
+  expect(styles.radius).toBe('0px');
+  expect(styles.bg).toBe('rgba(0, 0, 0, 0)');
+});

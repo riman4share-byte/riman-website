@@ -47,7 +47,7 @@ export default function ProfilePage() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar */}
           <aside className="w-full lg:w-80">
-            <div className="bg-ivory p-8 border border-stone-100 relative overflow-hidden">
+            <div className="bg-ivory p-8 relative overflow-hidden">
                <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-2xl -translate-y-1/2 translate-x-1/2" />
                
                <div className="flex items-center gap-4 mb-10 relative z-10">
@@ -99,19 +99,19 @@ export default function ProfilePage() {
                {ordersLoading ? (
                  <div className="space-y-4">
                    {[1, 2, 3].map(i => (
-                     <div key={i} className="bg-stone-50 p-6 border border-stone-100 animate-pulse">
+                      <div key={i} className="bg-stone-50 p-6 animate-pulse">
                        <div className="h-4 w-40 bg-stone-200 mb-3" />
                        <div className="h-3 w-60 bg-stone-100" />
                      </div>
                    ))}
                  </div>
                ) : !isSupabaseConfigured ? (
-                 <div className="bg-ivory p-12 text-center border border-stone-100">
+                  <div className="bg-ivory p-12 text-center">
                    <Package className="w-10 h-10 text-stone-200 mx-auto mb-4" />
                     <p className="text-micro tracking-widest text-stone-600 uppercase">{t('profile.backend_not_connected')}</p>
                  </div>
                ) : recentOrders.length === 0 ? (
-                 <div className="bg-ivory p-12 text-center border border-stone-100">
+                  <div className="bg-ivory p-12 text-center">
                    <Package className="w-10 h-10 text-stone-200 mx-auto mb-4" />
                     <p className="text-micro tracking-widest text-stone-600 uppercase mb-6">{t('profile.no_orders')}</p>
                     <Link to="/collection/bridal" className="text-micro text-gold uppercase tracking-[0.3em] font-bold underline underline-offset-4">{t('profile.explore_new')}</Link>
@@ -119,7 +119,7 @@ export default function ProfilePage() {
                ) : (
                  <div className="space-y-4">
                    {recentOrders.map(order => (
-                     <div key={order.id} className="bg-ivory p-6 border border-stone-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gold/20 transition-colors">
+                      <div key={order.id} className="bg-ivory p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors">
                        <div>
                          <h4 className="text-micro font-bold text-stone-800 uppercase tracking-widest mb-1">
                             {order.type === 'rental' ? t('profile.rental_booking') : order.type === 'mixed' ? t('profile.combined_order') : t('profile.purchase_order')} — {order.id?.slice(0, 8)}
@@ -171,7 +171,7 @@ function ProfileLink({ icon: Icon, label, active, onClick }: any) {
 
 function StatBox({ label, value }: any) {
   return (
-    <div className="bg-ivory p-8 border border-stone-100">
+    <div className="bg-ivory p-8">
       <p className="text-micro text-stone-600 uppercase tracking-widest mb-2">{label}</p>
       <p className="font-heading text-2xl text-stone-800 tracking-wide">{value}</p>
     </div>

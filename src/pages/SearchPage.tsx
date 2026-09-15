@@ -44,7 +44,7 @@ export default function SearchPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t('search.placeholder')}
-                  className="w-full bg-stone-50 border-stone-100 p-8 ps-16 text-sm tracking-[0.2em] uppercase outline-none focus:bg-ivory focus:border-gold transition-all"
+                  className="field-couture p-8 ps-16 text-sm tracking-[0.2em] uppercase"
                   autoFocus
                 />
                 {query && (
@@ -111,7 +111,7 @@ export default function SearchPage() {
                 animate={{ opacity: 1 }}
                 className="text-center py-20"
               >
-                 <div className="w-20 h-20 bg-stone-50 flex items-center justify-center mx-auto mb-8 border border-stone-100">
+                 <div className="w-20 h-20 bg-stone-50 flex items-center justify-center mx-auto mb-8">
                    <SearchIcon className="w-8 h-8 text-stone-500" />
                  </div>
                   <h3 className="font-heading text-2xl text-stone-800 mb-4 tracking-widest uppercase">{t('search.empty_heading')}</h3>
