@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Archivo:wght@300;400;500&family=Cairo:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Archivo:wght@300;400;500&family=Cairo:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Prata&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-heading: "Fraunces", serif;
+  --font-heading: "Prata", serif;
   --font-editorial: "Newsreader", serif;
   --font-body: "Newsreader", serif;
   --font-label: "Archivo", sans-serif;
@@ -10,18 +10,31 @@
   --font-arabic-heading: "Amiri", serif;
   --font-jewelry: "Fraunces", serif;
 
+  /* Couture warm-neutral remap of Tailwind's stone scale (spec §1) */
+  --color-stone-50: #faf8f3;
+  --color-stone-100: #f4efe7;
+  --color-stone-200: #e6dfd1;
+  --color-stone-300: #d2c8b6;
+  --color-stone-400: #ad9f86;
+  --color-stone-500: #807662;
+  --color-stone-600: #655c49;
+  --color-stone-700: #4b4335;
+  --color-stone-800: #2e2820;
+  --color-stone-900: #1b1712;
+  --color-stone-950: #0f0d0a;
+
   --text-micro: 11px;
   --text-caption: 12px;
 
-  --color-gold: #A2492B;
-  --color-gold-light: #C45A3C;
-  --color-gold-dark: #7A3520;
-  --color-onyx: #161513;
-  --color-bone: #EFEAE2;
+  --color-gold: #b08d57;
+  --color-gold-light: #c9a96f;
+  --color-gold-dark: #8a6a3c;
+  --color-onyx: #0f0d0a;
+  --color-bone: #efeae2;
   --color-ivory: var(--color-bone);
-  --color-champagne: #F6F0E6;
-  --color-pearl: #E8E3D9;
-  --color-jewelry: linear-gradient(45deg, #7A3520 0%, #A2492B 45%, #C45A3C 50%, #A2492B 55%, #7A3520 100%);
+  --color-champagne: #f6f0e6;
+  --color-pearl: #e8e3d9;
+  --color-jewelry: linear-gradient(45deg, #8a6a3c 0%, #b08d57 45%, #c9a96f 50%, #b08d57 55%, #8a6a3c 100%);
 
   --animate-fade-up: fade-up 0.8s ease-out forwards;
   --animate-fade-in: fade-in 1s ease-out forwards;
@@ -54,7 +67,7 @@
     outline-offset: 2px;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading tracking-tight;
+    @apply font-heading;
   }
   [dir="rtl"] {
     @apply font-arabic;
