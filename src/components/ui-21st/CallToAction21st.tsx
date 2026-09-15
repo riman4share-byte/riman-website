@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import KineticHeading from '../motion/KineticHeading';
 
 export default function CallToAction21st() {
   return (
@@ -10,7 +11,7 @@ export default function CallToAction21st() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="font-heading text-3xl md:text-5xl font-light text-stone-800 mb-4">Ready to begin?</h2>
+          <KineticHeading as="h2" text="Ready to begin?" className="font-heading text-3xl md:text-5xl font-light text-stone-800 mb-4" />
           <p className="font-body text-stone-600 max-w-xl mx-auto mb-8">Schedule a private viewing at our Sharjah atelier.</p>
           <Link to="/appointment" className="btn-luxury">Book a Fitting</Link>
         </motion.div>

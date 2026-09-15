@@ -9,12 +9,12 @@ describe('ChapterLabel', () => {
   });
 
   it('renders numeral and translated chapter title', () => {
-    render(
+    const { container } = render(
       <LanguageProvider>
         <ChapterLabel numeral="I" titleKey="chapter.atelier" />
       </LanguageProvider>
     );
     expect(screen.getByText('I')).toBeInTheDocument();
-    expect(screen.getByText("L'Atelier")).toBeInTheDocument();
+    expect(container.textContent).toContain("L'Atelier");
   });
 });

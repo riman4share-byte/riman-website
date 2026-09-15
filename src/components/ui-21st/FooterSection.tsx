@@ -29,7 +29,7 @@ export default function FooterSection21st() {
             ['Gallery', '/gallery'],
             ['Book a Fitting', '/appointment'],
           ].map(([label, to]) => (
-            <Link key={to} to={to} className="text-white/70 hover:text-gold min-h-[44px] inline-flex items-center">
+            <Link key={to} to={to} className="link-couture text-white/70 hover:text-gold min-h-[44px] inline-flex items-center">
               {label}
             </Link>
           ))}
@@ -56,8 +56,8 @@ export default function FooterSection21st() {
       <div className="container mx-auto px-6 mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between gap-3 text-xs text-white/40">
         <span>© 2026 Riman Fashion · Sharjah, UAE</span>
         <span className="flex gap-6">
-          <Link to="/privacy" className="hover:text-gold">Privacy</Link>
-          <Link to="/terms" className="hover:text-gold">Terms</Link>
+          <Link to="/privacy" className="link-couture hover:text-gold">Privacy</Link>
+          <Link to="/terms" className="link-couture hover:text-gold">Terms</Link>
         </span>
       </div>
     </footer>

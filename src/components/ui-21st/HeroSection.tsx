@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import CalligraphicAccent from '../salon/CalligraphicAccent';
+import KineticHeading from '../motion/KineticHeading';
 
 const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
 const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
@@ -58,14 +59,12 @@ export default function HeroSection21st() {
         <p className="font-label text-xs tracking-[0.25em] uppercase text-bone/90 mb-6 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {t('cat.bridal')} · {t('cat.evening')} · {t('cat.rentals')}
         </p>
-        <h1 className="font-heading text-white font-light leading-[1.02] text-[clamp(2.5rem,8vw,7rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]">
-          {t('hero.title').split('&').map((part, i, arr) => (
-            <span key={i}>
-              {part}
-              {i < arr.length - 1 && <em className="font-editorial italic text-gold">&</em>}
-            </span>
-          ))}
-        </h1>
+        <KineticHeading
+          as="h1"
+          text={t('hero.title')}
+          emphasisChars={['&']}
+          className="font-heading text-white font-light leading-[1.02] text-[clamp(2.5rem,8vw,7rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]"
+        />
         <p className="font-body text-base md:text-lg text-white leading-relaxed mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب — تجربة خاصة في الشارقة' : 'Buy · Rent · Bespoke — private fittings in Sharjah'}
         </p>

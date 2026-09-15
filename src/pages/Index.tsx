@@ -3,6 +3,7 @@ import ScrollReveal from '../components/ScrollReveal';
 import { useData } from '../contexts/DataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import ChapterLabel from '../components/salon/ChapterLabel';
+import RevealWords from '../components/motion/RevealWords';
 import InvitationRule from '../components/salon/InvitationRule';
 import EditorialPlate from '../components/salon/EditorialPlate';
 import HeroSection21st from '../components/ui-21st/HeroSection';
@@ -43,9 +44,10 @@ export default function Index() {
                 {t('atelier.heading')}
               </h3>
             </ScrollReveal>
-            <ScrollReveal delay={0.1}>
-              <p className="font-body text-stone-600 leading-loose max-w-2xl">{t('atelier.body')}</p>
-            </ScrollReveal>
+            <RevealWords
+              text={t('atelier.body')}
+              className="font-body text-stone-600 leading-loose max-w-2xl"
+            />
           </div>
         </div>
       </section>
@@ -64,9 +66,10 @@ export default function Index() {
         <div className="absolute inset-0 bg-gradient-to-b from-onyx/70 via-onyx/10 to-onyx/80" aria-hidden="true" />
         <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center gap-10 px-6 py-24 text-center">
           <span className="h-px w-16 bg-gold/50" aria-hidden="true" />
-          <p className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]">
-            {t('atelier.quote')}
-          </p>
+          <RevealWords
+            text={t('atelier.quote')}
+            className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]"
+          />
           <span className="font-label text-[10px] uppercase tracking-[0.45em] text-gold-light">
             {t('chapter.atelier')}
           </span>
@@ -128,7 +131,7 @@ export default function Index() {
                   </div>
                   <h3 className="font-heading text-2xl font-light text-stone-800 mt-5">{t(d.titleKey)}</h3>
                   <p className="font-editorial italic text-stone-600 mt-2">{t(d.descKey)}</p>
-                  <span className="inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-gold border-b border-gold/40 pb-1">
+                  <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-gold">
                     {t('disciplines.discover')}
                   </span>
                 </Link>

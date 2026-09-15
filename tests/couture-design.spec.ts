@@ -181,3 +181,54 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
   expect(probe.boxedInputs).toBe(0);
   expect(probe.plates).toBe(0);
 });
+
+test('phase 3: btn-luxury has champagne sheen pseudo-element', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const btn = page.locator('#hero a.btn-luxury').first();
+  await btn.waitFor({ timeout: 45000 });
+  const styles = await btn.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    const pre = getComputedStyle(el, '::before');
+    return { overflow: cs.overflow, pos: cs.position, preTransition: pre.transitionDuration, preW: parseFloat(pre.width) > 0, preBg: pre.backgroundImage.includes('gradient') };
+  });
+  expect(styles.overflow).toBe('hidden');
+  expect(styles.pos).toBe('relative');
+  expect(styles.preTransition).toContain('0.9s');
+  expect(styles.preW).toBe(true);
+  expect(styles.preBg).toBe(true);
+});
+
+test('phase 3: hero headline letter-splits EN, stays plain AR + reduced-motion', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('#hero h1', { timeout: 45000 });
+  await page.waitForTimeout(1500);
+  const en = await page.evaluate(() => ({
+    letters: document.querySelectorAll('#hero h1 .kin-letter').length,
+    text: document.querySelector('#hero h1')!.textContent,
+  }));
+  expect(en.letters).toBeGreaterThan(10);
+  expect((en.text || '').trim().length).toBeGreaterThan(5);
+
+  const arPage = await page.context().newPage();
+  await arPage.addInitScript(() => localStorage.setItem('riman_lang', 'ar'));
+  await arPage.goto('http://localhost:3001/', { waitUntil: 'domcontentloaded' });
+  await arPage.waitForSelector('#hero h1', { timeout: 45000 });
+  expect(await arPage.locator('#hero h1 .kin-letter').count()).toBe(0);
+
+  const rctx = await page.context().browser()!.newContext({ reducedMotion: 'reduce' });
+  const rpage = await rctx.newPage();
+  await rpage.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await rpage.goto('http://localhost:3001/', { waitUntil: 'domcontentloaded' });
+  await rpage.waitForSelector('#hero h1', { timeout: 45000 });
+  expect(await rpage.locator('#hero h1 .kin-letter').count()).toBe(0);
+  await rctx.close();
+});
+
+test('phase 3: link-couture underlines present on homepage', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('main', { timeout: 45000 });
+  expect(await page.locator('.link-couture').count()).toBeGreaterThanOrEqual(3);
+});

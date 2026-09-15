@@ -1,4 +1,5 @@
 import { useLanguage } from '../../contexts/LanguageContext';
+import KineticHeading from '../motion/KineticHeading';
 
 interface ChapterLabelProps {
   numeral: string;
@@ -16,9 +17,12 @@ export default function ChapterLabel({ numeral, titleKey }: ChapterLabelProps) {
         {numeral}
       </span>
       <span className="h-px w-8 bg-gold/50" aria-hidden="true" />
-      <h2 className="font-heading text-3xl md:text-5xl font-light normal-case text-stone-800">
-        {t(titleKey)}
-      </h2>
+      <KineticHeading
+        as="h2"
+        text={t(titleKey)}
+        delay={0.15}
+        className="font-heading text-3xl md:text-5xl font-light normal-case text-stone-800"
+      />
     </div>
   );
 }
