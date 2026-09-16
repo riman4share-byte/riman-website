@@ -1,5 +1,14 @@
 import { supabase } from './supabase';
 
+// `quote` is stored as { value: string } by the admin save path
+// (DataContext.updateContent) but consumed as a plain string everywhere else.
+function normalizeSiteContentValue(key: string, value: unknown): unknown {
+  if (key === 'quote' && value !== null && typeof value === 'object' && 'value' in value) {
+    return (value as { value: unknown }).value;
+  }
+  return value;
+}
+
 export async function fetchSiteContent(): Promise<Record<string, any>> {
   const { data, error } = await supabase
     .from('site_content')
@@ -8,7 +17,7 @@ export async function fetchSiteContent(): Promise<Record<string, any>> {
   if (error) throw error;
   const result: Record<string, any> = {};
   (data || []).forEach(row => {
-    result[row.key] = row.value;
+    result[row.key] = normalizeSiteContentValue(row.key, row.value);
   });
   return result;
 }
