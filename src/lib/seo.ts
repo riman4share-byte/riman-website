@@ -177,7 +177,7 @@ export function organizationSchema() {
     '@id': `${BASE_URL}/#organization`,
     name: 'Atelier Riman',
     url: BASE_URL,
-    logo: `${BASE_URL}/logo.png`,
+    logo: `${BASE_URL}/riman-logo.png`,
     description: 'Sharjah\'s premier bridal and evening couture house. Bespoke gowns, premium rentals, and fine jewelry.',
     address: {
       '@type': 'PostalAddress',
@@ -206,7 +206,7 @@ export function localBusinessSchema() {
     parentOrganization: { '@id': `${BASE_URL}/#organization` },
     name: 'Atelier Riman - Sharjah Boutique',
     url: BASE_URL,
-    image: `${BASE_URL}/logo.png`,
+    image: `${BASE_URL}/riman-logo.png`,
     description: 'Premier bridal and evening couture atelier in Sharjah, UAE.',
     address: {
       '@type': 'PostalAddress',

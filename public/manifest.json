@@ -9,13 +9,8 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/logo.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/logo.png",
-      "sizes": "512x512",
+      "src": "/riman-logo.png",
+      "sizes": "469x532",
       "type": "image/png"
     }
   ],
