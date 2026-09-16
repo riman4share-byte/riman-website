@@ -68,13 +68,18 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, scale: 1 }}
             className="relative"
           >
-            <img
-              src="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
-              alt="Couture Details"
-              className="w-full aspect-[4/5] object-cover"
-              loading="lazy"
-            />
-            <div className="absolute -bottom-10 -left-10 bg-ivory p-10 hidden md:block border border-stone-100 max-w-xs">
+            <div className="w-full aspect-[4/5] overflow-hidden bg-onyx relative shadow-2xl">
+              <video
+                src="/output-1.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+                poster="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
+              />
+            </div>
+            <div className="absolute -bottom-10 -left-10 bg-ivory p-10 hidden md:block border border-stone-100 max-w-xs shadow-lg">
               <Quote className="text-gold w-8 h-8 mb-4" />
               <p className="font-body text-stone-800 italic text-sm mb-4">
                 "{t('about.quote')}"
