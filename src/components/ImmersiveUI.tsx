@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion, AnimatePresence, useScroll, useSpring, animate } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'motion/react';
 import { useFeature } from '../hooks/useFeature';
 
 function usePrefersReducedMotion(): boolean {
@@ -31,7 +31,6 @@ export default function ImmersiveUI() {
   });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [cursorHovered, setCursorHovered] = useState(false);
-  const [count, setCount] = useState(0);
   const mouseTrackingRef = useRef<number>(0);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -42,17 +41,14 @@ export default function ImmersiveUI() {
 
   useEffect(() => {
     if (!loading) return;
-    const controls = animate(0, 100, {
-      duration: 1.7,
-      ease: 'easeInOut',
-      onUpdate: (v) => setCount(Math.round(v)),
-    });
+    // Video is exactly 8.0 seconds long (from ffprobe duration)
+    // We want the curtain to start lifting right at the end
     const timer = setTimeout(() => {
       sessionStorage.setItem('riman_preloader_shown', '1');
       isFirstVisit.current = false;
       setLoading(false);
-    }, 2100);
-    return () => { controls.stop(); clearTimeout(timer); };
+    }, 8000);
+    return () => { clearTimeout(timer); };
   }, [loading]);
 
   useEffect(() => {
@@ -108,38 +104,39 @@ export default function ImmersiveUI() {
         />
       )}
 
-      {/* Luxury Preloader — couture letter rise + counter + curtain exit */}
+      {/* Luxury Preloader — video intro followed by normal app */}
       <AnimatePresence>
         {loading && (
           <motion.div
             key="preloader"
             data-preloader
-            initial={{ y: 0 }}
-            exit={{ y: '-100%' }}
-            transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[2000] bg-onyx text-ivory flex items-center justify-center"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.8, ease: 'easeInOut' } }}
+            className="fixed inset-0 z-[2000] bg-onyx text-ivory flex items-center justify-center p-4 md:p-12 overflow-hidden"
           >
-            <div className="overflow-hidden px-4">
-              <h1 className="font-heading font-medium text-[19vw] md:text-[11vw] leading-none flex" aria-label="RIMAN">
-                {['R', 'I', 'M', 'A', 'N'].map((letter, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ y: '110%' }}
-                    animate={{ y: 0 }}
-                    transition={{ duration: 0.9, delay: i * 0.07, ease: [0.19, 1, 0.22, 1] }}
-                    className="inline-block"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </h1>
+            {/* Dark curtain that rises at the end */}
+            <motion.div
+              className="absolute inset-0 bg-onyx z-0 pointer-events-none"
+              exit={{ y: '-100%', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } }}
+            />
+            <div className="relative w-[512px] max-w-full aspect-video z-10">
+              <video
+                src="/output-1.mp4"
+                autoPlay
+                muted
+                playsInline
+                className="w-full h-full object-contain"
+                onEnded={() => {
+                  // Fallback in case the timer is out of sync or misses
+                  if (loading) {
+                    sessionStorage.setItem('riman_preloader_shown', '1');
+                    isFirstVisit.current = false;
+                    setLoading(false);
+                  }
+                }}
+              />
             </div>
-            <div className="absolute bottom-8 left-8 text-micro uppercase tracking-[0.35em] text-gold/60">
-              Maison de Couture
-            </div>
-            <div className="absolute bottom-8 right-8 text-sm tabular-nums text-ivory">
-              {String(count).padStart(2, '0')}<span className="text-ivory/40"> / 100</span>
-            </div>
+            {/* Remove the manual skip text — keeping it clean like an ident */}
           </motion.div>
         )}
       </AnimatePresence>

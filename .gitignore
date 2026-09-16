@@ -38,6 +38,7 @@ playwright-report/
 
 # Large media files (use CDN/hosting for these)
 public/**/*.mp4
+!public/output-1.mp4
 public/**/*.webm
 public/**/*.avi
 public/assets/
