@@ -9,12 +9,16 @@ export default function AboutPage() {
   return (
     <div className="pt-24 bg-ivory min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+      <section className="relative h-[70vh] md:h-[80vh] flex items-center justify-center overflow-hidden bg-onyx">
         <div className="absolute inset-0 z-0">
-          <img
-            src="/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg"
-            alt="Atelier Craftsman"
-            className="w-full h-full object-cover brightness-[0.7]"
+          <video
+            src="/output-1.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover brightness-[0.75]"
+            poster="/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg"
           />
           <div className="absolute inset-0 bg-stone-900/40" />
         </div>
@@ -68,17 +72,12 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, scale: 1 }}
             className="relative"
           >
-            <div className="w-full aspect-[4/5] overflow-hidden bg-onyx relative shadow-2xl">
-              <video
-                src="/output-1.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="w-full h-full object-cover"
-                poster="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
-              />
-            </div>
+            <img
+              src="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
+              alt="Couture Details"
+              className="w-full aspect-[4/5] object-cover shadow-2xl"
+              loading="lazy"
+            />
           </motion.div>
         </div>
       </section>
