@@ -1,6 +1,4 @@
-[project]
-ref = "vbuavhnpemnfsuguglqn"
-name = "riman-fashion"
+project_id = "vbuavhnpemnfsuguglqn"
 
 [api]
 enabled = true
@@ -8,19 +6,16 @@ port = 54321
 schemas = ["public", "graphql_public"]
 
 [db]
-migration_dir = "supabase/migrations"
+port = 54322
+shadow_port = 54320
+major_version = 17
 
-[functions]
-enabled = true
+[db.seed]
+enabled = false
 
-[functions.secrets]
-RESEND_API_KEY = ""
-STRIPE_SECRET_KEY = ""
-STRIPE_WEBHOOK_SECRET = ""
-SUPABASE_SERVICE_ROLE_KEY = ""
-APP_URL = "https://riman-website.pages.dev"
+[studio]
+enabled = false
 
 [auth]
-enabled = true
 site_url = "https://riman-website.pages.dev"
 additional_redirect_urls = ["https://riman-website.pages.dev", "http://localhost:3001", "http://127.0.0.1:3001"]
