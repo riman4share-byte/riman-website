@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { isSupabaseConfigured, supabase, supabaseAnonKey, supabaseUrl } from './supabase';
 
 export async function submitContactForm(data: {
   name: string;
@@ -7,20 +7,31 @@ export async function submitContactForm(data: {
   inquiry_type: string;
   message: string;
 }) {
-  const { data: result, error } = await supabase
-    .from('contact_submissions')
-    .insert({
+  if (!isSupabaseConfigured) throw new Error('Contact service unavailable.');
+  // Anon-only, return=minimal: SELECT on contact_submissions is admin-only,
+  // so requesting the row back (`.select()`) turns a permitted insert into
+  // a 42501 RLS violation — same bug class as appointments. The UI needs
+  // no row back.
+  const res = await fetch(`${supabaseUrl.replace(/\/+$/, '')}/rest/v1/contact_submissions`, {
+    method: 'POST',
+    headers: {
+      apikey: supabaseAnonKey,
+      Authorization: `Bearer ${supabaseAnonKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
       name: data.name,
       email: data.email,
       phone: data.phone,
       inquiry_type: data.inquiry_type,
       message: data.message,
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return result;
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error((body && (body.message || body.hint)) || `Contact submit failed (HTTP ${res.status})`);
+  }
 }
 
 export async function fetchContactSubmissions() {

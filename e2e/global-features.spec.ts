@@ -1,44 +1,42 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Riman Fashion — Global Features', () => {
-
   /** ─── LANGUAGE SWITCHER ─── */
   test.describe('Language Switcher', () => {
     test('language toggle button exists in header', async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
       await page.goto('/');
-      const langBtn = page.locator('header').getByLabel('Switch language');
+      const langBtn = page.locator('header').locator('button[aria-label^="Switch to"]');
       await expect(langBtn).toBeVisible();
     });
 
     test('toggling language changes button text', async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
       await page.goto('/');
-      const langBtn = page.locator('header').getByLabel('Switch language');
+      const langBtn = page.locator('header').locator('button[aria-label^="Switch to"]');
+      await expect(langBtn).toBeVisible();
 
-      const initialText = await langBtn.textContent();
-
+      // Clicking flips the label to Arabic, so assert on <html> dir instead.
+      await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
       await langBtn.click();
-      await page.waitForTimeout(500);
-
-      const newText = await langBtn.textContent();
-      // Text should switch between EN/AR
-      expect(newText?.trim()).not.toBe(initialText?.trim());
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
     });
 
     test('language toggle persists on navigation', async ({ page }) => {
+      // NOTE: no addInitScript here — it re-seeds localStorage on every
+      // navigation and would wipe the toggled value under test.
       await page.goto('/');
-      const langBtn = page.locator('header').getByLabel('Switch language');
+      await page.evaluate(() => localStorage.setItem('riman_lang', 'en'));
+      await page.reload();
+      const langBtn = page.locator('header').locator('button[aria-label^="Switch to"]');
+      await expect(langBtn).toBeVisible();
 
       await langBtn.click();
-      await page.waitForTimeout(500);
-      const textAfterToggle = await langBtn.textContent();
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
 
-      // Navigate to another page
+      // Navigate to another page — dir (and language) should persist
       await page.goto('/about');
-      await page.waitForTimeout(500);
-
-      const langBtn2 = page.locator('header').getByLabel('Switch language');
-      const textAfterNav = await langBtn2.textContent();
-      // Language should persist (may reset depending on implementation)
+      await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
     });
   });
 

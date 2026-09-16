@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('Riman Fashion — Authentication', () => {
 
   test.beforeEach(async ({ page }) => {
+    // Suite assumes English copy; the app defaults to Arabic ('ar').
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
     await page.goto('/auth');
   });
 

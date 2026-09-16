@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Riman Fashion — Checkout & Cart', () => {
+  // Suite asserts English empty-cart copy; the app defaults to Arabic ('ar').
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  });
 
   /** ─── EMPTY CART ─── */
   test.describe('Empty Cart', () => {
@@ -49,7 +53,9 @@ test.describe('Riman Fashion — Checkout & Cart', () => {
   test.describe('Price Integrity', () => {
     test('checkout with empty cart does not submit', async ({ page }) => {
       await page.goto('/checkout');
-      // Should show empty cart message, not a checkout form
+      // Wait for the empty state to render before asserting (avoids catching
+      // a transient loading state).
+      await expect(page.getByRole('heading', { name: /empty|bag/i })).toBeVisible({ timeout: 10000 });
       const pageText = await page.locator('body').innerText();
       const isEmpty = /empty|no items|continue shopping/i.test(pageText);
       expect(isEmpty).toBeTruthy();

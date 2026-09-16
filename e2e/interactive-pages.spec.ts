@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Riman Fashion — Interactive Pages (Forms & Features)', () => {
+  // Suite assumes English copy; the app defaults to Arabic ('ar').
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  });
 
   /** ─── CONTACT PAGE ─── */
   test.describe('Contact Page', () => {
@@ -88,14 +92,9 @@ test.describe('Riman Fashion — Interactive Pages (Forms & Features)', () => {
     });
 
     test('appointment form has service type selection', async ({ page }) => {
-      // Look for service selector
-      const serviceBtn = page.locator('button').filter({ hasText: /bridal|consultation|evening|rental|jewelry|alterations/i }).first();
-      const serviceSelect = page.locator('select').first();
-
-      const hasServiceBtns = await serviceBtn.isVisible().catch(() => false);
-      const hasServiceSelect = await serviceSelect.isVisible().catch(() => false);
-
-      expect(hasServiceBtns || hasServiceSelect).toBeTruthy();
+      // Step 1 renders a native service <select> (entry animation starts at
+      // opacity 0, so use auto-waiting expect instead of instant isVisible).
+      await expect(page.locator('select').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('booking flow: select service and fill form', async ({ page }) => {
@@ -160,7 +159,8 @@ test.describe('Riman Fashion — Interactive Pages (Forms & Features)', () => {
   /** ─── STYLE QUIZ ─── */
   test.describe('Style Quiz', () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('/style-quiz');
+      // domcontentloaded: full 'load' can hang on slow third-party assets.
+      await page.goto('/style-quiz', { waitUntil: 'domcontentloaded' });
     });
 
     test('style quiz loads with first question', async ({ page }) => {

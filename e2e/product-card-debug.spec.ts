@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Product Card Click Fix', () => {
+  // Suite assumes English copy ("Quick Add"/"Quick Shop"); app defaults to Arabic.
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+  });
   test('desktop: clicking product image area navigates to detail page', async ({ page }) => {
     await page.goto('/collection/bridal');
     await page.waitForTimeout(2000);

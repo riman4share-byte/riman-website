@@ -31,18 +31,14 @@ test.describe('Booking-first conversion', () => {
   });
 
   test('wishlist request CTA carries all saved gowns', async ({ page }) => {
-    await waitForApp(page);
-    await page.goto('/collection/all');
-    const cards = page.locator('a[href^="/product/"]');
-    await cards.nth(0).click();
-    const heart = page.locator('button[aria-label="Add to wishlist"]').first();
-    await expect(heart).toBeVisible({ timeout: 15000 });
-    await heart.click();
-    await page.goBack();
-    await cards.nth(1).click();
-    const heart2 = page.locator('button[aria-label="Add to wishlist"]').first();
-    await expect(heart2).toBeVisible({ timeout: 15000 });
-    await heart2.click();
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
+    // Cards navigate programmatically (no product anchors) and each card
+    // carries its own "Add to Wishlist" button — save two cards in place.
+    await page.goto('/collection/all', { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('.aspect-\\[3\\/4\\]');
+    await expect(cards.first()).toBeVisible({ timeout: 15000 });
+    await cards.nth(0).locator('button', { hasText: /add to wishlist/i }).click();
+    await cards.nth(1).locator('button', { hasText: /add to wishlist/i }).click();
 
     await page.goto('/wishlist');
     const req = page.getByRole('button', { name: /request private viewing|طلب مشاهدة خاصة/i }).first();

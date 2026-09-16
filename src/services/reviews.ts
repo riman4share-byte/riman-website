@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { isSupabaseConfigured } from './supabase';
+import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from './supabase';
 import { reviewsData } from '../data/reviews';
 
 export interface Review {
@@ -89,26 +89,33 @@ export async function submitReview(review: Omit<Review, 'id' | 'status' | 'creat
   };
 
   if (isSupabaseConfigured) {
+    // Anon-safe insert: the "Public submit pending" policy allows
+    // status='pending' rows, but SELECT is approval-gated, so requesting
+    // the row back (`.select()`) fails RLS and used to silently fall back
+    // to local-only storage — the admin never saw the review. Use
+    // return=minimal; local fallback is now for network errors only.
     try {
-      const base = {
-        product_id: review.productId,
-        name: review.name,
-        rating: review.rating,
-        comment: review.comment,
-      };
-      let result = await supabase
-        .from('reviews')
-        .insert({ ...base, photo_url: review.photoUrl || null, status: 'pending' })
-        .select()
-        .single();
-      if (result.error) {
-        // Legacy schema without status/photo_url columns
-        result = await supabase.from('reviews').insert(base).select().single();
-      }
-      if (result.error) throw result.error;
-      return mapDbReview(result.data);
+      const res = await fetch(`${supabaseUrl.replace(/\/+$/, '')}/rest/v1/reviews`, {
+        method: 'POST',
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({
+          product_id: review.productId,
+          name: review.name,
+          rating: review.rating,
+          comment: review.comment,
+          photo_url: review.photoUrl || null,
+          status: 'pending',
+        }),
+      });
+      if (!res.ok) throw new Error(`Review submit failed (HTTP ${res.status})`);
+      return { ...local, status: 'pending' as const };
     } catch {
-      // Fall through to local storage
+      // Fall through to local storage (offline / unreachable backend)
     }
   }
 

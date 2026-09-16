@@ -16,6 +16,8 @@ async function waitForApp(page) {
 
 /** Navigate to the homepage and confirm it loaded. */
 async function goHome(page) {
+  // Suite assumes English copy; the app defaults to Arabic ('ar').
+  await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await waitForApp(page);
 }
@@ -110,10 +112,11 @@ test('Language toggle switches language', async ({ page }) => {
   await goHome(page);
   const langBtn = page.locator('button[aria-label^="Switch to"]');
   await expect(langBtn).toBeVisible({ timeout: 5000 });
-  const labelBefore = await langBtn.getAttribute('aria-label');
+  // Clicking flips the label to the other language, so assert on <html> dir instead.
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
   await langBtn.click();
-  // aria-label flips between "Switch to Arabic" / "Switch to English" after the click
-  await expect(page.locator('button[aria-label^="Switch to"]')).not.toHaveAttribute('aria-label', labelBefore, { timeout: 5000 });
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl', { timeout: 5000 });
+  await expect(page.locator('button[aria-label^="التبديل"]')).toBeVisible({ timeout: 5000 });
 });
 
 // ---------------------------------------------------------------------------

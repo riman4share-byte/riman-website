@@ -29,6 +29,29 @@ export async function fetchRentalBookings(): Promise<RentalBooking[]> {
 }
 
 export async function fetchBookedDates(productId: string): Promise<string[]> {
+  // Public RPC first: direct SELECT on rental_bookings is owner/admin-only,
+  // so anon gets [] and the calendar would show everything as available.
+  // The RPC exposes only booked date ranges (no customer PII).
+  try {
+    const { data, error } = await supabase.rpc('product_booked_dates', {
+      p_product_id: productId,
+    });
+    if (!error && data) {
+      const dates: string[] = [];
+      (data as { start_date: string; end_date: string }[]).forEach((booking) => {
+        const start = new Date(booking.start_date);
+        const end = new Date(booking.end_date);
+        const current = new Date(start);
+        while (current <= end) {
+          dates.push(current.toISOString().split('T')[0]);
+          current.setDate(current.getDate() + 1);
+        }
+      });
+      return dates;
+    }
+  } catch {
+    // Fall through to direct select (works for admins / owners)
+  }
   const { data, error } = await supabase
     .from('rental_bookings')
     .select('start_date, end_date')

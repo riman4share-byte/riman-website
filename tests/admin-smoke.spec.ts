@@ -40,7 +40,8 @@ test('public home loads with a title and no hard errors', async ({ page }) => {
   const errors = captureErrors(page);
   await page.goto('/');
   await expect(page).toHaveTitle(/Atelier Riman/);
-  await page.waitForLoadState('networkidle');
+  // NOTE: no networkidle — Vite HMR websocket keeps connections open in dev.
+  await page.waitForTimeout(2000);
   expect(errors.filter((e) => !isTransient(e))).toEqual([]);
 });
 
