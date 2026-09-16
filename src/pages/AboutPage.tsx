@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Quote, Sparkles, Heart, Anchor } from 'lucide-react';
+import { Sparkles, Heart, Anchor } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import ScrollReveal from '../components/ScrollReveal';
 
@@ -78,13 +78,6 @@ export default function AboutPage() {
                 className="w-full h-full object-cover"
                 poster="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
               />
-            </div>
-            <div className="absolute -bottom-10 -left-10 bg-ivory p-10 hidden md:block border border-stone-100 max-w-xs shadow-lg">
-              <Quote className="text-gold w-8 h-8 mb-4" />
-              <p className="font-body text-stone-800 italic text-sm mb-4">
-                "{t('about.quote')}"
-              </p>
-              <span className="text-micro uppercase tracking-widest text-stone-600">{t('about.quote_author')}</span>
             </div>
           </motion.div>
         </div>
