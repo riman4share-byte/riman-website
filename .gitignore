@@ -7,7 +7,7 @@ dist/
 # Environment
 .env
 .env.local
-.env.production
+# .env.production is intentionally COMMITTED (public build values only — see header inside)
 
 # IDE
 .vscode/
