@@ -19,3 +19,17 @@ enabled = false
 [auth]
 site_url = "https://riman-website.pages.dev"
 additional_redirect_urls = ["https://riman-website.pages.dev", "http://localhost:3001", "http://127.0.0.1:3001"]
+
+# Guest-facing / machine-facing functions: gateway must not demand a user JWT.
+# (send-notification deliberately KEEPS verify_jwt — it is auth-gated.)
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.create-order]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.process-outbox]
+verify_jwt = false
