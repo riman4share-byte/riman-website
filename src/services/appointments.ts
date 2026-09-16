@@ -39,19 +39,23 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 's
     payload.interested_gowns = appointment.interested_gowns;
   }
 
+  // NOTE: no `?select=*` / `return=representation` here on purpose. Postgres
+  // applies SELECT RLS to INSERT...RETURNING, and anon has no SELECT grant
+  // (admin-only, to protect customer PII) — requesting the row back turns a
+  // permitted insert into a 42501 RLS violation. The form needs no row back.
   try {
-    const res = await fetch(`${supabaseUrl.replace(/\/+$/, '')}/rest/v1/appointments?select=*`, {
+    const res = await fetch(`${supabaseUrl.replace(/\/+$/, '')}/rest/v1/appointments`, {
       method: 'POST',
       headers: {
         apikey: supabaseAnonKey,
         Authorization: `Bearer ${supabaseAnonKey}`,
         'Content-Type': 'application/json',
-        Prefer: 'return=representation',
+        Prefer: 'return=minimal',
       },
       body: JSON.stringify(payload),
     });
-    const body = await res.json().catch(() => null);
     if (!res.ok) {
+      const body = await res.json().catch(() => null);
       const msg = (body && (body.message || body.hint)) || `Booking failed (HTTP ${res.status})`;
       const err = new Error(msg) as Error & { code?: string; status?: number; details?: unknown };
       err.code = body?.code;
@@ -59,7 +63,7 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 's
       err.details = body;
       throw err;
     }
-    return (Array.isArray(body) ? body[0] : body) as Appointment;
+    return { ...appointment, status: 'pending' } as Appointment;
   } catch (err: any) {
     // Production: never fake success. Surface failure so UI shows
     // retry + WhatsApp fallback instead of a false confirmation.
