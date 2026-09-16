@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from './supabase';
+import { supabase, isSupabaseConfigured, supabaseUrl, supabaseAnonKey } from './supabase';
 import { Appointment } from '../types';
 
 const LOCAL_APPOINTMENTS_KEY = 'riman_appointments';
@@ -21,25 +21,45 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 's
     throw new Error('Booking service unavailable. Please try again or contact us on WhatsApp.');
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('appointments')
-      .insert({
-        name: appointment.name,
-        email: appointment.email,
-        phone: appointment.phone,
-        date: appointment.date,
-        time: appointment.time,
-        service_type: appointment.service_type,
-        notes: appointment.notes,
-        interested_gowns: appointment.interested_gowns ?? null,
-        status: 'pending',
-      })
-      .select()
-      .single();
+  // Public booking must succeed even when the browser holds a stale/expired
+  // user session (invalid refresh token). supabase-js would attach that bad
+  // JWT as Authorization and PostgREST answers 401. So POST with the pure
+  // anon key — no user token — which matches the "Anyone can create" policy.
+  const payload: Record<string, unknown> = {
+    name: appointment.name,
+    email: appointment.email,
+    phone: appointment.phone,
+    date: appointment.date,
+    time: appointment.time,
+    service_type: appointment.service_type,
+    notes: appointment.notes,
+    status: 'pending',
+  };
+  if (appointment.interested_gowns && appointment.interested_gowns.length) {
+    payload.interested_gowns = appointment.interested_gowns;
+  }
 
-    if (error) throw error;
-    return data as Appointment;
+  try {
+    const res = await fetch(`${supabaseUrl.replace(/\/+$/, '')}/rest/v1/appointments?select=*`, {
+      method: 'POST',
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(payload),
+    });
+    const body = await res.json().catch(() => null);
+    if (!res.ok) {
+      const msg = (body && (body.message || body.hint)) || `Booking failed (HTTP ${res.status})`;
+      const err = new Error(msg) as Error & { code?: string; status?: number; details?: unknown };
+      err.code = body?.code;
+      err.status = res.status;
+      err.details = body;
+      throw err;
+    }
+    return (Array.isArray(body) ? body[0] : body) as Appointment;
   } catch (err: any) {
     // Production: never fake success. Surface failure so UI shows
     // retry + WhatsApp fallback instead of a false confirmation.

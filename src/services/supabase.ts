@@ -41,6 +41,26 @@ export const supabase: SupabaseClient = isConfigured
 
 export const isSupabaseConfigured = isConfigured;
 
+// Self-heal stale sessions: an expired/invalid refresh token otherwise poisons
+// every REST call with a bad Bearer JWT -> PostgREST 401 (e.g. booking form).
+// Clear it once so the client falls back to the pure anon key.
+if (isConfigured && typeof window !== 'undefined') {
+  const clearStaleSession = () => {
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) localStorage.removeItem(k);
+      }
+    } catch { /* storage unavailable */ }
+  };
+  supabase.auth.getSession().then(({ error }) => {
+    if (error && /refresh.*token|invalid.*token/i.test(error.message)) {
+      clearStaleSession();
+      supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+    }
+  }).catch(() => undefined);
+}
+
 if (isConfigured) {
   const maskedUrl = supabaseUrl.replace(/(https?:\/\/).{5}/, '$1*****');
   console.info(`%c[Riman] Connecting to Supabase: ${maskedUrl}`, 'color: #A2492B; font-weight: bold;');

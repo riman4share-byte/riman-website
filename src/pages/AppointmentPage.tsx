@@ -95,8 +95,13 @@ export default function AppointmentPage() {
       sendAppointmentConfirmationEmail({ name: form.name, email: form.email, date: form.date, time: form.time, gowns: gownList }).catch(err => console.error('Confirmation email failed:', err));
       sendAppointmentAdminAlert({ name: form.name, email: form.email, phone: form.phone, date: form.date, time: form.time, gowns: gownList }).catch(err => console.error('Admin alert failed:', err));
       setIsSubmitted(true);
-    } catch (err) {
-      console.error('[Riman] Appointment booking failed:', err);
+    } catch (err: any) {
+      console.error('[Riman] Appointment booking failed:', {
+        message: err?.message,
+        code: err?.code,
+        status: err?.status,
+        details: err?.details ?? err,
+      });
       setError(t('appointment.something_wrong'));
     } finally {
       setIsSubmitting(false);
