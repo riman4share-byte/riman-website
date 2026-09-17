@@ -68,9 +68,9 @@ export default function Header() {
         "top-0 left-0 w-full z-[100] transition-all duration-500 ease-[0.16,1,0.3,1]",
         isHome ? "fixed" : "absolute",
         scrolledHome
-          ? "bg-onyx/90 backdrop-blur-xl py-3 border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
+          ? "bg-onyx/95 py-3 border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
           : !isHome
-            ? "bg-ivory/[0.97] backdrop-blur-xl py-3 border-b border-stone-200/70"
+            ? "bg-ivory py-3 border-b border-stone-200/70"
             : "bg-gradient-to-b from-black/60 via-black/25 to-transparent py-5 md:py-8"
       )}
     >

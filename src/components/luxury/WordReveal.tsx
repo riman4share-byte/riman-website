@@ -1,19 +1,10 @@
-import { useRef } from 'react';
-import { motion, useScroll, useTransform, MotionValue } from 'motion/react';
+import { useRef, useMemo } from 'react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface WordRevealProps {
   text: string;
   className?: string;
-}
-
-function Word({ children, progress, range }: { children: string; progress: MotionValue<number>; range: [number, number] }) {
-  const opacity = useTransform(progress, range, [0.15, 1]);
-  return (
-    <motion.span data-word style={{ opacity }} className="inline-block">
-      {children}
-    </motion.span>
-  );
 }
 
 export default function WordReveal({ text, className }: WordRevealProps) {
@@ -40,21 +31,27 @@ export default function WordReveal({ text, className }: WordRevealProps) {
     );
   }
 
-  const words = text.split(/\s+/).filter(Boolean);
+  const words = useMemo(() => text.split(/\s+/).filter(Boolean), [text]);
 
   return (
     <p ref={ref} className={className}>
       {words.map((word, i) => (
-        <span key={i}>
-          <Word
-            progress={scrollYProgress}
-            range={[i / words.length, Math.min(1, (i + 1) / words.length + 0.05)]}
-          >
-            {word}
-          </Word>
-          {i < words.length - 1 ? ' ' : null}
-        </span>
+        <Word key={i} progress={scrollYProgress} index={i} total={words.length}>
+          {word}
+        </Word>
       ))}
     </p>
+  );
+}
+
+function Word({ children, progress, index, total }: { children: string; progress: any; index: number; total: number }) {
+  // Each word gets its own useTransform, but we batch the output ranges
+  const start = index / total;
+  const end = Math.min(1, (index + 1) / total + 0.05);
+  const opacity = useTransform(progress, [start, end], [0.15, 1]);
+  return (
+    <motion.span data-word style={{ opacity }} className="inline-block">
+      {children}
+    </motion.span>
   );
 }

@@ -341,8 +341,10 @@
   }
   .film-grain::after {
     content: "";
-    @apply fixed inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay z-[9999];
+    @apply fixed inset-0 pointer-events-none opacity-[0.03];
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    z-index: 50;
+    will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -394,6 +396,13 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
+  .instagram-marquee { animation: none; }
+}
+
+/* Instagram marquee — CSS-only for GPU efficiency */
+.instagram-marquee {
+  animation: marquee 40s linear infinite;
+  will-change: transform;
 }
 
 /* Arabic display type takes over headings under RTL */
@@ -418,5 +427,20 @@
 @media (scripting: enabled) {
   .prerender-shell {
     display: none;
+  }
+}
+
+/* ── Performance hints ── */
+/* GPU-accelerate all motion transforms */
+[data-projection-id] {
+  will-change: transform;
+}
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

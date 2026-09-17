@@ -31,6 +31,7 @@ export default function ImmersiveUI() {
   });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [cursorMode, setCursorMode] = useState<'default' | 'action' | 'heading'>('default');
+  const prevCursorMode = useRef<'default' | 'action' | 'heading'>('default');
   const [count, setCount] = useState(0);
   const mouseTrackingRef = useRef<number>(0);
   const { scrollYProgress } = useScroll();
@@ -77,12 +78,15 @@ export default function ImmersiveUI() {
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      let next: 'default' | 'action' | 'heading' = 'default';
       if (target.closest('h1, h2, h3, .font-heading, [data-heading]')) {
-        setCursorMode('heading');
+        next = 'heading';
       } else if (target.closest('a, button, [data-hover], input, select, textarea')) {
-        setCursorMode('action');
-      } else {
-        setCursorMode('default');
+        next = 'action';
+      }
+      if (next !== prevCursorMode.current) {
+        prevCursorMode.current = next;
+        setCursorMode(next);
       }
     };
     window.addEventListener('mouseover', handleMouseOver, { passive: true });

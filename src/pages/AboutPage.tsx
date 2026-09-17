@@ -27,6 +27,7 @@ export default function AboutPage() {
           <motion.span 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
             className="text-micro text-white/70 uppercase tracking-[0.5em] mb-6 block"
           >
             {t('about.hero_subtitle')}
@@ -34,6 +35,7 @@ export default function AboutPage() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.2 }}
             className="font-heading text-6xl md:text-8xl text-white tracking-tighter mb-8"
           >
@@ -49,6 +51,7 @@ export default function AboutPage() {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
             className="space-y-10"
           >
             <h2 className="font-heading text-4xl text-stone-800 leading-tight">
@@ -70,6 +73,7 @@ export default function AboutPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             className="relative"
           >
             <img

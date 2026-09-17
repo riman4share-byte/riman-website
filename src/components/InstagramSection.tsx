@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import { Instagram } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -39,11 +38,8 @@ export default function InstagramSection() {
       </div>
 
       <div className="flex gap-4 md:gap-8 overflow-hidden">
-        <motion.div 
-          initial={{ x: 0 }}
-          animate={{ x: "-50%" }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="flex gap-4 md:gap-8 flex-nowrap"
+        <div 
+          className="flex gap-4 md:gap-8 flex-nowrap instagram-marquee"
         >
           {[...instaPosts, ...instaPosts].map((post, idx) => (
             <a 
@@ -65,7 +61,7 @@ export default function InstagramSection() {
               </div>
             </a>
           ))}
-        </motion.div>
+        </div>
       </div>
 
       <div className="mt-16 text-center">
