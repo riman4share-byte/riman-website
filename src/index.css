@@ -255,12 +255,14 @@
     @apply font-editorial font-normal italic tracking-normal text-gold-dark;
   }
 
-  /* Heading hover: specular shimmer + glow */
+  /* Heading hover: specular shimmer + glow — all h1/h2/h3 with font-heading */
   @media (hover: hover) and (pointer: fine) {
+    h1.font-heading, h2.font-heading, h3.font-heading,
     [data-heading] {
       transition: text-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1),
                   letter-spacing 500ms cubic-bezier(0.22, 1, 0.36, 1);
     }
+    h1.font-heading:hover, h2.font-heading:hover, h3.font-heading:hover,
     [data-heading]:hover {
       text-shadow: 0 0 40px rgba(212,175,55,0.25), 0 2px 20px rgba(212,175,55,0.15);
       letter-spacing: 0.02em;
