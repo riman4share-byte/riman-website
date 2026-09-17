@@ -30,7 +30,7 @@ export default function ImmersiveUI() {
     return false;
   });
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [cursorHovered, setCursorHovered] = useState(false);
+  const [cursorMode, setCursorMode] = useState<'default' | 'action' | 'heading'>('default');
   const [count, setCount] = useState(0);
   const mouseTrackingRef = useRef<number>(0);
   const { scrollYProgress } = useScroll();
@@ -77,7 +77,13 @@ export default function ImmersiveUI() {
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      setCursorHovered(!!target.closest('a, button, [data-hover]'));
+      if (target.closest('h1, h2, h3, .font-heading, [data-heading]')) {
+        setCursorMode('heading');
+      } else if (target.closest('a, button, [data-hover], input, select, textarea')) {
+        setCursorMode('action');
+      } else {
+        setCursorMode('default');
+      }
     };
     window.addEventListener('mouseover', handleMouseOver, { passive: true });
 
@@ -152,7 +158,8 @@ export default function ImmersiveUI() {
             animate={{
               x: mousePos.x - 16,
               y: mousePos.y - 16,
-              scale: cursorHovered ? 1.8 : 1,
+              scale: cursorMode === 'action' ? 2 : cursorMode === 'heading' ? 1.6 : 1,
+              borderColor: cursorMode === 'heading' ? 'rgba(212,175,55,0.9)' : 'rgba(212,175,55,0.6)',
             }}
             transition={{ type: 'spring', damping: 20, stiffness: 150, mass: 0.5 }}
           />
@@ -161,6 +168,7 @@ export default function ImmersiveUI() {
             animate={{
               x: mousePos.x - 3,
               y: mousePos.y - 3,
+              scale: cursorMode === 'heading' ? 1.8 : 1,
             }}
             transition={{ type: 'spring', damping: 30, stiffness: 250, mass: 0.1 }}
           />

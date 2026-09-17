@@ -38,27 +38,45 @@ export default function KineticHeading({
 
   if (reduced || language === 'ar' || chars.length > 90) {
     const Tag = HTML_TAGS[as];
-    return <Tag className={className}>{text}</Tag>;
+    return (
+      <Tag
+        className={`${className} transition-all duration-500 hover:[text-shadow:0_0_28px_rgba(212,175,55,0.35)] cursor-default`}
+        data-heading
+      >
+        {text}
+      </Tag>
+    );
   }
 
   const MotionTag = MOTION_TAGS[as];
   return (
     <MotionTag
-      className={className}
+      className={`${className} cursor-default`}
       custom={delay}
       variants={container}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.35 }}
+      data-heading
     >
       {chars.map((char, i) => (
         <motion.span
           key={`${char}-${i}`}
           variants={letter}
+          whileHover={
+            char.trim() !== ''
+              ? {
+                  y: -3,
+                  scale: 1.06,
+                  color: '#D4AF37',
+                  transition: { type: 'spring', stiffness: 500, damping: 20 },
+                }
+              : undefined
+          }
           className={
             emphasisChars.includes(char)
-              ? `${emphasisClassName} inline-block whitespace-pre`
-              : 'kin-letter inline-block whitespace-pre'
+              ? `${emphasisClassName} inline-block whitespace-pre select-none transition-colors duration-300`
+              : 'kin-letter inline-block whitespace-pre select-none transition-colors duration-300'
           }
         >
           {char}

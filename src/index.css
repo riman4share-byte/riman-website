@@ -255,6 +255,18 @@
     @apply font-editorial font-normal italic tracking-normal text-gold-dark;
   }
 
+  /* Heading hover: specular shimmer + glow */
+  @media (hover: hover) and (pointer: fine) {
+    [data-heading] {
+      transition: text-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1),
+                  letter-spacing 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    [data-heading]:hover {
+      text-shadow: 0 0 40px rgba(212,175,55,0.25), 0 2px 20px rgba(212,175,55,0.15);
+      letter-spacing: 0.02em;
+    }
+  }
+
   .section-padding {
     @apply py-20 md:py-32 px-6 md:px-12 lg:px-20;
   }
