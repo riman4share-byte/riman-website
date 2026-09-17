@@ -21,7 +21,7 @@ const DISCIPLINES = [
 ];
 
 export default function Index() {
-  const { products } = useData();
+  const { products, content } = useData();
   const { t } = useLanguage();
 
   const featured = products.filter((p) => p.isFeatured).slice(0, 4);
@@ -56,7 +56,7 @@ export default function Index() {
       <section className="couture-interstitial relative isolate overflow-hidden bg-onyx">
         <div className="ken-burns absolute inset-0">
           <img
-            src="/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg"
+            src={content.quoteImage}
             alt=""
             aria-hidden="true"
             loading="lazy"

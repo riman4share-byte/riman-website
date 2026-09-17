@@ -17,6 +17,7 @@ interface SiteContent {
     description: string;
   };
   quote: string;
+  quoteImage: string;
 }
 
 interface DataContextType {
@@ -44,6 +45,7 @@ const defaultContent: SiteContent = {
     description: "Founded in the vibrant cultural landscape of Sharjah, Riman Fashion was born from a passion for preserving traditional artistry while embracing contemporary design. Our atelier is the zenith of luxury, where every thread is woven with royal intent.",
   },
   quote: "In the heart of Sharjah, we weave dreams into silk. Every thread is a testament to the heritage we preserve and the majestic future we envision.",
+  quoteImage: "/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg",
 };
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -117,6 +119,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
           hero: remote.hero || prev.hero,
           about: remote.about || prev.about,
           quote: remote.quote || prev.quote,
+          quoteImage: remote.quoteImage || prev.quoteImage,
         }));
       }
     } catch {
@@ -149,6 +152,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         if (updates.hero) await updateSiteContentKey('hero', updates.hero);
         if (updates.about) await updateSiteContentKey('about', updates.about);
         if (updates.quote !== undefined) await updateSiteContentKey('quote', { value: updates.quote });
+        if (updates.quoteImage !== undefined) await updateSiteContentKey('quoteImage', updates.quoteImage);
       } catch (err) {
         console.error('[Riman] Failed to save content to Supabase:', err);
         addToast({ type: 'error', title: 'Could not save content', message: 'Changes kept locally only.' });

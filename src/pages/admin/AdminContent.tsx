@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Layout, Type, Save, CheckCircle2, RefreshCw, ChevronRight } from 'lucide-react';
+import { Layout, Type, Save, CheckCircle2, RefreshCw, ChevronRight, Upload, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 import { useData } from '../../contexts/DataContext';
+import { supabase, isSupabaseConfigured } from '../../services/supabase';
 
 export default function AdminContent() {
   const { content, updateContent } = useData();
@@ -10,7 +11,57 @@ export default function AdminContent() {
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [quoteImage, setQuoteImage] = useState(content.quoteImage);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Only image files are allowed.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError('Image must be under 10MB.');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `cms/quote-image-${Date.now()}.${ext}`;
+        const { error } = await supabase.storage
+          .from('gallery')
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (error) throw error;
+        const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(path);
+        setQuoteImage(urlData?.publicUrl || '');
+      } else {
+        // No backend: downscale to a DataURL so it still previews locally
+        const bitmap = await createImageBitmap(file).catch(() => null);
+        if (!bitmap) throw new Error('Failed to process image');
+        const maxDim = 1600;
+        const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Failed to process image');
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+        setQuoteImage(canvas.toDataURL('image/jpeg', 0.85));
+      }
+    } catch (err: any) {
+      setUploadError(err.message || 'Upload failed. You can still paste a URL below.');
+    } finally {
+      setIsUploading(false);
+      e.target.value = '';
+    }
+  };
 
   const handleSave = async () => {
     if (!formRef.current) return;
@@ -28,6 +79,7 @@ export default function AdminContent() {
         bgImage: formData.get('heroBg'),
       };
       updates.quote = formData.get('quote');
+      updates.quoteImage = quoteImage;
     } else if (activeView === 'about') {
       updates.about = {
         title: formData.get('aboutTitle'),
@@ -125,6 +177,15 @@ export default function AdminContent() {
                    label="Atelier Quote" 
                    name="quote"
                    defaultValue={content.quote} 
+                />
+                <ImageUploader
+                  label="Atelier Backdrop (the dark interstitial behind the quote)"
+                  value={quoteImage}
+                  isUploading={isUploading}
+                  uploadError={uploadError}
+                  onUpload={handleImageUpload}
+                  onClear={() => { setQuoteImage(''); setUploadError(null); }}
+                  onUrlChange={setQuoteImage}
                 />
               </section>
             </div>
@@ -224,6 +285,92 @@ function CMSTextarea({ label, name, defaultValue }: CMSTextareaProps) {
         rows={6}
         className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest leading-relaxed outline-none focus:border-gold transition-colors font-medium text-stone-800 resize-none shadow-inner"
       />
+    </div>
+  );
+}
+
+interface ImageUploaderProps {
+  label: string;
+  value: string;
+  isUploading: boolean;
+  uploadError: string | null;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onClear: () => void;
+  onUrlChange: (url: string) => void;
+}
+
+function ImageUploader({ label, value, isUploading, uploadError, onUpload, onClear, onUrlChange }: ImageUploaderProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="space-y-3">
+      <label className="text-micro font-black text-stone-600 uppercase tracking-widest">{label}</label>
+
+      {value ? (
+        <div className="relative w-full max-w-sm">
+          <img
+            src={value}
+            alt="Backdrop preview"
+            className="w-full h-44 object-cover border border-stone-200 bg-stone-100"
+            onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.2'; }}
+          />
+          <button
+            type="button"
+            onClick={onClear}
+            className="absolute top-2 right-2 w-7 h-7 bg-stone-900/80 text-white flex items-center justify-center hover:bg-rose-600 transition-colors"
+            aria-label="Remove image"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ) : (
+        <div className="w-full max-w-sm h-44 border border-dashed border-stone-300 bg-stone-50 flex items-center justify-center">
+          <span className="text-micro text-stone-400 uppercase tracking-widest">No image selected</span>
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 flex-wrap">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          onChange={onUpload}
+          className="sr-only"
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={isUploading}
+          className="inline-flex items-center gap-2 bg-stone-900 text-white px-5 py-3 text-micro uppercase tracking-widest font-bold hover:bg-stone-700 disabled:opacity-50 transition-colors"
+        >
+          {isUploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+          {isUploading ? 'Uploading...' : 'Upload Image'}
+        </button>
+        {value && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="text-micro uppercase tracking-widest text-stone-500 hover:text-rose-600 transition-colors"
+          >
+            Reset to default
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <span className="text-micro text-stone-400 uppercase tracking-widest shrink-0">or URL</span>
+        <input
+          type="text"
+          value={value.startsWith('data:') ? '' : value}
+          onChange={(e) => onUrlChange(e.target.value)}
+          placeholder="https://..."
+          className="flex-1 bg-stone-50 border border-stone-100 p-3 text-xs tracking-widest outline-none focus:border-gold transition-colors font-medium text-stone-800"
+        />
+      </div>
+
+      {uploadError && (
+        <p className="text-xs text-rose-600">{uploadError}</p>
+      )}
     </div>
   );
 }
