@@ -74,7 +74,7 @@ export default function HeroSection21st() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
           <Link
             to="/appointment"
-            className="btn-luxury min-h-[52px]"
+            className="btn-couture-ghost"
             aria-label={t('cta.viewing')}
           >
             {t('cta.viewing')}
