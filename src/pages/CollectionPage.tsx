@@ -149,7 +149,7 @@ export default function CollectionPage() {
                       className="absolute right-0 top-full pt-2 z-50"
                       onMouseDown={(e) => e.preventDefault()}
                     >
-                      <div className="bg-ivory border border-stone-100 p-2 w-56 flex flex-col gap-1 backdrop-blur-md shadow-lg shadow-stone-200/50">
+                      <div className="bg-ivory border border-stone-200 p-2 w-56 flex flex-col gap-1">
                         {[['featured', t('collection.sort_featured')], ['newest', t('collection.sort_newest')], ['price-low', t('collection.sort_price_low')], ['price-high', t('collection.sort_price_high')]].map(([option, label]) => (
                           <button
                             key={option}

@@ -138,6 +138,14 @@
     }
   }
 
+  /* Editorial flat: zero radius everywhere, hairline borders */
+  *, *::before, *::after {
+    border-radius: 0 !important;
+  }
+  img, video, model-viewer {
+    border-radius: 0 !important;
+  }
+
   /* Couture hairline fields: bottom rule only, gold focus. Utility-classed
      inputs (explicit border/bg classes) intentionally override this. */
   input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):not([class*="border"]),
@@ -171,7 +179,7 @@
 @import "./print.css";
 
   .btn-luxury {
-    @apply relative overflow-hidden inline-flex items-center justify-center px-10 py-4 font-label text-xs tracking-[0.25em] uppercase transition-colors duration-500 bg-onyx text-bone hover:bg-stone-900 hover:text-gold-light border-0;
+    @apply relative overflow-hidden inline-flex items-center justify-center px-10 py-4 font-label text-xs tracking-[0.25em] uppercase transition-colors duration-500 bg-transparent text-stone-800 border border-stone-800 hover:bg-stone-800 hover:text-ivory;
   }
 
   .btn-luxury-outline {
@@ -179,7 +187,7 @@
   }
 
   .btn-couture-ghost {
-    @apply relative inline-flex items-center justify-center min-h-[52px] px-2 font-label text-xs uppercase tracking-[0.25em] text-bone transition-colors duration-500;
+    @apply relative inline-flex items-center justify-center min-h-[52px] px-2 font-label text-xs uppercase tracking-[0.25em] text-stone-800 transition-colors duration-500;
   }
   .btn-couture-ghost::after {
     content: '';
@@ -188,13 +196,13 @@
     right: 0;
     bottom: 12px;
     height: 1px;
-    background: var(--color-gold-light);
+    background: var(--color-gold);
     transform: scaleX(0.35);
     transform-origin: left;
     transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-couture-ghost:hover {
-    color: var(--color-gold-light);
+    color: var(--color-gold-dark);
   }
   .btn-couture-ghost:hover::after {
     transform: scaleX(1);
@@ -205,23 +213,6 @@
   .btn-couture-ghost:focus-visible {
     outline: 2px solid var(--color-gold);
     outline-offset: 4px;
-  }
-
-  .btn-luxury::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 60%;
-    background: linear-gradient(105deg, transparent 0%, rgba(201, 169, 111, 0.28) 45%, rgba(246, 240, 230, 0.35) 50%, rgba(201, 169, 111, 0.28) 55%, transparent 100%);
-    transform: translateX(-160%) skewX(-14deg);
-    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
-  }
-  .btn-luxury:hover::before,
-  .btn-luxury:focus-visible::before {
-    transform: translateX(260%) skewX(-14deg);
   }
 
   .link-couture {
@@ -288,7 +279,7 @@
   .card-couture {
     position: relative;
     overflow: hidden;
-    border: 0;
+    border: 1px solid var(--color-stone-200);
     border-radius: 0;
     box-shadow: none;
     background: transparent;

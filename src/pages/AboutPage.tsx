@@ -79,7 +79,7 @@ export default function AboutPage() {
             <img
               src="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg"
               alt="Couture Details"
-              className="w-full aspect-[4/5] object-cover shadow-2xl"
+              className="w-full aspect-[4/5] object-cover"
               loading="lazy"
             />
           </motion.div>

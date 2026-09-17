@@ -38,7 +38,7 @@ export default function ToastContainer() {
               exit={{ opacity: 0, x: 100, scale: 0.95 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "pointer-events-auto border p-4 shadow-xl flex items-start gap-3",
+                "pointer-events-auto border p-4 flex items-start gap-3",
                 COLORS[toast.type]
               )}
             >

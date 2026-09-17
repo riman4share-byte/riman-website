@@ -190,7 +190,7 @@ function Popover({ anchorKey, onClose, children, labelledBy }: PopoverProps) {
           left: pos?.left ?? -9999,
           zIndex: 60,
         }}
-        className="min-w-[13rem] max-w-[18rem] overflow-hidden rounded-lg border border-zinc-950/10 bg-white shadow-lg shadow-zinc-950/10 dark:border-white/10 dark:bg-zinc-900 dark:shadow-black/40"
+        className="min-w-[13rem] max-w-[18rem] overflow-hidden border border-stone-200 bg-white dark:border-white/10 dark:bg-zinc-900"
       >
         {children}
       </motion.div>

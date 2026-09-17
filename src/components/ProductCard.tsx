@@ -120,7 +120,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             </span>
           )}
           {product.glbUrl && (
-            <span className="bg-ivory/90 backdrop-blur-md text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 font-bold">
+            <span className="bg-ivory text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 border border-stone-200">
               <Box className="w-3 h-3 text-gold" />
               {t('badge.3d')}
             </span>
@@ -138,7 +138,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             "md:hidden absolute bottom-0 left-0 right-0 z-20 py-3 text-micro tracking-[0.2em] uppercase font-body flex items-center justify-center gap-2 transition-all duration-300",
             showMobileActions 
               ? "bg-onyx text-white" 
-              : "bg-gold/90 text-white backdrop-blur-sm"
+              : "bg-gold text-white"
           )}
           aria-label={showMobileActions ? 'Close quick shop' : 'Open quick shop'}
         >
@@ -158,7 +158,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="w-full bg-ivory/95 backdrop-blur-sm p-3 flex flex-col gap-2"
+              className="w-full bg-ivory p-3 flex flex-col gap-2 border-t border-stone-200"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-micro tracking-[0.2em] uppercase text-stone-600 font-bold">{t('product.select_size')}</span>
@@ -187,7 +187,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           {/* Slim bar with two actions */}
           <div className={cn(
-            "flex bg-onyx/95 backdrop-blur-sm border-t border-gold/20 transition-all duration-500",
+            "flex bg-onyx border-t border-gold/20 transition-all duration-500",
             showMobileActions ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
             "md:group-hover:opacity-100 md:group-hover:translate-y-0"
           )}>

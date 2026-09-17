@@ -61,7 +61,7 @@ export default function GlobalFeatures() {
           href="https://wa.me/971553730792"
           target="_blank"
           rel="noopener noreferrer"
-          className={`fixed right-4 md:right-10 z-[100] w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all ${
+          className={`fixed right-4 md:right-10 z-[100] w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-all ${
             showCookies ? 'bottom-36 md:bottom-32' : 'bottom-20 md:bottom-10'
           }`}
           aria-label={t('common.whatsapp_label')}
