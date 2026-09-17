@@ -153,25 +153,68 @@ export default function ImmersiveUI() {
       {/* Custom Global Cursor — only on desktop, when enabled, and not prefers-reduced-motion */}
       {customCursorEnabled && !prefersReducedMotion && (
         <>
+          {/* Trail ring — follows with lag */}
           <motion.div
-            className="hidden lg:block fixed top-0 left-0 w-8 h-8 border border-gold/60 rounded-full pointer-events-none z-[9999] mix-blend-difference"
+            className="hidden lg:block fixed top-0 left-0 w-12 h-12 border border-gold/40 rounded-full pointer-events-none z-[9998]"
             animate={{
-              x: mousePos.x - 16,
-              y: mousePos.y - 16,
-              scale: cursorMode === 'action' ? 2 : cursorMode === 'heading' ? 1.6 : 1,
-              borderColor: cursorMode === 'heading' ? 'rgba(212,175,55,0.9)' : 'rgba(212,175,55,0.6)',
+              x: mousePos.x - 24,
+              y: mousePos.y - 24,
+              scale: cursorMode === 'action' ? 1.4 : cursorMode === 'heading' ? 1.2 : 1,
+              opacity: cursorMode === 'heading' ? 0.8 : 0.4,
             }}
-            transition={{ type: 'spring', damping: 20, stiffness: 150, mass: 0.5 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
           />
+
+          {/* Main cursor image */}
           <motion.div
-            className="hidden lg:block fixed top-0 left-0 w-1.5 h-1.5 bg-gold rounded-full pointer-events-none z-[9999]"
+            className="hidden lg:block fixed top-0 left-0 pointer-events-none z-[9999]"
             animate={{
-              x: mousePos.x - 3,
-              y: mousePos.y - 3,
-              scale: cursorMode === 'heading' ? 1.8 : 1,
+              x: mousePos.x - 20,
+              y: mousePos.y - 20,
+              scale: cursorMode === 'action' ? 1.35 : cursorMode === 'heading' ? 1.15 : 1,
+              rotate: cursorMode === 'heading' ? [0, 8, -8, 0] : 0,
             }}
-            transition={{ type: 'spring', damping: 30, stiffness: 250, mass: 0.1 }}
-          />
+            transition={{
+              x: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
+              y: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
+              scale: { type: 'spring', damping: 20, stiffness: 180, mass: 0.4 },
+              rotate: { duration: 0.6, ease: 'easeInOut' },
+            }}
+          >
+            <img
+              src="/custom-cursor.png"
+              alt=""
+              draggable={false}
+              className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
+              style={{ imageRendering: 'auto' }}
+            />
+          </motion.div>
+
+          {/* Floating sparkle particles on heading hover */}
+          {cursorMode === 'heading' && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={`sparkle-${i}`}
+                  className="hidden lg:block fixed pointer-events-none z-[9997]"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    x: mousePos.x - 2 + (i - 1) * 18,
+                    y: mousePos.y - 2 - 20 - i * 10,
+                    opacity: [0, 0.9, 0],
+                    scale: [0, 1.2, 0],
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: i * 0.12,
+                    ease: 'easeOut',
+                  }}
+                >
+                  <div className="w-1 h-1 rounded-full bg-gold/80" />
+                </motion.div>
+              ))}
+            </>
+          )}
         </>
       )}
     </>
