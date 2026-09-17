@@ -464,7 +464,7 @@ export default function Checkout() {
                       {items.map((item) => (
                         <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4 items-center p-3 border-b border-stone-200">
                           <div className="w-14 h-18 bg-stone-100 flex-shrink-0 overflow-hidden">
-                            <img src={item.images?.[0]} className="w-full h-full object-cover" alt={item.name} />
+                            <img src={item.images?.[0]} className="w-full h-full object-cover" loading="lazy" alt={item.name} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-micro text-stone-600 uppercase tracking-widest">{translateProductValue('category', item.category, language)}</p>
@@ -642,7 +642,7 @@ export default function Checkout() {
                       {items.map((item) => (
                         <div key={`${item.id}-${item.selectedSize}`} className="flex gap-3 items-center">
                           <div className="w-12 h-16 bg-stone-800 flex-shrink-0 overflow-hidden">
-                            <img src={item.images?.[0]} className="w-full h-full object-cover grayscale-[0.3]" alt={item.name} />
+                            <img src={item.images?.[0]} className="w-full h-full object-cover grayscale-[0.3]" loading="lazy" alt={item.name} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-micro text-stone-500 uppercase tracking-widest">{translateProductValue('category', item.category, language)}</p>
@@ -754,7 +754,7 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
               className="flex gap-3 group relative items-center"
             >
               <div className="w-14 h-18 bg-stone-800 flex-shrink-0 overflow-hidden">
-                <img src={item.images?.[0]} className="w-full h-full object-cover grayscale-[0.3]" alt={item.name} />
+                <img src={item.images?.[0]} className="w-full h-full object-cover grayscale-[0.3]" loading="lazy" alt={item.name} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-micro text-stone-500 uppercase tracking-widest mb-0.5">{translateProductValue('category', item.category, language)}</p>

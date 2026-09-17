@@ -15,5 +15,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'vite/**/*.test.ts'],
+    // Forks pool times out starting workers on Windows paths with spaces;
+    // threads pool is stable and faster here.
+    pool: 'threads',
   },
 });

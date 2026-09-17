@@ -1,7 +1,0 @@
-{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}
-{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"search","arguments":{"query":"lookbook carousel horizontal","type":"component","limit":3}}}
-{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"search","arguments":{"query":"testimonial reviews","type":"component","limit":3}}}
-{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"search","arguments":{"query":"booking CTA button","type":"component","limit":3}}}
-{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"get_component","arguments":{"id":5415}}}
-{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"get_component","arguments":{"id":1614}}}
-{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"search","arguments":{"query":"marquee ticker scrolling","type":"component","limit":2}}}

@@ -152,6 +152,7 @@ export default function JournalPage() {
               <div className="card-couture">
                 <img
                   src={featured.image(products)}
+                  loading="lazy"
                   alt={featured.title[lang]}
                   onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
                   className="w-full aspect-[4/5] object-cover"

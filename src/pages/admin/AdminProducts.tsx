@@ -308,7 +308,7 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-8 py-4">
                     <div className="w-16 h-20 bg-stone-100 overflow-hidden border border-stone-200">
-                      <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                      <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-full object-cover" />
                     </div>
                   </td>
                   <td className="px-8 py-4">
@@ -478,7 +478,7 @@ export default function AdminProducts() {
                   <div className="flex flex-wrap gap-3">
                     {productImages.map((url, i) => (
                       <div key={i} className="relative group w-20 h-24 bg-stone-100 border border-stone-200 overflow-hidden">
-                        <img src={url} alt={`Product image ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={url} alt={`Product image ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => setProductImages(prev => prev.filter((_, idx) => idx !== i))}
@@ -643,7 +643,7 @@ export default function AdminProducts() {
                   <div className="flex flex-wrap gap-3">
                     {importFiles.map((file, i) => (
                       <div key={i} className="relative group w-20 h-24 bg-stone-100 border border-stone-200 overflow-hidden">
-                        <img src={URL.createObjectURL(file)} alt={`Import ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={URL.createObjectURL(file)} alt={`Import ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                         <button type="button" onClick={() => setImportFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-rose-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Remove file">
                           <X className="w-3 h-3" />
                         </button>

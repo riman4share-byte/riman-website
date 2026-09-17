@@ -357,7 +357,7 @@ export default function ProductDetail() {
                   const index = product.videoUrl ? i + 1 : i;
                   return (
                     <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition-all", currentImageIndex === index ? "border-gold" : "border-transparent")}>
-                      <img src={img} className="w-full h-full object-cover" alt={`${productName} thumbnail ${i + 1}`} />
+                      <img src={img} className="w-full h-full object-cover" loading="lazy" alt={`${productName} thumbnail ${i + 1}`} />
                     </button>
                   );
                 })}
@@ -743,7 +743,7 @@ export default function ProductDetail() {
                               <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.add_photo')}</label>
                               {newReview.photoUrl ? (
                                 <div className="flex items-center gap-3">
-                                  <img src={newReview.photoUrl} alt="Review attachment" className="w-14 h-14 object-cover" />
+                                  <img src={newReview.photoUrl} alt="Review attachment" loading="lazy" className="w-14 h-14 object-cover" />
                                   <button type="button" onClick={() => setNewReview({ ...newReview, photoUrl: undefined })} className="text-micro text-rose-500 uppercase tracking-widest">{t('product.cancel')}</button>
                                 </div>
                               ) : (
