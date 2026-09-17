@@ -178,7 +178,7 @@ export default function ImmersiveUI() {
                 src="/custom-cursor.png"
                 alt=""
                 draggable={false}
-                className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
+                className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none [filter:sepia(1)_saturate(6)_hue-rotate(5deg)_brightness(1.1)]"
               />
             </div>
           ) : (
@@ -201,8 +201,7 @@ export default function ImmersiveUI() {
                 src="/custom-cursor.png"
                 alt=""
                 draggable={false}
-                className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
-                style={{ imageRendering: 'auto' }}
+              className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none [filter:sepia(1)_saturate(6)_hue-rotate(5deg)_brightness(1.1)]"
               />
             </motion.div>
           )}
