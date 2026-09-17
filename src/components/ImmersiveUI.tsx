@@ -63,7 +63,7 @@ export default function ImmersiveUI() {
 
   // Throttled mouse tracking for custom cursor
   useEffect(() => {
-    if (!customCursorEnabled || prefersReducedMotion) return;
+    if (!customCursorEnabled) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (mouseTrackingRef.current) {
@@ -92,17 +92,17 @@ export default function ImmersiveUI() {
       window.removeEventListener('mouseover', handleMouseOver);
       if (mouseTrackingRef.current) cancelAnimationFrame(mouseTrackingRef.current);
     };
-  }, [customCursorEnabled, prefersReducedMotion]);
+  }, [customCursorEnabled]);
 
   // Toggle custom cursor class on <html>
   useEffect(() => {
     const html = document.documentElement;
-    if (customCursorEnabled && !prefersReducedMotion) {
+    if (customCursorEnabled) {
       html.classList.add('custom-cursor-active');
       return () => html.classList.remove('custom-cursor-active');
     }
     html.classList.remove('custom-cursor-active');
-  }, [customCursorEnabled, prefersReducedMotion]);
+  }, [customCursorEnabled]);
 
   return (
     <>
@@ -150,53 +150,70 @@ export default function ImmersiveUI() {
         )}
       </AnimatePresence>
 
-      {/* Custom Global Cursor — only on desktop, when enabled, and not prefers-reduced-motion */}
-      {customCursorEnabled && !prefersReducedMotion && (
+      {/* Custom Global Cursor */}
+      {customCursorEnabled && (
         <>
-          {/* Trail ring — follows with lag */}
-          <motion.div
-            className="hidden lg:block fixed top-0 left-0 w-12 h-12 border border-gold/40 rounded-full pointer-events-none z-[9998]"
-            animate={{
-              x: mousePos.x - 24,
-              y: mousePos.y - 24,
-              scale: cursorMode === 'action' ? 1.4 : cursorMode === 'heading' ? 1.2 : 1,
-              opacity: cursorMode === 'heading' ? 0.8 : 0.4,
-            }}
-            transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
-          />
+          {/* Trail ring — follows with lag (skipped if reduced motion) */}
+          {!prefersReducedMotion && (
+            <motion.div
+              className="fixed top-0 left-0 w-12 h-12 border border-gold/40 rounded-full pointer-events-none z-[9998]"
+              animate={{
+                x: mousePos.x - 24,
+                y: mousePos.y - 24,
+                scale: cursorMode === 'action' ? 1.4 : cursorMode === 'heading' ? 1.2 : 1,
+                opacity: cursorMode === 'heading' ? 0.8 : 0.4,
+              }}
+              transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
+            />
+          )}
 
           {/* Main cursor image */}
-          <motion.div
-            className="hidden lg:block fixed top-0 left-0 pointer-events-none z-[9999]"
-            animate={{
-              x: mousePos.x - 20,
-              y: mousePos.y - 20,
-              scale: cursorMode === 'action' ? 1.35 : cursorMode === 'heading' ? 1.15 : 1,
-              rotate: cursorMode === 'heading' ? [0, 8, -8, 0] : 0,
-            }}
-            transition={{
-              x: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
-              y: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
-              scale: { type: 'spring', damping: 20, stiffness: 180, mass: 0.4 },
-              rotate: { duration: 0.6, ease: 'easeInOut' },
-            }}
-          >
-            <img
-              src="/custom-cursor.png"
-              alt=""
-              draggable={false}
-              className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
-              style={{ imageRendering: 'auto' }}
-            />
-          </motion.div>
+          {prefersReducedMotion ? (
+            /* No-animation fallback: plain CSS follow */
+            <div
+              className="fixed pointer-events-none z-[9999]"
+              style={{ left: mousePos.x - 20, top: mousePos.y - 20 }}
+            >
+              <img
+                src="/custom-cursor.png"
+                alt=""
+                draggable={false}
+                className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
+              />
+            </div>
+          ) : (
+            <motion.div
+              className="fixed top-0 left-0 pointer-events-none z-[9999]"
+              animate={{
+                x: mousePos.x - 20,
+                y: mousePos.y - 20,
+                scale: cursorMode === 'action' ? 1.35 : cursorMode === 'heading' ? 1.15 : 1,
+                rotate: cursorMode === 'heading' ? [0, 8, -8, 0] : 0,
+              }}
+              transition={{
+                x: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
+                y: { type: 'spring', damping: 30, stiffness: 200, mass: 0.3 },
+                scale: { type: 'spring', damping: 20, stiffness: 180, mass: 0.4 },
+                rotate: { duration: 0.6, ease: 'easeInOut' },
+              }}
+            >
+              <img
+                src="/custom-cursor.png"
+                alt=""
+                draggable={false}
+                className="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)] select-none"
+                style={{ imageRendering: 'auto' }}
+              />
+            </motion.div>
+          )}
 
-          {/* Floating sparkle particles on heading hover */}
-          {cursorMode === 'heading' && (
+          {/* Floating sparkle particles on heading hover (skipped if reduced motion) */}
+          {!prefersReducedMotion && cursorMode === 'heading' && (
             <>
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={`sparkle-${i}`}
-                  className="hidden lg:block fixed pointer-events-none z-[9997]"
+                  className="fixed pointer-events-none z-[9997]"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{
                     x: mousePos.x - 2 + (i - 1) * 18,
