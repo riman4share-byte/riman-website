@@ -8,7 +8,7 @@ import { ShieldCheck, ArrowLeft, ArrowRight, Check, ChevronDown, ChevronUp, X, T
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { validateCheckoutStep } from '../lib/checkout';
-import { getItemUnitPrice } from '../lib/pricing';
+import { getItemUnitPrice, getCartLineUnitPrice } from '../lib/pricing';
 import { createOrderViaEdge } from '../services/orders';
 import { isSupabaseConfigured } from '../services/supabase';
 import { createCheckoutSession, isStripeConfigured } from '../services/payment';
@@ -238,7 +238,7 @@ export default function Checkout() {
     return (
       <div className="pt-8 pb-20 px-6 min-h-[60vh] flex flex-col items-center justify-center text-center bg-ivory">
         <h1 className="font-heading text-4xl text-stone-800 uppercase mb-4">{t('checkout.empty')}</h1>
-        <div className="w-12 h-px bg-gold mx-auto mb-6" />
+        <div className="w-12 h-px bg-terracotta mx-auto mb-6" />
         <p className="font-body text-stone-600 text-sm tracking-widest uppercase mb-12 italic">{t('checkout.empty_desc')}</p>
         <Link to="/search" className="btn-luxury px-12">{t('checkout.explore')}</Link>
       </div>
@@ -251,12 +251,12 @@ export default function Checkout() {
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center text-gold mb-8"
+          className="w-24 h-24 bg-terracotta/10 rounded-full flex items-center justify-center text-terracotta-dark mb-8"
         >
           <Check className="w-12 h-12" />
         </motion.div>
         <h1 className="font-heading text-4xl md:text-6xl text-stone-800 uppercase mb-4">{t('checkout.order_received')}</h1>
-        <div className="w-12 h-px bg-gold mx-auto mb-6" />
+        <div className="w-12 h-px bg-terracotta mx-auto mb-6" />
         <p className="font-body text-stone-600 text-sm tracking-widest uppercase mb-4">{t('checkout.order_preparing')}</p>
         <p className="font-body text-stone-600 text-xs mb-4 uppercase italic">{t('checkout.confirmation_email')} {formData.email}</p>
         <p className="font-body text-stone-600 text-xs mb-12 uppercase tracking-widest max-w-md">{t('checkout.contact_24h')}</p>
@@ -304,7 +304,7 @@ export default function Checkout() {
                 {i < 2 && (
                   <div className="flex-1 mx-3 h-px bg-stone-200 relative">
                     <div
-                      className={cn("absolute inset-y-0 left-0 bg-gold transition-all duration-500", step > s && "right-0")}
+                      className={cn("absolute inset-y-0 left-0 bg-terracotta transition-all duration-500", step > s && "right-0")}
                       style={{ width: step > s ? '100%' : step === s + 1 ? '50%' : '0%' }}
                     />
                   </div>
@@ -330,7 +330,9 @@ export default function Checkout() {
                     <SectionHeading title={t('checkout.personal_details')} />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
                       <Input
-                        label={t('checkout.first_name')}
+id="co-first"
+            label={t('checkout.first_name')}
+            required
                         value={formData.firstName}
                         onChange={(v: string) => setFormData({...formData, firstName: v})}
                         onBlur={() => handleBlur('firstName')}
@@ -338,7 +340,9 @@ export default function Checkout() {
                         autoComplete="given-name"
                       />
                       <Input
-                        label={t('checkout.last_name')}
+id="co-last"
+            label={t('checkout.last_name')}
+            required
                         value={formData.lastName}
                         onChange={(v: string) => setFormData({...formData, lastName: v})}
                         onBlur={() => handleBlur('lastName')}
@@ -346,7 +350,9 @@ export default function Checkout() {
                         autoComplete="family-name"
                       />
                       <Input
-                        label={t('checkout.email')}
+id="co-email"
+            label={t('checkout.email')}
+            required
                         value={formData.email}
                         onChange={(v: string) => setFormData({...formData, email: v})}
                         onBlur={() => handleBlur('email')}
@@ -356,7 +362,9 @@ export default function Checkout() {
                         autoComplete="email"
                       />
                       <Input
-                        label={t('checkout.phone')}
+id="co-phone"
+            label={t('checkout.phone')}
+            required
                         value={formData.phone}
                         onChange={(v: string) => setFormData({...formData, phone: v})}
                         onBlur={() => handleBlur('phone')}
@@ -384,7 +392,9 @@ export default function Checkout() {
                     <SectionHeading title={t('checkout.delivery_info')} />
                     <div className="grid grid-cols-1 gap-5">
                       <Input
+id="co-address"
                         label={t('checkout.address')}
+                        required
                         value={formData.address}
                         onChange={(v: string) => setFormData({...formData, address: v})}
                         onBlur={() => handleBlur('address')}
@@ -393,7 +403,9 @@ export default function Checkout() {
                       />
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <Input
+id="co-city"
                           label={t('checkout.city')}
+                          required
                           value={formData.city}
                           onChange={(v: string) => setFormData({...formData, city: v})}
                           onBlur={() => handleBlur('city')}
@@ -401,7 +413,9 @@ export default function Checkout() {
                           autoComplete="address-level2"
                         />
                         <Input
+id="co-country"
                           label={t('checkout.country')}
+                          required
                           value={formData.country === 'United Arab Emirates' && language === 'ar' ? t('checkout.country_default') : formData.country}
                           onChange={(v: string) => setFormData({...formData, country: v})}
                           disabled
@@ -431,10 +445,10 @@ export default function Checkout() {
                     <SectionHeading title={t('checkout.review')} />
 
                     {/* Details summary */}
-                    <div className="bg-ivory/50 p-5 border border-gold/10 space-y-4">
+                    <div className="bg-ivory/50 p-5 border border-terracotta/10 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-heading text-xs tracking-[0.2em] uppercase text-stone-600">{t('checkout.your_details')}</h3>
-                        <button onClick={() => setStep(1)} className="text-micro tracking-widest uppercase text-gold font-bold hover:text-gold-dark transition-colors">
+                        <button onClick={() => setStep(1)} className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark-dark transition-colors">
                           {t('checkout.previous')}
                         </button>
                       </div>
@@ -470,9 +484,9 @@ export default function Checkout() {
                             <p className="text-micro text-stone-600 uppercase tracking-widest">{translateProductValue('category', item.category, language)}</p>
                             <p className="text-xs uppercase tracking-wider font-bold truncate">{item.name}</p>
                             {item.selectedSize && <p className="text-micro text-stone-600 uppercase">{t('checkout.size')}: {item.selectedSize}</p>}
-                            {item.selectedDate && <p className="text-micro text-gold uppercase">{t('checkout.date')}: {new Date(item.selectedDate).toLocaleDateString()}</p>}
+                            {item.selectedDate && <p className="text-micro text-terracotta-dark uppercase">{t('checkout.date')}: {new Date(item.selectedDate).toLocaleDateString()}</p>}
                           </div>
-                          <p className="text-xs text-gold font-medium">{formatPrice(getItemUnitPrice({ intent: item.intent ?? 'sale', salePrice: item.salePrice, rentalPrice: item.rentalPrice }) * item.quantity)}</p>
+                          <p className="text-xs text-terracotta-dark font-medium">{formatPrice(getCartLineUnitPrice(item) * item.quantity)}</p>
                         </div>
                       ))}
                     </div>
@@ -489,16 +503,18 @@ export default function Checkout() {
                       </div>
                       <div className="flex justify-between font-heading text-xl pt-4 border-t border-stone-100 mt-4">
                         <span className="uppercase text-sm tracking-widest pt-1">{t('checkout.total')}</span>
-                        <span className="text-gold">{formatPrice(subtotal)}</span>
+                        <span className="text-terracotta-dark">{formatPrice(subtotal)}</span>
                       </div>
                     </div>
 
                     {/* Order notes */}
                     <div className="space-y-3">
-                      <label className="text-micro uppercase tracking-widest text-stone-600 font-bold flex items-center gap-2">
-                        <MessageSquare className="w-3 h-3 text-gold" /> {t('checkout.order_notes')}
+                      <label htmlFor="co-notes" className="text-micro uppercase tracking-widest text-stone-600 font-bold flex items-center gap-2">
+                        <MessageSquare className="w-3 h-3 text-terracotta-dark" aria-hidden="true" /> {t('checkout.order_notes')}
                       </label>
                       <textarea
+                        id="co-notes"
+                        name="order_notes"
                         value={orderNotes}
                         onChange={(e) => setOrderNotes(e.target.value)}
                         rows={3}
@@ -517,11 +533,11 @@ export default function Checkout() {
                           className={cn(
                             "flex items-center gap-4 p-4 border text-start transition-all",
                             paymentMethod === 'card'
-                              ? "bg-gold/5 border-gold/30 text-stone-800"
+                              ? "bg-terracotta/5 border-terracotta/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
                           )}
                         >
-                          <CreditCard className={cn("w-5 h-5 shrink-0", paymentMethod === 'card' ? 'text-gold' : 'text-stone-500')} />
+                          <CreditCard className={cn("w-5 h-5 shrink-0", paymentMethod === 'card' ? 'text-terracotta-dark' : 'text-stone-500')} />
                           <div>
                             <p className="text-micro tracking-widest uppercase font-bold">{t('checkout.pay_online')} — Visa / Mastercard</p>
                             <p className="text-micro text-stone-600 mt-0.5 tracking-wide">{t('checkout.pay_online_desc')}</p>
@@ -533,11 +549,11 @@ export default function Checkout() {
                           className={cn(
                             "flex items-center gap-4 p-4 border text-start transition-all",
                             paymentMethod === 'atelier'
-                              ? "bg-gold/5 border-gold/30 text-stone-800"
+                              ? "bg-terracotta/5 border-terracotta/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
                           )}
                         >
-                          <Building2 className={cn("w-5 h-5 shrink-0", paymentMethod === 'atelier' ? 'text-gold' : 'text-stone-500')} />
+                          <Building2 className={cn("w-5 h-5 shrink-0", paymentMethod === 'atelier' ? 'text-terracotta-dark' : 'text-stone-500')} />
                           <div>
                             <p className="text-micro tracking-widest uppercase font-bold">{t('checkout.pay_atelier')}</p>
                             <p className="text-micro text-stone-600 mt-0.5 tracking-wide">{t('checkout.pay_atelier_desc')}</p>
@@ -547,8 +563,8 @@ export default function Checkout() {
                     </div>
 
                     {/* Payment info box */}
-                    <div className={cn("p-4 border flex items-start gap-3", paymentMethod === 'card' ? 'bg-emerald-50/50 border-emerald-200/50' : 'bg-gold/5 border-gold/10')}>
-                      {paymentMethod === 'card' ? <CreditCard className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <Truck className="w-5 h-5 text-gold shrink-0 mt-0.5" />}
+                    <div className={cn("p-4 border flex items-start gap-3", paymentMethod === 'card' ? 'bg-emerald-50/50 border-emerald-200/50' : 'bg-terracotta/5 border-terracotta/10')}>
+                      {paymentMethod === 'card' ? <CreditCard className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <Truck className="w-5 h-5 text-terracotta-dark shrink-0 mt-0.5" />}
                       <div>
                         <p className="text-micro tracking-widest text-stone-600 uppercase font-bold">
                           {paymentMethod === 'card' ? t('checkout.secure_online') : t('checkout.instore_payment')}
@@ -559,6 +575,24 @@ export default function Checkout() {
                             : t('checkout.instore_desc')}
                         </p>
                       </div>
+                    </div>
+
+                    {/* Before You Confirm — inline the answers that stop checkouts */}
+                    <div className="mb-6 p-5 border border-terracotta/30 bg-terracotta/[0.04]">
+                      <p className="text-micro tracking-[0.3em] uppercase text-stone-800 font-bold mb-3">{t('contact.promise_block_title')}</p>
+                      <ul className="space-y-2">
+                        {[
+                          t('checkout.promise_returns'),
+                          t('checkout.promise_fitting'),
+                          t('checkout.promise_reschedule'),
+                          t('checkout.promise_payment'),
+                        ].map((promise) => (
+                          <li key={promise} className="flex items-start gap-2 text-sm text-stone-700">
+                            <ShieldCheck className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
+                            <span>{promise}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
                     {/* WhatsApp help */}
@@ -596,7 +630,7 @@ export default function Checkout() {
                           href={`https://wa.me/${WHATSAPP_NUMBER}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-micro tracking-widest uppercase text-gold font-bold hover:text-gold-dark transition-colors"
+                          className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark-dark transition-colors"
                         >
                           {t('checkout.whatsapp_support')} &rarr;
                         </a>
@@ -617,7 +651,7 @@ export default function Checkout() {
                 className="w-full bg-onyx text-white p-4 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-1 h-5 bg-gold" />
+                  <div className="w-1 h-5 bg-terracotta" />
                   <span className="text-micro tracking-[0.2em] uppercase font-bold">
                     {t('checkout.order_summary')}
                   </span>
@@ -626,7 +660,7 @@ export default function Checkout() {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-gold text-sm font-heading">{formatPrice(subtotal)}</span>
+                  <span className="text-terracotta-dark text-sm font-heading">{formatPrice(subtotal)}</span>
                   {mobileSummaryOpen ? <ChevronUp className="w-4 h-4 text-stone-400" /> : <ChevronDown className="w-4 h-4 text-stone-400" />}
                 </div>
               </button>
@@ -649,10 +683,10 @@ export default function Checkout() {
                             <p className="text-micro uppercase tracking-wider font-bold truncate text-white">{item.name}</p>
                             <div className="flex flex-wrap gap-1.5 mt-1">
                               {item.selectedSize && <span className="text-micro border border-stone-700 px-1.5 py-0.5 text-stone-400">{item.selectedSize}</span>}
-                              {item.selectedDate && <span className="text-micro border border-gold/30 px-1.5 py-0.5 text-gold">{new Date(item.selectedDate).toLocaleDateString()}</span>}
+                              {item.selectedDate && <span className="text-micro border border-terracotta/30 px-1.5 py-0.5 text-terracotta-dark">{new Date(item.selectedDate).toLocaleDateString()}</span>}
                             </div>
                           </div>
-                          <p className="text-micro text-gold font-medium">{formatPrice((item.rentalPrice || item.salePrice || 0) * item.quantity)}</p>
+<p className="text-micro text-terracotta-dark font-medium">{formatPrice(getCartLineUnitPrice(item) * item.quantity)}</p>
                         </div>
                       ))}
                       <div className="space-y-2 pt-3 border-t border-stone-800">
@@ -666,7 +700,7 @@ export default function Checkout() {
                         </div>
                         <div className="flex justify-between font-heading text-lg pt-3 border-t border-stone-800">
                           <span className="uppercase text-xs tracking-widest">{t('checkout.total')}</span>
-                          <span className="text-gold">{formatPrice(subtotal)}</span>
+                          <span className="text-terracotta-dark">{formatPrice(subtotal)}</span>
                         </div>
                       </div>
                     </div>
@@ -700,7 +734,7 @@ function StepStep({ num, label, active, completed }: { num: number; label: strin
     <div className="flex items-center gap-2.5">
       <div className={cn(
         "w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs transition-all duration-300 font-bold shrink-0",
-        completed ? "bg-gold border-gold text-white" : active ? "bg-gold/10 border-gold text-gold" : "border-stone-200 text-stone-500"
+        completed ? "bg-terracotta border-terracotta text-white" : active ? "bg-terracotta/10 border-terracotta text-terracotta-dark" : "border-stone-200 text-stone-500"
       )}>
         {completed ? <Check className="w-4 h-4" /> : num}
       </div>
@@ -716,7 +750,7 @@ function SectionHeading({ title }: { title: string }) {
   return (
     <div className="border-b border-stone-50 pb-4">
       <h2 className="font-heading text-xl md:text-2xl tracking-widest uppercase text-stone-800">{title}</h2>
-      <div className="w-8 h-px bg-gold mt-3" />
+      <div className="w-8 h-px bg-terracotta mt-3" />
     </div>
   );
 }
@@ -724,7 +758,7 @@ function SectionHeading({ title }: { title: string }) {
 function TrustBadge({ icon, label }: { icon: ReactNode; label: string }) {
   return (
     <div className="flex items-center gap-2 text-stone-600">
-      <div className="text-gold">{icon}</div>
+      <div className="text-terracotta-dark">{icon}</div>
       <span className="text-micro tracking-[0.2em] uppercase font-bold">{label}</span>
     </div>
   );
@@ -741,7 +775,7 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
   return (
     <div className="bg-onyx text-white p-6">
       <div className="flex items-center gap-3 mb-6 pb-4 border-b border-stone-800">
-        <div className="w-1 h-6 bg-gold" />
+        <div className="w-1 h-6 bg-terracotta" />
         <h3 className="font-heading text-base tracking-[0.2em] uppercase">{t('checkout.bag_summary')}</h3>
       </div>
       <div className="space-y-6 mb-8 max-h-[35vh] overflow-y-auto pr-2 no-scrollbar">
@@ -761,10 +795,10 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
                 <h4 className="text-micro uppercase tracking-wider font-bold mb-1 truncate">{item.name}</h4>
                 <div className="flex flex-wrap gap-1.5 mb-1.5">
                   {item.selectedSize && <span className="text-micro border border-stone-700 px-1.5 py-0.5 text-stone-400">{t('checkout.size')}: {item.selectedSize}</span>}
-                  {item.selectedDate && <span className="text-micro border border-gold/30 px-1.5 py-0.5 text-gold"><Calendar className="w-2 h-2 inline mr-0.5" />{new Date(item.selectedDate).toLocaleDateString()}</span>}
+                  {item.selectedDate && <span className="text-micro border border-terracotta/30 px-1.5 py-0.5 text-terracotta-dark"><Calendar className="w-2 h-2 inline mr-0.5" />{new Date(item.selectedDate).toLocaleDateString()}</span>}
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-micro text-gold font-medium">{formatPrice((item.rentalPrice || item.salePrice || 0) * item.quantity)}</p>
+                  <p className="text-micro text-terracotta-dark font-medium">{formatPrice(getCartLineUnitPrice(item) * item.quantity)}</p>
                   {item.quantity > 1 && <span className="text-micro text-stone-500">{t('checkout.qty')}: {item.quantity}</span>}
                 </div>
               </div>
@@ -794,12 +828,12 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
         </div>
         <div className="flex justify-between font-heading text-lg pt-4 border-t border-stone-800 mt-3">
           <span className="uppercase text-xs tracking-widest">{t('checkout.total')}</span>
-          <span className="text-gold">{formatPrice(subtotal)}</span>
+          <span className="text-terracotta-dark">{formatPrice(subtotal)}</span>
         </div>
       </div>
 
       <div className="mt-8 flex items-center gap-3 p-3 border border-white/5 bg-white/5">
-        <ShieldCheck className="w-4 h-4 text-gold shrink-0" />
+        <ShieldCheck className="w-4 h-4 text-terracotta-dark shrink-0" />
         <p className="text-micro tracking-widest leading-relaxed text-stone-400 uppercase">
           {paymentMethod === 'card' ? t('checkout.secured_stripe') : t('checkout.secure_order_atelier')}
         </p>
@@ -808,7 +842,8 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
   );
 }
 
-function Input({ label, value, onChange, onBlur, placeholder, className, disabled, type = "text", error, autoComplete }: {
+function Input({ id, label, value, onChange, onBlur, placeholder, className, disabled, type = "text", error, autoComplete, required }: {
+  id: string;
   label: string;
   value: string;
   onChange: (v: string) => void;
@@ -819,24 +854,32 @@ function Input({ label, value, onChange, onBlur, placeholder, className, disable
   type?: string;
   error?: string;
   autoComplete?: string;
+  required?: boolean;
 }) {
+  const errId = `${id}-error`;
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex justify-between items-center">
-        <label className="text-micro tracking-widest uppercase font-bold text-stone-600 block">{label}</label>
-        {error && <span className="text-micro text-rose-500 uppercase tracking-widest font-bold">{error}</span>}
+        <label htmlFor={id} className="text-micro tracking-widest uppercase font-bold text-stone-600 block">{label}</label>
+        {error && <span id={errId} className="text-micro text-rose-600 uppercase tracking-widest font-bold">{error}</span>}
       </div>
       <input
+        id={id}
+        name={id}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}
+        required={required}
         autoComplete={autoComplete}
+        aria-required={required || undefined}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errId : undefined}
         className={cn(
-          "w-full bg-ivory border p-4 text-sm tracking-wide outline-none focus:border-gold transition-all disabled:opacity-50 font-medium min-h-[48px]",
-          error ? "border-rose-300" : "border-stone-200"
+          "w-full bg-ivory border p-4 text-sm tracking-wide outline-none focus:border-terracotta transition-all disabled:opacity-50 font-medium min-h-[48px]",
+          error ? "border-rose-400" : "border-stone-300"
         )}
       />
     </div>

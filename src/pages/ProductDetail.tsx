@@ -4,6 +4,7 @@ import { ShoppingBag, Heart, ChevronRight, ChevronLeft, ChevronDown, Share2, Rul
 import { motion, AnimatePresence } from 'motion/react';
 import { products } from '../data/products';
 import { formatPrice, cn, categoryToSlug } from '../lib/utils';
+import { resolveMediaUrl } from '../lib/seo';
 import { Product, type GownRef } from '../types';
 import { useData } from '../contexts/DataContext';
 import { useCart } from '../contexts/CartContext';
@@ -13,7 +14,8 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import { lazyWithRetry } from '../lib/lazyWithRetry';
 import { useFeature } from '../hooks/useFeature';
 import { useToast } from '../contexts/ToastContext';
-import { fetchApprovedReviews, submitReview, type Review } from '../services/reviews';
+import { useSettings } from '../contexts/SettingsContext';
+import { fetchApprovedReviews, submitReview, type Review, type ReviewDelivery } from '../services/reviews';
 import { uploadImage } from '../services/upload';
 import { translateProductValue, localizedContent } from '../lib/productVocab';
 import ProductCard from '../components/ProductCard';
@@ -30,6 +32,7 @@ export default function ProductDetail() {
   const { addItem } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { t, language } = useLanguage();
+  const { settings } = useSettings();
   const navigate = useNavigate();
   const threeDViewerEnabled = useFeature('threeDViewer');
   const { addToast } = useToast();
@@ -45,10 +48,12 @@ export default function ProductDetail() {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showArtistry, setShowArtistry] = useState(false);
   const [showCare, setShowCare] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewSuccess, setReviewSuccess] = useState(false);
+  const [reviewNotice, setReviewNotice] = useState<'local' | 'failed' | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '', photoUrl: '' as string | undefined });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +78,6 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!product) return;
-    const url = `${window.location.origin}/product/${product.id}`;
     document.title = `${productName} | Atelier Riman`;
     analytics.productView({ id: product.id, name: productName, category: product.category });
 
@@ -91,64 +95,15 @@ export default function ProductDetail() {
     setMeta('property', 'og:title', `${productName} | Atelier Riman`);
     setMeta('property', 'og:description', productDescription.slice(0, 155));
     setMeta('property', 'og:type', 'product');
-    if (product.images[0]) setMeta('property', 'og:image', product.images[0]);
+    const heroImage = product.images[0];
+    if (heroImage) setMeta('property', 'og:image', resolveMediaUrl(heroImage) || heroImage);
 
-    const schema = {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: productName,
-      description: productDescription,
-      image: product.images,
-      sku: `RF-${product.id.padStart(4, '0')}`,
-      brand: { '@type': 'Brand', name: product.designer || 'Atelier Riman' },
-      ...(reviews.length > 0 && {
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1),
-          reviewCount: reviews.length,
-        },
-      }),
-      offers: {
-        '@type': 'Offer',
-        url,
-        priceCurrency: 'AED',
-        price: product.salePrice || product.rentalPrice || 0,
-        availability: 'https://schema.org/InStock',
-        itemCondition: 'https://schema.org/NewCondition',
-      },
-    };
-
-    let ld = document.getElementById('product-jsonld');
-    if (!ld) {
-      ld = document.createElement('script');
-      ld.id = 'product-jsonld';
-      (ld as HTMLScriptElement).type = 'application/ld+json';
-      document.head.appendChild(ld);
-    }
-    ld.textContent = JSON.stringify(schema);
-
-    const breadcrumbSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: `${window.location.origin}/` },
-        { '@type': 'ListItem', position: 2, name: product.category, item: `${window.location.origin}/collection` },
-        { '@type': 'ListItem', position: 3, name: productName },
-      ],
-    };
-    let bc = document.getElementById('breadcrumb-jsonld');
-    if (!bc) {
-      bc = document.createElement('script');
-      bc.id = 'breadcrumb-jsonld';
-      (bc as HTMLScriptElement).type = 'application/ld+json';
-      document.head.appendChild(bc);
-    }
-    bc.textContent = JSON.stringify(breadcrumbSchema);
-
-    return () => {
-      document.getElementById('product-jsonld')?.remove();
-    };
-  }, [product, reviews]);
+    // Product + BreadcrumbList JSON-LD is emitted by <SEOHead product={product} />
+    // (see src/components/SEOHead.tsx). Emitting a second Product node here
+    // gave Google two conflicting `image`/`offers` values per URL.
+    document.getElementById('product-jsonld')?.remove();
+    document.getElementById('breadcrumb-jsonld')?.remove();
+  }, [product]);
 
   const saved = isInWishlist(product?.id || '');
   const relatedProducts = useMemo(() =>
@@ -235,9 +190,9 @@ export default function ProductDetail() {
         <div className="container mx-auto px-5 py-10">
           {/* Breadcrumbs */}
           <nav className="flex gap-2 text-xs tracking-[0.2em] uppercase text-stone-600 mb-10">
-            <Link to="/" className="hover:text-gold transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-terracotta-dark transition-colors">{t('nav.home')}</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to={`/collection/${categoryToSlug(product.category)}`} className="hover:text-gold transition-colors">{translateProductValue('category', product.category, language)}</Link>
+            <Link to={`/collection/${categoryToSlug(product.category)}`} className="hover:text-terracotta-dark transition-colors">{translateProductValue('category', product.category, language)}</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-stone-800 font-medium">{productName}</span>
           </nav>
@@ -250,8 +205,8 @@ export default function ProductDetail() {
                   {is3DMode && product.glbUrl ? (
                     <motion.div key="3d-viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
                       <div className="w-full h-full">
-                        <Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-stone-50"><Loader2 className="w-8 h-8 text-gold animate-spin" /></div>}>
-                          <ThreeDViewer src={product.glbUrl} poster={product.images[0]} alt={`${productName} 3D model`} className="w-full h-full border border-gold/20" />
+                        <Suspense fallback={<div className="w-full h-full flex items-center justify-center bg-stone-50"><Loader2 className="w-8 h-8 text-terracotta-dark animate-spin" /></div>}>
+                          <ThreeDViewer src={product.glbUrl} poster={product.images[0]} alt={`${productName} 3D model`} className="w-full h-full border border-terracotta/20" />
                         </Suspense>
                       </div>
                     </motion.div>
@@ -302,10 +257,10 @@ export default function ProductDetail() {
                 {/* Nav Arrows */}
                 {totalAssets > 1 && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-gold hover:text-white transition-all z-20" aria-label="Previous image">
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Previous image">
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-gold hover:text-white transition-all z-20" aria-label="Next image">
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Next image">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </>
@@ -314,11 +269,11 @@ export default function ProductDetail() {
                 {/* Perspective Toggle */}
                 {product.glbUrl && (
                   <div className="absolute top-5 right-5 z-30 flex gap-2">
-                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-gold text-white border-gold" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
+                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-terracotta text-white border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
                       <Search className="w-3.5 h-3.5" />
                     </button>
                     {threeDViewerEnabled && (
-                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition-all backdrop-blur border", is3DMode ? "bg-gold text-white border-gold scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
+                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition-all backdrop-blur border", is3DMode ? "bg-terracotta text-white border-terracotta scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
                         <Box className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -327,7 +282,7 @@ export default function ProductDetail() {
 
                 {/* Share Menu */}
                 <div className="absolute bottom-5 right-5 z-20 flex gap-2">
-                  <button onClick={() => setShowShareMenu(!showShareMenu)} className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-gold hover:text-white transition-all" aria-label="Share this product">
+                  <button onClick={() => setShowShareMenu(!showShareMenu)} className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition-all" aria-label="Share this product">
                     <Share2 className="w-3.5 h-3.5" />
                   </button>
                   {showShareMenu && (
@@ -346,7 +301,7 @@ export default function ProductDetail() {
               {/* Thumbnails */}
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 {product.videoUrl && (
-                  <button onClick={() => setCurrentImageIndex(0)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-900 overflow-hidden border-2 transition-all flex items-center justify-center relative", currentImageIndex === 0 ? "border-gold" : "border-transparent")}>
+                  <button onClick={() => setCurrentImageIndex(0)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-900 overflow-hidden border-2 transition-all flex items-center justify-center relative", currentImageIndex === 0 ? "border-terracotta" : "border-transparent")}>
                     <video src={product.videoUrl} poster={product.images[0]} preload="metadata" muted className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <RotateCcw className="w-4 h-4 text-white/80" />
@@ -356,7 +311,7 @@ export default function ProductDetail() {
                 {product.images.map((img, i) => {
                   const index = product.videoUrl ? i + 1 : i;
                   return (
-                    <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition-all", currentImageIndex === index ? "border-gold" : "border-transparent")}>
+                    <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition-all", currentImageIndex === index ? "border-terracotta" : "border-transparent")}>
                       <img src={img} className="w-full h-full object-cover" loading="lazy" alt={`${productName} thumbnail ${i + 1}`} />
                     </button>
                   );
@@ -366,17 +321,17 @@ export default function ProductDetail() {
               {/* Quick Specs Bar */}
               <div className="grid grid-cols-3 gap-3 pt-3 border-t border-stone-100">
                 <div className="flex flex-col items-center gap-1.5 py-3">
-                  <Gem className="w-4 h-4 text-gold" />
+                  <Gem className="w-4 h-4 text-terracotta-dark" />
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.fabric')}</span>
                   <span className="text-micro text-stone-700 font-medium tracking-wide">{translateProductValue('fabric', product.fabric, language) || t('product.fabric_default')}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1.5 py-3 border-x border-stone-100">
-                  <Sparkles className="w-4 h-4 text-gold" />
+                  <Sparkles className="w-4 h-4 text-terracotta-dark" />
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.silhouette')}</span>
                   <span className="text-micro text-stone-700 font-medium tracking-wide">{translateProductValue('silhouette', product.silhouette, language) || translateProductValue('category', product.category, language)}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1.5 py-3">
-                  <Wind className="w-4 h-4 text-gold" />
+                  <Wind className="w-4 h-4 text-terracotta-dark" />
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.color')}</span>
                   <span className="text-micro text-stone-700 font-medium tracking-wide">{product.color?.[0] || product.style[0] || 'Signature'}</span>
                 </div>
@@ -386,17 +341,22 @@ export default function ProductDetail() {
             {/* Info — Sticky on Desktop */}
             <div className="flex flex-col lg:sticky lg:top-28 lg:self-start">
               <header className="mb-8">
-                <span className="text-micro tracking-[0.3em] uppercase text-gold block mb-2 font-bold">{product.designer || 'Riman Atelier'}</span>
+                <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-2 font-bold">{product.designer || 'Riman Atelier'}</span>
                 <h1 className="font-heading text-3xl md:text-4xl text-stone-800 tracking-wider mb-3 leading-tight">{productName}</h1>
                 <div className="flex gap-3">
-                  {product.isNew && <span className="text-gold text-micro uppercase tracking-widest border border-gold/30 px-3 py-1 font-bold">{t('product.limited_edition')}</span>}
+                  {product.isNew && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-terracotta-dark text-micro uppercase tracking-widest border border-terracotta/30 px-3 py-1 font-bold self-start">{t('product.limited_edition')}</span>
+                    <span className="text-[11px] text-stone-500 italic">{t('product.limited_edition_count')}</span>
+                  </div>
+                )}
                   <span className="text-stone-600 text-micro uppercase tracking-widest border border-stone-200 px-3 py-1 font-medium">SKU: RF-{product.id.padStart(4, '0')}</span>
                 </div>
               </header>
 
               {/* Editorial Quote */}
               {pullQuote && (
-                <div className="mb-8 ps-5 border-s-2 border-gold/40">
+                <div className="mb-8 ps-5 border-s-2 border-terracotta/40">
                   <p className="font-editorial italic text-sm text-stone-600 leading-relaxed">
                     "{pullQuote}"
                   </p>
@@ -404,7 +364,7 @@ export default function ProductDetail() {
               )}
 
               {/* Pricing */}
-              <div className="mb-8 p-5 bg-gold/5 flex flex-col gap-4">
+              <div className="mb-8 p-5 bg-terracotta/5 flex flex-col gap-4">
                 {isSale && (
                   <div className="flex justify-between items-baseline">
                     <span className="font-body text-micro tracking-widest uppercase text-stone-600 font-medium">{t('product.purchase_value')}</span>
@@ -418,17 +378,49 @@ export default function ProductDetail() {
                       <span className="text-micro text-stone-600 uppercase tracking-wider italic">({t('product.rental_includes')})</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-heading text-3xl text-gold"><span className="text-sm font-body text-stone-600 uppercase tracking-widest me-2">{t('pricing.from')}</span>{formatPrice(product.rentalPrice || 0)}</span>
-                      <p className="text-micro text-stone-600 uppercase tracking-widest mt-1">{t('product.refundable_deposit')}</p>
+                      <span className="font-heading text-3xl text-terracotta-dark"><span className="text-sm font-body text-stone-600 uppercase tracking-widest me-2">{t('pricing.from')}</span>{formatPrice(product.rentalPrice || 0)}</span>
+                      <p className="text-micro text-stone-600 uppercase tracking-widest mt-1">
+                        + {formatPrice(product.securityDeposit || 0)} {t('product.refundable_deposit')}
+                      </p>
                     </div>
                   </div>
                 )}
                 <p className="font-body text-micro text-stone-600 italic mt-2 leading-relaxed">{t('pricing.consultation_note')}</p>
+                <p className="font-body text-micro text-stone-600 italic leading-relaxed">{t('product.deposit_return_note')}</p>
               </div>
 
               <p className="font-body text-sm text-stone-600 leading-relaxed tracking-wide mb-8">
                 {bodyCopy}
               </p>
+
+              {/* Will It Fit You? — answers the #1 blocker before the size picker */}
+              <div className="mb-8 border border-terracotta/30 bg-terracotta/[0.04] p-6">
+                <h3 className="font-heading text-xl tracking-wide text-stone-800 mb-4">{t('product.fit_block_title')}</h3>
+                <ul className="space-y-3">
+                  {[t('product.fit_point_1'), t('product.fit_point_2'), t('product.fit_point_3')].map((point) => (
+                    <li key={point} className="flex gap-3 text-sm text-stone-700 leading-relaxed">
+                      <ShieldCheck className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex flex-wrap items-center gap-4 mt-5 pt-4 border-t border-terracotta/20">
+                  <button onClick={() => setShowSizeGuide(true)} className="flex items-center gap-2 text-micro tracking-widest text-terracotta-dark uppercase hover:underline">
+                    <Ruler className="w-3 h-3" /> {t('product.size_guide')}
+                  </button>
+                  <span className="text-micro text-stone-500 italic">{t('product.fit_block_measurement_hint')}</span>
+                </div>
+              </div>
+
+              {/* Lead time — turns a vague timeline into a decision */}
+              <div className="mb-8 p-5 border-l-2 border-terracotta bg-stone-50">
+                <h3 className="font-body text-micro font-bold tracking-[0.2em] uppercase text-stone-800 mb-2">{t('product.leadtime_title')}</h3>
+                <p className="text-sm text-stone-700 leading-relaxed mb-2">{t('product.leadtime_body')}</p>
+                <p className="text-sm text-stone-700 leading-relaxed">
+                  {t('product.leadtime_urgent')}{' '}
+                  <a href={`tel:${settings.contact.phone.replace(/\s/g, '')}`} className="text-terracotta-dark font-bold hover:underline">{settings.contact.phone}</a>
+                </p>
+              </div>
 
               {/* Selection */}
               <div className="space-y-6 mb-10">
@@ -436,7 +428,7 @@ export default function ProductDetail() {
                   <div className="p-5 bg-stone-50">
                     <div className="flex justify-between items-center mb-3">
                       <span className="font-body text-micro tracking-[0.2em] uppercase text-stone-800">{t('product.rental_availability')}</span>
-                      <span className="text-micro text-gold uppercase tracking-widest font-bold">{t('product.fast_booking')}</span>
+                      <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold">{t('product.fast_booking')}</span>
                     </div>
                     <AvailabilityCalendar productId={product.id} selectedDate={bookingDate} onDateSelect={setBookingDate} />
                     {!bookingDate && (
@@ -450,7 +442,7 @@ export default function ProductDetail() {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <span className="font-body text-micro tracking-[0.2em] uppercase text-stone-800">{t('product.select_size_label')}</span>
-                    <button onClick={() => setShowSizeGuide(true)} className="flex items-center gap-2 text-micro tracking-widest text-gold uppercase hover:underline">
+                    <button onClick={() => setShowSizeGuide(true)} className="flex items-center gap-2 text-micro tracking-widest text-terracotta-dark uppercase hover:underline">
                       <Ruler className="w-3 h-3" /> {t('product.size_guide')}
                     </button>
                   </div>
@@ -458,7 +450,7 @@ export default function ProductDetail() {
                     {['XS', 'S', 'M', 'L', 'XL'].map((size) => {
                       const isAvailable = product.sizes.includes(size);
                       return (
-                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition-all", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-gold bg-gold text-white" : "border-stone-200 text-stone-600 hover:border-gold")}>
+                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition-all", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-terracotta bg-terracotta text-white" : "border-stone-200 text-stone-600 hover:border-terracotta")}>
                           {size}
                         </button>
                       );
@@ -495,19 +487,19 @@ export default function ProductDetail() {
               </div>
 
               {/* Trust Badges — 3-column grid */}
-              <div className="grid grid-cols-3 gap-4 py-8 border-t border-b border-stone-100 mb-10 bg-gold/[0.03]">
+              <div className="grid grid-cols-3 gap-4 py-8 border-t border-b border-stone-100 mb-10 bg-terracotta/[0.03]">
                 <div className="flex flex-col items-center text-center gap-2">
-                  <ShieldCheck className="w-5 h-5 text-gold" />
+                  <ShieldCheck className="w-5 h-5 text-terracotta-dark" />
                   <span className="text-micro font-bold text-stone-800 tracking-wider leading-tight">{t('product.couture_care')}</span>
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.cleaning_included')}</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-2 border-x border-stone-100">
-                  <Truck className="w-5 h-5 text-gold" />
+                  <Truck className="w-5 h-5 text-terracotta-dark" />
                   <span className="text-micro font-bold text-stone-800 tracking-wider leading-tight">{t('product.secure_delivery')}</span>
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.uae_gcc')}</span>
                 </div>
                 <div className="flex flex-col items-center text-center gap-2">
-                  <Ruler className="w-5 h-5 text-gold" />
+                  <Ruler className="w-5 h-5 text-terracotta-dark" />
                   <span className="text-micro font-bold text-stone-800 tracking-wider leading-tight">{t('product.bespoke_fit')}</span>
                   <span className="text-micro text-stone-600 uppercase tracking-widest font-bold">{t('product.custom_tailoring')}</span>
                 </div>
@@ -524,21 +516,21 @@ export default function ProductDetail() {
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="border-t border-stone-100">
                         <div className="flex justify-between py-3.5 px-5 bg-ivory">
-                          <span className="text-micro text-gold uppercase tracking-widest font-bold">{t('product.fabric')}</span>
+                          <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold">{t('product.fabric')}</span>
                           <span className="text-xs text-stone-800 font-medium tracking-wide">{translateProductValue('fabric', product.fabric, language) || t('product.fabric_default')}</span>
                         </div>
                         <div className="flex justify-between py-3.5 px-5 bg-stone-50/50">
-                          <span className="text-micro text-gold uppercase tracking-widest font-bold">{t('product.designer')}</span>
+                          <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold">{t('product.designer')}</span>
                           <span className="text-xs text-stone-800 font-medium tracking-wide">{product.designer || 'Riman Atelier'}</span>
                         </div>
                         <div className="py-3.5 px-5 bg-ivory">
-                          <span className="text-micro text-gold uppercase tracking-widest font-bold block mb-2">{t('product.style_elements')}</span>
+                          <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold block mb-2">{t('product.style_elements')}</span>
                           <div className="flex flex-wrap gap-2">
                             {product.style.map((tag, i) => (
                               <span key={i} className="text-micro px-3 py-1 bg-stone-50 border border-stone-100 text-stone-600 uppercase tracking-[0.15em] font-medium">{tag}</span>
                             ))}
                             {product.category && (
-                              <span className="text-micro px-3 py-1 bg-gold/5 border border-gold/10 text-gold uppercase tracking-[0.15em] font-bold">{translateProductValue('category', product.category, language)}</span>
+                              <span className="text-micro px-3 py-1 bg-terracotta/5 border border-terracotta/10 text-terracotta-dark uppercase tracking-[0.15em] font-bold">{translateProductValue('category', product.category, language)}</span>
                             )}
                           </div>
                         </div>
@@ -559,28 +551,28 @@ export default function ProductDetail() {
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="p-5 pt-0 space-y-3">
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.care_dry_clean')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.care_dry_clean_desc')}</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.care_store')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.care_store_desc')}</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.care_handle')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.care_handle_desc')}</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.care_steam')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.care_steam_desc')}</p>
@@ -593,38 +585,38 @@ export default function ProductDetail() {
               </div>
 
               {/* Ask a Stylist CTA */}
-              <Link to="/appointment" className="block p-5 bg-gold/5 transition-all mb-4 group">
+              <Link to="/appointment" className="block p-5 bg-terracotta/5 transition-all mb-4 group">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gold/10 flex items-center justify-center shrink-0">
-                    <MessageCircle className="w-5 h-5 text-gold" />
+                  <div className="w-10 h-10 bg-terracotta/10 flex items-center justify-center shrink-0">
+                    <MessageCircle className="w-5 h-5 text-terracotta-dark" />
                   </div>
                   <div>
-                    <h4 className="font-heading text-xs tracking-[0.15em] uppercase text-stone-800 mb-1 group-hover:text-gold transition-colors">{t('product.ask_stylist')}</h4>
+                    <h4 className="font-heading text-xs tracking-[0.15em] uppercase text-stone-800 mb-1 group-hover:text-terracotta-dark transition-colors">{t('product.ask_stylist')}</h4>
                     <p className="text-micro text-stone-600 tracking-wide">{t('product.ask_stylist_desc')}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gold ml-auto group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-4 h-4 text-terracotta-dark ml-auto group-hover:translate-x-1 transition-transform" />
                 </div>
               </Link>
 
               {/* Artistry & Essence — collapsible */}
               <div className="border-t border-stone-200">
-                <button onClick={() => setShowDetails(!showDetails)} className="w-full flex items-center justify-between p-5 bg-ivory hover:bg-ivory transition-colors">
+                <button onClick={() => setShowArtistry(!showArtistry)} className="w-full flex items-center justify-between p-5 bg-ivory hover:bg-ivory transition-colors">
                   <span className="font-body text-micro font-bold tracking-widest uppercase text-stone-800">{t('product.artistry_essence')}</span>
-                  <ChevronDown className={cn("w-4 h-4 text-stone-600 transition-transform duration-300", showDetails && "rotate-180")} />
+                  <ChevronDown className={cn("w-4 h-4 text-stone-600 transition-transform duration-300", showArtistry && "rotate-180")} />
                 </button>
                 <AnimatePresence>
-                  {showDetails && (
+                  {showArtistry && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                       <div className="p-5 pt-0 space-y-5">
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.fitting_title')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.fitting_desc')}</p>
                           </div>
                         </div>
                         <div className="flex gap-4">
-                          <div className="w-px h-auto bg-gold/30 shrink-0" />
+                          <div className="w-px h-auto bg-terracotta/30 shrink-0" />
                           <div>
                             <h5 className="font-body text-micro font-bold tracking-widest uppercase mb-1">{t('product.texture_title')}</h5>
                             <p className="text-micro text-stone-600 leading-relaxed italic">{t('product.texture_desc')}</p>
@@ -647,10 +639,12 @@ export default function ProductDetail() {
                   <div className="flex items-center gap-2">
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className={cn("w-4 h-4", star <= Math.round(averageRating) ? "text-gold fill-gold" : "text-stone-200")} />
+                        <Star key={star} className={cn("w-4 h-4", star <= Math.round(averageRating) ? "text-terracotta-dark fill-terracotta" : "text-stone-200")} />
                       ))}
                     </div>
-                    <span className="text-xs text-stone-600 font-bold tracking-widest">({averageRating.toFixed(1)})</span>
+                    <span className="text-xs text-stone-600 font-bold tracking-widest">
+                      {averageRating.toFixed(1)} · {reviews.length} {t('product.review_count')}
+                    </span>
                   </div>
                 )}
                 <ChevronDown className={cn("w-5 h-5 text-stone-600 transition-transform duration-300", showReviews && "rotate-180")} />
@@ -663,8 +657,9 @@ export default function ProductDetail() {
                     <div className="lg:col-span-2">
                       {reviews.length === 0 ? (
                         <div className="py-16 text-center">
-                          <p className="font-editorial italic text-stone-600 text-lg mb-2">{t('product.no_reviews_heading')}</p>
-                          <p className="text-micro text-stone-600 uppercase tracking-widest">{t('product.no_reviews_desc')}</p>
+                          <p className="font-editorial italic text-stone-600 text-lg mb-2">{t('product.no_reflections_title')}</p>
+                          <p className="text-micro text-stone-600 uppercase tracking-widest">{t('product.no_reflections_desc')}</p>
+                          <p className="font-body text-sm text-stone-600 leading-relaxed mt-4 max-w-md mx-auto">{t('product.no_reflections_assurance')}</p>
                         </div>
                       ) : (
                       <div className="space-y-8">
@@ -673,10 +668,15 @@ export default function ProductDetail() {
                             <div className="flex justify-between items-start mb-3">
                               <div>
                                 <p className="text-micro font-bold text-stone-800 uppercase tracking-widest mb-1">{review.name}</p>
-                                <div className="flex gap-1 mb-2">
-                                  {[1, 2, 3, 4, 5].map((star) => (
-                                    <Star key={star} className={cn("w-3 h-3", star <= review.rating ? "text-gold fill-gold" : "text-stone-200")} />
-                                  ))}
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="flex gap-1">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star key={star} className={cn("w-3 h-3", star <= review.rating ? "text-terracotta-dark fill-terracotta" : "text-stone-200")} />
+                                    ))}
+                                  </div>
+                                  <span className="text-[10px] text-stone-500 uppercase tracking-widest flex items-center gap-1">
+                                    <CheckCircle2 className="w-2.5 h-2.5 text-terracotta-dark" /> {t('product.verified_review')}
+                                  </span>
                                 </div>
                               </div>
                               <span className="text-micro text-stone-600 uppercase tracking-widest">
@@ -701,22 +701,29 @@ export default function ProductDetail() {
                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                             <CheckCircle2 className="w-12 h-12 text-green-500" />
                             <p className="text-micro tracking-widest text-stone-600 uppercase font-bold">{t('product.reflection_curated')}</p>
-                            <button onClick={() => setReviewSuccess(false)} className="text-micro text-gold uppercase tracking-widest border-b border-gold/30 pb-1">{t('product.write_another')}</button>
+                            <button onClick={() => setReviewSuccess(false)} className="text-micro text-terracotta-dark uppercase tracking-widest border-b border-terracotta/30 pb-1">{t('product.write_another')}</button>
                           </motion.div>
                         ) : (
                           <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6" onSubmit={async (e) => {
                             e.preventDefault();
                             if (!newReview.name.trim() || newReview.name.trim().length < 2 || !newReview.comment.trim() || newReview.comment.trim().length < 10 || !product) return;
+                            setReviewNotice(null);
+                            let delivery: ReviewDelivery;
                             try {
-                              await submitReview({
+                              ({ delivery } = await submitReview({
                                 productId: product.id,
                                 name: newReview.name,
                                 rating: newReview.rating,
                                 comment: newReview.comment,
                                 photoUrl: newReview.photoUrl,
-                              });
+                              }));
                             } catch {
-                              // Submission stored locally at minimum; show confirmation regardless
+                              setReviewNotice('failed');
+                              return;
+                            }
+                            if (delivery === 'local') {
+                              setReviewNotice('local');
+                              return;
                             }
                             setNewReview({ name: '', rating: 5, comment: '', photoUrl: undefined });
                             setReviewSuccess(true);
@@ -726,18 +733,18 @@ export default function ProductDetail() {
                               <div className="flex gap-2">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                   <button key={star} type="button" onClick={() => setNewReview({ ...newReview, rating: star })} className="transition-transform hover:scale-110">
-                                    <Star className={cn("w-7 h-7", star <= newReview.rating ? "text-gold fill-gold" : "text-stone-200")} />
+                                    <Star className={cn("w-7 h-7", star <= newReview.rating ? "text-terracotta-dark fill-terracotta" : "text-stone-200")} />
                                   </button>
                                 ))}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_name')}</label>
-                              <input type="text" value={newReview.name} onChange={(e) => setNewReview({ ...newReview, name: e.target.value })} className="field-couture" placeholder={t('product.enter_name')} />
-                            </div>
-                            <div>
-                              <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_reflection')}</label>
-                              <textarea rows={4} value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })} className="field-couture resize-none" placeholder={t('product.share_experience')}></textarea>
+<label htmlFor="review-name" className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_name')}</label>
+                <input id="review-name" name="review_name" type="text" required aria-required="true" value={newReview.name} onChange={(e) => setNewReview({ ...newReview, name: e.target.value })} className="field-couture" placeholder={t('product.enter_name')} />
+              </div>
+              <div>
+                <label htmlFor="review-comment" className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.your_reflection')}</label>
+                <textarea id="review-comment" name="review_comment" rows={4} required aria-required="true" value={newReview.comment} onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })} className="field-couture resize-none" placeholder={t('product.share_experience')}></textarea>
                             </div>
                             <div>
                               <label className="block text-micro font-bold text-stone-600 uppercase tracking-widest mb-2">{t('product.add_photo')}</label>
@@ -774,6 +781,21 @@ export default function ProductDetail() {
                               />
                             </div>
                             <button type="submit" className="w-full btn-luxury">{t('product.submit_review')}</button>
+                            {reviewNotice && (
+                              <div role="alert" className="flex items-start gap-3 border border-amber-700/40 bg-amber-50/60 p-4">
+                                <Info className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                                <div className="space-y-2">
+                                  <p className="text-micro uppercase tracking-widest text-stone-700">{t(reviewNotice === 'local' ? 'product.reflection_local_notice' : 'product.reflection_failed')}</p>
+                                  {reviewNotice === 'local' && (
+                                    <p className="text-xs text-stone-600">
+                                      <a href={`https://wa.me/${settings.social.whatsapp.replace(/[^\d]/g, '')}?text=${encodeURIComponent(t('product.reflection_local_whatsapp'))}`} target="_blank" rel="noopener noreferrer" className="underline border-b border-stone-400 inline-block">
+                                        {t('product.reflection_send_whatsapp')}
+                                      </a>
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                           </motion.form>
                         )}
                       </AnimatePresence>
@@ -802,7 +824,7 @@ export default function ProductDetail() {
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-ivory border-t border-stone-200 p-4 flex items-center gap-4 lg:hidden">
           <div className="flex-1 min-w-0">
             <p className="font-heading text-micro tracking-wider uppercase text-stone-800 truncate">{productName}</p>
-            <p className="font-heading text-sm text-gold"><span className="text-micro font-body text-stone-600 uppercase tracking-wider me-1">{t('pricing.from')}</span>{formatPrice(isSale ? (product.salePrice || 0) : (isRent ? (product.rentalPrice || 0) : 0))}</p>
+            <p className="font-heading text-sm text-terracotta-dark"><span className="text-micro font-body text-stone-600 uppercase tracking-wider me-1">{t('pricing.from')}</span>{formatPrice(isSale ? (product.salePrice || 0) : (isRent ? (product.rentalPrice || 0) : 0))}</p>
           </div>
           <div className="flex flex-col gap-1.5 shrink-0">
             <button onClick={reserveViewing} className="btn-luxury !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
@@ -859,7 +881,7 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
           </div>
 
           <h3 className="font-heading text-3xl text-stone-800 mb-2 uppercase tracking-widest">{t('product.reservation_secured')}</h3>
-          <div className="w-12 h-px bg-gold mx-auto my-4" />
+          <div className="w-12 h-px bg-terracotta mx-auto my-4" />
           <p className="text-stone-600 text-micro tracking-widest uppercase mb-10">{t('product.atelier_moment_booked')}</p>
 
           <div className="bg-stone-50 p-6 mb-10 text-left space-y-4">
@@ -870,7 +892,7 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
             <div className="flex justify-between items-center text-xs pb-4 border-b border-stone-100">
               <span className="text-stone-600 uppercase tracking-widest">{t('product.period_starts')}</span>
               <div className="flex items-center gap-2 font-bold text-stone-800">
-                <Calendar className="w-3 h-3 text-gold" />
+                <Calendar className="w-3 h-3 text-terracotta-dark" />
                 {date.toLocaleDateString(language === 'ar' ? 'ar-AE' : 'en-AE', { month: 'long', day: 'numeric', year: 'numeric' })}
               </div>
             </div>
@@ -878,14 +900,14 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
 
           <div className="text-left space-y-6 mb-10">
             <div className="flex gap-3">
-              <Info className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+              <Info className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
               <div>
                 <p className="text-micro font-bold text-stone-800 uppercase tracking-widest mb-1">{t('product.rental_policy')}</p>
                 <p className="text-xs text-stone-600 leading-relaxed italic">{t('product.rental_policy_desc')}</p>
               </div>
             </div>
             <div className="flex gap-3">
-              <ShieldCheck className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+              <ShieldCheck className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
               <div>
                 <p className="text-micro font-bold text-stone-800 uppercase tracking-widest mb-1">{t('product.security_deposit')}</p>
                 <p className="text-xs text-stone-600 leading-relaxed italic">{t('product.security_deposit_desc')} {formatPrice(product.securityDeposit || 5000)} {t('product.will_be_held')}</p>

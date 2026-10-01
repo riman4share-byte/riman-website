@@ -1,6 +1,5 @@
 import { supabase } from './supabase';
 import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from './supabase';
-import { reviewsData } from '../data/reviews';
 
 export interface Review {
   id: string;
@@ -66,21 +65,21 @@ export async function fetchApprovedReviews(productId: string): Promise<Review[]>
   const local = readLocal().filter(r => r.productId === productId && r.status === 'approved');
   if (local.length > 0) return local;
 
-  return reviewsData
-    .filter(r => r.productId === productId)
-    .map((r, i) => ({
-      id: `seed-${r.productId}-${i}`,
-      productId: r.productId,
-      name: r.name,
-      rating: r.rating,
-      comment: r.comment,
-      photoUrl: r.photoUrl,
-      status: 'approved' as const,
-      createdAt: new Date().toISOString(),
-    }));
+  // No seeded placeholder reviews. Previously this fell back to a hardcoded
+  // array of invented named customers; with a "Verified purchase" marker in
+  // the UI that asserts a purchase that never happened. Better to show the
+  // empty state ("New in the atelier") than to display fabricated proof.
+  return [];
 }
 
-export async function submitReview(review: Omit<Review, 'id' | 'status' | 'createdAt'>): Promise<Review> {
+export type ReviewDelivery = 'server' | 'local';
+
+export interface ReviewSubmissionResult {
+  review: Review;
+  delivery: ReviewDelivery;
+}
+
+export async function submitReview(review: Omit<Review, 'id' | 'status' | 'createdAt'>): Promise<ReviewSubmissionResult> {
   const local: Review = {
     ...review,
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -113,14 +112,14 @@ export async function submitReview(review: Omit<Review, 'id' | 'status' | 'creat
         }),
       });
       if (!res.ok) throw new Error(`Review submit failed (HTTP ${res.status})`);
-      return { ...local, status: 'pending' as const };
+      return { review: { ...local, status: 'pending' as const }, delivery: 'server' };
     } catch {
       // Fall through to local storage (offline / unreachable backend)
     }
   }
 
   writeLocal([local, ...readLocal()]);
-  return local;
+  return { review: local, delivery: 'local' };
 }
 
 export async function fetchAllReviews(): Promise<Review[]> {

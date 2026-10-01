@@ -15,6 +15,20 @@ export function getItemUnitPrice(item: PricedItem): number {
   return item.intent === 'rent' ? (item.rentalPrice || 0) : (item.salePrice || 0);
 }
 
+export interface CartLinePriced {
+  intent?: 'sale' | 'rent';
+  salePrice?: number;
+  rentalPrice?: number;
+}
+
+export function getCartLineUnitPrice(item: CartLinePriced): number {
+  return getItemUnitPrice({
+    intent: item.intent ?? 'sale',
+    salePrice: item.salePrice,
+    rentalPrice: item.rentalPrice,
+  });
+}
+
 export function calculateDiscount(subtotal: number, coupon: Coupon | null): number {
   if (!coupon) return 0;
   if (coupon.minSubtotal != null && subtotal < coupon.minSubtotal) return 0;

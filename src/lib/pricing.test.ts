@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateDiscount, getFinalTotal, getItemUnitPrice, type Coupon, type PricedItem } from './pricing';
+import { calculateDiscount, getFinalTotal, getItemUnitPrice, getCartLineUnitPrice, type Coupon, type PricedItem, type CartLinePriced } from './pricing';
 
 describe('calculateDiscount', () => {
   const percentCoupon: Coupon = { code: 'SAVE10', type: 'percent', value: 10 };
@@ -56,5 +56,26 @@ describe('getItemUnitPrice', () => {
   it('falls back to zero when the relevant price is missing', () => {
     expect(getItemUnitPrice({ intent: 'rent', salePrice: 1000 })).toBe(0);
     expect(getItemUnitPrice({ intent: 'sale', rentalPrice: 100 })).toBe(0);
+  });
+});
+
+describe('getCartLineUnitPrice', () => {
+  it('shows the purchase price, not the rental price, for a gown being bought', () => {
+    const line = { intent: 'sale' as const, salePrice: 4200, rentalPrice: 350 };
+    expect(getCartLineUnitPrice(line)).toBe(4200);
+  });
+
+  it('shows the rental price for a gown being rented', () => {
+    const line = { intent: 'rent' as const, salePrice: 4200, rentalPrice: 350 };
+    expect(getCartLineUnitPrice(line)).toBe(350);
+  });
+
+  it('treats a legacy line with no intent as a purchase', () => {
+    expect(getCartLineUnitPrice({ salePrice: 4200, rentalPrice: 350 })).toBe(4200);
+  });
+
+  it('never reports the rental price for a line bought outright', () => {
+    const both: CartLinePriced = { intent: 'sale', salePrice: 4200, rentalPrice: 350 };
+    expect(getCartLineUnitPrice(both)).not.toBe(350);
   });
 });
