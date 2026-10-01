@@ -110,7 +110,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
         {/* Badges — above link, pointer-events-none so clicks pass through */}
         <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none z-10">
           {product.isNew && (
-            <span className="bg-gold text-white text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
+            <span className="bg-terracotta text-white text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
               {t('badge.new')}
             </span>
           )}
@@ -121,7 +121,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
           )}
           {product.glbUrl && (
             <span className="bg-ivory text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 border border-stone-200">
-              <Box className="w-3 h-3 text-gold" />
+              <Box className="w-3 h-3 text-terracotta-dark-ink" />
               {t('badge.3d')}
             </span>
           )}
@@ -138,7 +138,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             "md:hidden absolute bottom-0 left-0 right-0 z-20 py-3 text-micro tracking-[0.2em] uppercase font-body flex items-center justify-center gap-2 transition-all duration-300",
             showMobileActions 
               ? "bg-onyx text-white" 
-              : "bg-gold text-white"
+              : "bg-terracotta text-white"
           )}
           aria-label={showMobileActions ? 'Close quick shop' : 'Open quick shop'}
         >
@@ -174,8 +174,8 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                     className={cn(
                       "min-w-[2.5rem] h-9 px-2 flex items-center justify-center border text-micro tracking-wider transition-all",
                       selectedSize === size
-                        ? "border-gold bg-gold text-white"
-                        : "border-stone-300 text-stone-600 hover:border-gold hover:text-gold"
+                        ? "border-terracotta bg-terracotta text-white"
+                        : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-dark-ink"
                     )}
                   >
                     {size}
@@ -187,7 +187,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           {/* Slim bar with two actions */}
           <div className={cn(
-            "flex bg-onyx border-t border-gold/20 transition-all duration-500",
+            "flex bg-onyx border-t border-terracotta/20 transition-all duration-500",
             showMobileActions ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
             "md:group-hover:opacity-100 md:group-hover:translate-y-0"
           )}>
@@ -197,7 +197,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                 "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-all duration-300 flex items-center justify-center gap-1.5",
                 isAdded
                   ? "text-emerald-400"
-                  : "text-white hover:text-gold"
+                  : "text-white hover:text-terracotta-dark-ink"
               )}
             >
               {isAdded ? (
@@ -233,11 +233,11 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
         <div>
           <p className="text-micro tracking-widest text-stone-600 uppercase mb-1">{product.category}</p>
         {lookNumber && (
-          <span className="font-label text-micro tracking-[0.3em] uppercase text-gold">
+          <span className="font-label text-micro tracking-[0.3em] uppercase text-terracotta-dark-ink">
             {t('silhouettes.look')} {lookNumber}
           </span>
         )}
-          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-gold transition-colors leading-[1.1]">
+          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-terracotta-dark-ink transition-colors leading-[1.1]">
             {productName}
         </Link>
         {product.fabric && (
@@ -256,7 +256,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                   {t('product.rent')}: <span className="text-stone-700"><span className="me-1 text-micro uppercase tracking-wider text-stone-600">{t('pricing.from')}</span>{' '}{formatPrice(product.rentalPrice || 0)}</span>
                 </p>
                 {isAvailable && start && end && (
-                  <p className="flex items-center gap-1 text-micro text-gold/80 tracking-wider">
+                  <p className="flex items-center gap-1 text-micro text-terracotta-dark-ink/80 tracking-wider">
                     <Calendar className="w-3 h-3" />
                     <span className="tracking-widest uppercase font-medium">
                       {availabilityDateFormatter.format(start)}–{availabilityDayFormatter.format(end)} {t('product.available')}
@@ -275,7 +275,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           <Link
             to={`/product/${product.id}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-gold transition-colors duration-500 mt-2"
+            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-terracotta-dark-ink transition-colors duration-500 mt-2"
           >
             {t('silhouettes.enquire')}
             <ArrowRight className="w-3 h-3" />

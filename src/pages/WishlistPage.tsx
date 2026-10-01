@@ -88,7 +88,7 @@ export default function WishlistPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-32">
-            <Loader2 className="w-8 h-8 text-gold animate-spin" />
+            <Loader2 className="w-8 h-8 text-terracotta-dark animate-spin" />
           </div>
         ) : displayProducts.length > 0 ? (
           <>
@@ -141,8 +141,8 @@ export default function WishlistPage() {
 
                   <div className="p-8 text-center border-t border-stone-50">
                     <span className="text-micro text-stone-500 uppercase tracking-widest mb-2 block">{translateProductValue('category', product.category, language)}</span>
-                    <h3 className="font-heading text-lg text-stone-800 mb-4 tracking-wide group-hover:text-gold transition-colors">{product.name}</h3>
-                    <p className="font-body text-sm text-gold mb-8">{formatPrice(product.salePrice || product.rentalPrice || 0)}</p>
+                    <h3 className="font-heading text-lg text-stone-800 mb-4 tracking-wide group-hover:text-terracotta-dark transition-colors">{product.name}</h3>
+                    <p className="font-body text-sm text-terracotta-dark mb-8">{formatPrice(product.salePrice || product.rentalPrice || 0)}</p>
 
                      <div className="flex gap-2">
                         <Link to={`/product/${product.id}`} className="flex-1 btn-luxury !py-3 !px-4 text-micro">{t('selection.view')}</Link>

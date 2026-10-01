@@ -106,7 +106,7 @@ export default function CollectionPage() {
       <header className="section-padding !py-12 bg-ivory border-b border-stone-100">
         <div className="container mx-auto">
           <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-4">
-            <Link to="/" className="hover:text-gold transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-terracotta-dark-ink transition-colors">{t('nav.home')}</Link>
             <span>/</span>
             <span className="text-stone-800 font-medium">{t('cat.collection')}</span>
           </nav>
@@ -156,7 +156,7 @@ export default function CollectionPage() {
                             onClick={() => { setSortBy(option); setShowSortMenu(false); }}
                             className={cn(
                               "text-left px-5 py-3 text-xs tracking-widest uppercase transition-colors font-medium cursor-pointer",
-                              sortBy === option ? "bg-gold/10 text-gold" : "text-stone-600 hover:bg-stone-50 hover:text-stone-800"
+                              sortBy === option ? "bg-terracotta/10 text-terracotta-dark-ink" : "text-stone-600 hover:bg-stone-50 hover:text-stone-800"
                             )}
                           >
                             {label}
@@ -173,7 +173,7 @@ export default function CollectionPage() {
           {hasActiveFilters && (
             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-stone-100">
               <span className="text-micro tracking-widest uppercase text-stone-600">{filteredProducts.length} {t('collection.results')}</span>
-              <button onClick={clearFilters} className="text-micro tracking-[0.2em] uppercase text-gold hover:text-stone-800 transition-colors font-bold">{t('collection.clear_all')}</button>
+              <button onClick={clearFilters} className="text-micro tracking-[0.2em] uppercase text-terracotta-dark-ink hover:text-stone-800 transition-colors font-bold">{t('collection.clear_all')}</button>
             </div>
           )}
         </div>
@@ -191,12 +191,12 @@ export default function CollectionPage() {
           ) : (
             <div className="col-span-full py-24 text-center">
               <div className="max-w-md mx-auto mb-10">
-                <div className="w-16 h-px bg-gold mx-auto mb-8" />
+                <div className="w-16 h-px bg-terracotta mx-auto mb-8" />
                 <p className="heading-editorial text-stone-600 text-2xl italic mb-4">{t('collection.empty_heading')}</p>
                 <p className="font-body text-xs text-stone-600 tracking-[0.2em] uppercase leading-relaxed">
                   {t('collection.empty_desc')}
                 </p>
-                <div className="w-16 h-px bg-gold mx-auto mt-8" />
+                <div className="w-16 h-px bg-terracotta mx-auto mt-8" />
               </div>
               <Link to="/collection/all" className="btn-luxury">{t('collection.view_all')}</Link>
             </div>
