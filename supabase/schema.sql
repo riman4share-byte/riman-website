@@ -1,4 +1,16 @@
-/* Riman Fashion - combined schema. Paste ALL of this into the Supabase dashboard SQL Editor and click Run. Safe to re-run. */
+/* ============================================================
+   !!! DEPRECATED — DO NOT RUN THIS FILE !!!
+   This combined schema is OUT OF DATE. It predates two security
+   migrations and re-running it will UNDO those fixes:
+     1. It recreates "Users can update their own profile" WITHOUT
+        the role-change guard -> reopens the admin-role
+        escalation hole fixed by 20260915000001_lockdown_profiles_role.sql
+     2. It recreates "Users can create orders" -> reopens the
+        fake-order-total hole fixed by 20260916000005_orders_server_created_only.sql
+   Instead, apply migrations in order from supabase/migrations/
+   (files are named YYYYMMDD... and are safe to run once each).
+   ============================================================ */
+-- Riman Fashion - combined schema (STALE, see banner above)
 -- ============================================
 -- RIMAN FASHION - Complete Database Schema
 -- Idempotent version - safe to re-run
