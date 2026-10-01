@@ -24,21 +24,21 @@ CREATE POLICY "Admins can manage site settings" ON site_settings FOR ALL USING (
 
 -- Seed default settings
 INSERT INTO site_settings (key, value) VALUES ('branding', '{
-  "siteName": "Atelier Riman",
+  "siteName": "Riman Fashion",
   "tagline": "Sharjah''s Most Majestic Couture",
   "logoText": "Riman"
 }'::jsonb) ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO site_settings (key, value) VALUES ('contact', '{
-  "email": "hello@riman.ae",
-  "phone": "+971 50 123 4567",
+  "email": "boutique@riman.ae",
+  "phone": "+971 55 373 0792",
   "address": "Al Zahra St, Sharjah, UAE",
   "hours": "Sat-Thu, 10am - 8pm"
 }'::jsonb) ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO site_settings (key, value) VALUES ('social', '{
   "instagram": "@rimanfashion",
-  "whatsapp": "+971501234567",
+  "whatsapp": "+971553730792",
   "facebook": "rimanfashion",
   "twitter": "rimanfashion",
   "youtube": "rimanfashion",
@@ -57,7 +57,7 @@ INSERT INTO site_settings (key, value) VALUES ('features', '{
 }'::jsonb) ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO site_settings (key, value) VALUES ('advanced', '{
-  "metaDescription": "Atelier Riman - Sharjah''s premier bridal and evening couture atelier.",
+  "metaDescription": "Riman Fashion - Sharjah''s premier bridal and evening couture atelier.",
   "ogImageUrl": "",
   "keywords": "bridal gowns, evening dresses, couture, Sharjah, UAE",
   "gaId": "",

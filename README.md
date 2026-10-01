@@ -1,4 +1,4 @@
-# Atelier Riman — E‑commerce Frontend
+# Riman Fashion — E‑commerce Frontend
 
 React 19 + Vite 6 + TypeScript fashion e-commerce app with a Supabase backend
 (Postgres + RLS, Edge Functions), Stripe Checkout (hosted, server-priced),

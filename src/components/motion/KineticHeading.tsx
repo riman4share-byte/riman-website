@@ -29,7 +29,7 @@ export default function KineticHeading({
   as = 'h2',
   className = '',
   emphasisChars = [],
-  emphasisClassName = 'font-editorial italic text-gold',
+  emphasisClassName = 'font-editorial italic text-terracotta-dark',
   delay = 0,
 }: KineticHeadingProps) {
   const { language } = useLanguage();

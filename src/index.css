@@ -483,11 +483,11 @@
    falls back to the brass light step (8.67:1 on onyx). Likewise a terracotta
    fill needs bone text (4.98:1); onyx on terracotta is only 3.26:1. These
    guards make the accent safe to use without auditing every dark section. */
-.bg-onyx .text-terracotta-dark,
-.bg-stone-800 .text-terracotta-dark,
-.bg-stone-900 .text-terracotta-dark,
-.bg-stone-950 .text-terracotta-dark,
-.bg-black .text-terracotta-dark {
+[class*="bg-onyx"] .text-terracotta-dark,
+[class*="bg-stone-800"] .text-terracotta-dark,
+[class*="bg-stone-900"] .text-terracotta-dark,
+[class*="bg-stone-950"] .text-terracotta-dark,
+[class*="bg-black"] .text-terracotta-dark {
   color: var(--color-brass-light);
 }
 

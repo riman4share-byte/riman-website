@@ -64,16 +64,16 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
 
             <div className="shrink-0 w-[30vw] flex items-center">
               <Link to="/collection/all" className="group">
-                <span className="font-heading italic font-medium text-5xl md:text-[4vw] leading-tight block text-white group-hover:text-gold transition-colors duration-500">
+                <span className="font-heading italic font-medium text-5xl md:text-[4vw] leading-tight block text-white group-hover:text-terracotta-dark transition-colors duration-500">
                   {t('lookbook.cta')}
                 </span>
-                <span className="inline-block mt-6 text-2xl text-gold group-hover:translate-x-3 transition-transform duration-500">→</span>
+                <span className="inline-block mt-6 text-2xl text-terracotta-dark group-hover:translate-x-3 transition-transform duration-500">→</span>
               </Link>
             </div>
           </motion.div>
 
           <div className="absolute bottom-8 left-[8vw] right-[8vw] h-px bg-white/15">
-            <motion.div className="h-full bg-gold origin-left" style={{ scaleX: progressScale }} />
+            <motion.div className="h-full bg-terracotta origin-left" style={{ scaleX: progressScale }} />
           </div>
         </div>
       </section>
@@ -89,7 +89,7 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
             </div>
           ))}
         </div>
-        <Link to="/collection/all" className="inline-block mt-12 text-gold text-micro uppercase tracking-[0.3em] border-b border-gold/40 pb-1">
+        <Link to="/collection/all" className="inline-block mt-12 text-terracotta-dark text-micro uppercase tracking-[0.3em] border-b border-terracotta/40 pb-1">
           {t('lookbook.cta')} →
         </Link>
       </section>

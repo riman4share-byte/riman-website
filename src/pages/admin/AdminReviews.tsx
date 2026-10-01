@@ -80,7 +80,7 @@ export default function AdminReviews() {
                 onClick={() => setStatusFilter(s)}
                 className={cn(
                   "px-4 py-2 text-micro tracking-widest uppercase font-bold transition-all border",
-                  statusFilter === s ? "border-gold text-gold" : "border-stone-200 text-stone-600 hover:border-gold hover:text-gold"
+                  statusFilter === s ? "border-terracotta text-terracotta-dark" : "border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
                 )}
               >
                 {s.charAt(0).toUpperCase() + s.slice(1)}
@@ -107,14 +107,14 @@ export default function AdminReviews() {
               {filteredReviews.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-8 py-12 text-center text-stone-500">
-                    {isLoading ? <Loader2 className="w-6 h-6 text-gold animate-spin mx-auto" /> : 'No reviews match this filter.'}
+                    {isLoading ? <Loader2 className="w-6 h-6 text-terracotta-dark animate-spin mx-auto" /> : 'No reviews match this filter.'}
                   </td>
                 </tr>
               ) : (
                 filteredReviews.map(r => (
                   <tr key={r.id} className="hover:bg-stone-50/50 transition-colors">
                     <td className="px-8 py-4">
-                      <Link to={`/product/${r.productId}`} className="text-xs font-bold text-stone-800 uppercase tracking-widest hover:text-gold transition-colors">
+                      <Link to={`/product/${r.productId}`} className="text-xs font-bold text-stone-800 uppercase tracking-widest hover:text-terracotta-dark transition-colors">
                         {productName(r.productId)}
                       </Link>
                     </td>
@@ -124,7 +124,7 @@ export default function AdminReviews() {
                     <td className="px-8 py-4">
                       <div className="flex gap-1">
                         {[1,2,3,4,5].map(star => (
-                          <Star key={star} className={cn("w-3 h-3", star <= r.rating ? "text-gold fill-gold" : "text-stone-200")} />
+                          <Star key={star} className={cn("w-3 h-3", star <= r.rating ? "text-terracotta-dark fill-terracotta" : "text-stone-200")} />
                         ))}
                       </div>
                     </td>
@@ -154,7 +154,7 @@ export default function AdminReviews() {
                         {r.status === 'pending' && (
                           <button
                             onClick={() => handleApprove(r.id)}
-                            className="px-3 py-1.5 bg-gold text-white text-micro tracking-widest uppercase font-bold hover:bg-gold-dark transition-colors"
+                            className="px-3 py-1.5 bg-terracotta text-white text-micro tracking-widest uppercase font-bold hover:bg-terracotta-dark transition-colors"
                           >
                             Approve
                           </button>

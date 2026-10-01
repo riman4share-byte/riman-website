@@ -1,17 +1,21 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'riman4share@gmail.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'killer2222';
+// Credentials come from the environment only. This file previously carried a
+// hardcoded password in the repository; it now skips unless they are provided.
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_READY = Boolean(ADMIN_EMAIL && ADMIN_PASSWORD);
 
 async function loginAsAdmin(page: Page) {
   await page.goto('/auth');
-  await page.fill('input[type="email"]', ADMIN_EMAIL);
-  await page.fill('input[type="password"]', ADMIN_PASSWORD);
+  await page.fill('input[type="email"]', ADMIN_EMAIL!);
+  await page.fill('input[type="password"]', ADMIN_PASSWORD!);
   await page.locator('button[type="submit"]').first().click();
   await page.waitForURL('**/admin**', { timeout: 15000 });
 }
 
 test('admin can create and delete a product', async ({ page }) => {
+  test.skip(!ADMIN_READY, 'Set ADMIN_EMAIL and ADMIN_PASSWORD to run the admin suite');
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('console', (m) => {

@@ -134,7 +134,7 @@ export default function StyleQuiz() {
           >
             <h1 className="font-heading text-4xl md:text-5xl text-stone-800 tracking-widest uppercase mb-4">{t('quiz.title')}</h1>
             <p className="font-body text-stone-600 text-micro tracking-[0.4em] uppercase">{t('quiz.subtitle')}</p>
-            <div className="w-16 h-px bg-gold mx-auto mt-6" />
+            <div className="w-16 h-px bg-terracotta mx-auto mt-6" />
           </motion.div>
         </header>
 
@@ -144,7 +144,7 @@ export default function StyleQuiz() {
             <motion.div
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.4 }}
-              className="h-full bg-gold"
+              className="h-full bg-terracotta"
             />
           </div>
         )}
@@ -160,7 +160,7 @@ export default function StyleQuiz() {
                 className="w-full"
               >
                 <div className="mb-8 flex items-center justify-between">
-                   <span className="text-micro tracking-widest text-gold font-bold uppercase">{t('quiz.progress')} {step + 1} / {questions.length}</span>
+                   <span className="text-micro tracking-widest text-terracotta-dark font-bold uppercase">{t('quiz.progress')} {step + 1} / {questions.length}</span>
                    {step > 0 && (
                      <button 
                        onClick={() => setStep(step - 1)}
@@ -180,10 +180,10 @@ export default function StyleQuiz() {
                     <button
                       key={option}
                       onClick={() => handleAnswer(option)}
-                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-gold hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 text-left"
+                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 text-left"
                     >
                       <span className="font-body text-sm text-stone-700 group-hover:text-stone-900 group-hover:pl-2 transition-all duration-300">{option}</span>
-                      <ChevronRight className="w-4 h-4 text-stone-500 group-hover:text-gold transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
                     </button>
                   ))}
                 </div>
@@ -196,11 +196,11 @@ export default function StyleQuiz() {
                 className="w-full"
               >
                 <div className="text-center mb-12">
-                  <span className="text-micro tracking-[0.5em] uppercase text-gold font-bold">{t('quiz.your_aesthetic')}</span>
+                  <span className="text-micro tracking-[0.5em] uppercase text-terracotta-dark font-bold">{t('quiz.your_aesthetic')}</span>
                   <h2 className="font-heading text-3xl md:text-4xl text-stone-800 mt-3 mb-4">
                     {recommendations.length > 0 ? t('quiz.your_matches') : t('quiz.no_matches')}
                   </h2>
-                  <div className="w-16 h-px bg-gold mx-auto mb-5" />
+                  <div className="w-16 h-px bg-terracotta mx-auto mb-5" />
                   <p className="font-body text-sm text-stone-600">
                     {recommendations.length > 0 
                       ? t('quiz.based_on_answers')
@@ -219,7 +219,7 @@ export default function StyleQuiz() {
 
                     {/* R17 — the quiz was the best zero-friction entry point on the
                         site and ended with nowhere to go. Close it into a booking. */}
-                    <div className="border border-gold/30 bg-gold/[0.04] p-7 md:p-9 text-center mb-10">
+                    <div className="border border-terracotta/30 bg-terracotta/[0.04] p-7 md:p-9 text-center mb-10">
                       <h3 className="font-heading text-xl md:text-2xl font-light text-stone-800 mb-3">
                         {t('quiz.next_step_heading')}
                       </h3>
@@ -229,7 +229,7 @@ export default function StyleQuiz() {
                       <ul className="max-w-lg mx-auto grid sm:grid-cols-2 gap-3 text-start mb-7">
                         {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
                           <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-700">
-                            <CheckCircle2 className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
                             <span>{promise}</span>
                           </li>
                         ))}
@@ -275,7 +275,7 @@ export default function StyleQuiz() {
               key={i} 
               className={cn(
                 "h-0.5 transition-all duration-500", 
-                i <= step ? "w-8 bg-gold" : "w-4 bg-stone-200"
+                i <= step ? "w-8 bg-terracotta" : "w-4 bg-stone-200"
               )} 
             />
           ))}

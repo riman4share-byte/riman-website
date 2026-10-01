@@ -448,11 +448,14 @@ test.describe('Mobile Navigation', () => {
     await hamburger.click();
     await page.waitForTimeout(500);
 
+    // Mirrors the drawer's actual link list (src/components/Header.tsx). The
+    // evening category is reached via /collection/couture, not
+    // /collection/evening, which is not a nav target.
     const mobileLinks = [
       { path: '/collection/bridal', name: 'Bridal' },
-      { path: '/collection/evening', name: 'Evening' },
+      { path: '/collection/couture', name: 'Couture' },
       { path: '/about', name: 'Our Story' },
-      { path: '/contact', name: 'Contact' },
+      { path: '/collections', name: 'Collections' },
       { path: '/faq', name: 'FAQ' },
     ];
 
@@ -471,13 +474,19 @@ test.describe('Mobile Navigation', () => {
         await page.waitForTimeout(500);
       }
 
-      const link = page.locator(`a[href="${path}"]`).first();
-      if (await link.count() > 0 && await link.isVisible().catch(() => false)) {
+      // Scope to the open drawer. A bare a[href=...] .first() can resolve to
+      // the desktop nav or footer link sitting behind the drawer's scrim, which
+      // is rendered but not clickable, so the click waits forever.
+      const drawer = page.locator('[role="dialog"]');
+      const link = drawer.locator(`a[href="${path}"]`).first();
+      if ((await link.count()) > 0 && (await link.isVisible().catch(() => false))) {
         await link.click();
         await page.waitForURL(`**${path}`, { timeout: 10000 });
         expect(page.url()).toContain(path);
         // Go back home for next iteration
         await goHome(page);
+      } else {
+        throw new Error(`drawer link ${path} is missing or not visible`);
       }
     }
   });

@@ -34,7 +34,7 @@ export default function GalleryPage() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="heading-editorial text-gold-ink text-micro mb-4 uppercase tracking-[0.4em]"
+            className="heading-editorial text-terracotta-dark text-micro mb-4 uppercase tracking-[0.4em]"
           >
             {t('gallery.title')}
           </motion.p>
@@ -46,7 +46,7 @@ export default function GalleryPage() {
           >
             {t('gallery.subtitle')}
           </motion.h1>
-          <div className="w-16 h-px bg-gold mx-auto mb-8" />
+          <div className="w-16 h-px bg-terracotta mx-auto mb-8" />
           <p className="text-stone-600 text-sm tracking-wide max-w-xl mx-auto">
             {t('gallery.description')}
           </p>
@@ -92,7 +92,7 @@ export default function GalleryPage() {
 
         <div className="mt-16">
           {/* R16 — turn a passive gallery into a lead-capture step */}
-          <div className="max-w-3xl mx-auto text-center border border-gold/30 bg-gold/[0.04] p-8 md:p-10">
+          <div className="max-w-3xl mx-auto text-center border border-terracotta/30 bg-terracotta/[0.04] p-8 md:p-10">
             <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
               {t('gallery.cta_heading')}
             </h2>
@@ -113,7 +113,7 @@ export default function GalleryPage() {
           </div>
 
           <div className="text-center mt-10">
-            <Link to="/" className="inline-flex items-center gap-2 text-gold-ink text-xs tracking-widest uppercase hover:gap-4 transition-all pb-1 border-b border-gold/30 font-medium">
+            <Link to="/" className="inline-flex items-center gap-2 text-terracotta-dark text-xs tracking-widest uppercase hover:gap-4 transition-all pb-1 border-b border-terracotta/30 font-medium">
               {t('gallery.back_home')} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

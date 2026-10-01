@@ -16,7 +16,7 @@ export default function InstagramSection() {
   return (
     <section className="py-32 bg-ivory overflow-hidden">
       <div className="container mx-auto px-6 mb-16 text-center">
-        <div className="flex items-center justify-center gap-3 text-gold mb-4">
+        <div className="flex items-center justify-center gap-3 text-terracotta-dark mb-4">
            <Instagram className="w-5 h-5" />
            <span className="text-caption tracking-[0.4em] uppercase font-bold">@rimanfashion</span>
         </div>
@@ -26,7 +26,7 @@ export default function InstagramSection() {
             href="https://www.instagram.com/rimanfashion/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-white hover:text-gold transition-all duration-500"
+            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-white hover:text-terracotta-dark transition-all duration-500"
           >
             <Instagram className="w-4 h-4" />
             <span className="text-micro tracking-[0.3em] uppercase font-bold transition-colors">

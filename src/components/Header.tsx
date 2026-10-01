@@ -197,7 +197,7 @@ export default function Header() {
           >
             <Heart className="w-5 h-5 transition-transform duration-300 group-hover/wishlist:scale-110" strokeWidth={1.5} />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+              <span className="absolute -top-1.5 -right-1.5 bg-terracotta-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
                 {wishlistCount}
               </span>
             )}
@@ -218,7 +218,7 @@ export default function Header() {
           >
             <ShoppingBag className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" strokeWidth={1.5} />
             {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+              <span className="absolute -top-1.5 -right-1.5 bg-terracotta-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
                 {totalItems}
               </span>
             )}
@@ -254,7 +254,7 @@ export default function Header() {
                 <Logo variant="gold" className="w-10" showText={false} />
                 <button
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-gold hover:text-white transition-all duration-300"
+                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-white transition-all duration-300"
                   aria-label={t('header.menu_close')}
                 >
                   <X className="w-5 h-5" />
@@ -283,7 +283,7 @@ export default function Header() {
                   <Link
                     to="/search"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 min-h-[44px] px-4 border border-stone-200 font-label text-micro tracking-[0.2em] uppercase text-stone-700 hover:border-gold"
+                    className="flex items-center justify-center gap-2 min-h-[44px] px-4 border border-stone-200 font-label text-micro tracking-[0.2em] uppercase text-stone-700 hover:border-terracotta"
                     aria-label={t('header.search')}
                   >
                     <Search className="w-4 h-4" />
@@ -291,7 +291,7 @@ export default function Header() {
                 </div>
                 {/* Primary Navigation */}
                 <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-3">{t('header.collections')}</p>
+                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.collections')}</p>
                   <nav className="flex flex-col gap-1">
                     {[
                       { label: 'Home', path: '/', key: 'nav.home' },
@@ -310,13 +310,13 @@ export default function Header() {
                         <Link
                           to={link.path}
                           onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-gold hover:bg-gold/5 transition-all"
+                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
                         >
                           <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-gold" />}
+                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
                             {link.key ? t(link.key) : link.label}
                           </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-gold transition-colors" />
+                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
                         </Link>
                       </motion.div>
                     ))}
@@ -325,7 +325,7 @@ export default function Header() {
 
                 {/* Atelier Links */}
                 <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-3">{t('header.atelier')}</p>
+                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.atelier')}</p>
                   <nav className="flex flex-col gap-1">
                     {[
                       { label: 'Gallery', path: '/gallery', key: 'nav.gallery' },
@@ -340,13 +340,13 @@ export default function Header() {
                         <Link
                           to={link.path}
                           onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-gold hover:bg-gold/5 transition-all"
+                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
                         >
                           <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-gold" />}
+                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
                             {link.key ? t(link.key) : link.label}
                           </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-gold transition-colors" />
+                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
                         </Link>
                       </motion.div>
                     ))}
@@ -355,7 +355,7 @@ export default function Header() {
 
                 {/* Services */}
                 <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-3">{t('header.services')}</p>
+                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.services')}</p>
                   <nav className="flex flex-col gap-1">
                     {[
                       { label: 'Book Appointment', path: '/appointment', key: 'nav.appointment', icon: Calendar },
@@ -372,13 +372,13 @@ export default function Header() {
                         <Link
                           to={link.path}
                           onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-gold hover:bg-gold/5 transition-all"
+                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
                         >
                           <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-gold" />}
+                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
                             {link.key ? t(link.key) : link.label}
                           </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-gold transition-colors" />
+                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
                         </Link>
                       </motion.div>
                     ))}
@@ -397,7 +397,7 @@ export default function Header() {
                   <Link
                     to="/search"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex w-full min-h-[52px] items-center justify-center text-center py-3 font-label text-xs tracking-[0.25em] uppercase border border-stone-800 text-stone-800 hover:border-gold hover:text-gold-dark transition-colors"
+                    className="flex w-full min-h-[52px] items-center justify-center text-center py-3 font-label text-xs tracking-[0.25em] uppercase border border-stone-800 text-stone-800 hover:border-terracotta hover:text-terracotta-dark transition-colors"
                   >
                     {t('cta.explore')}
                   </Link>

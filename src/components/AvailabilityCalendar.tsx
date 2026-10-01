@@ -152,7 +152,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
           <button
             type="button"
             onClick={() => goToMonth(-1)}
-            className="p-1 hover:text-gold transition-colors"
+            className="p-1 hover:text-terracotta-dark transition-colors"
             aria-label={t('calendar.prev')}
           >
             <PrevIcon className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
           <button
             type="button"
             onClick={() => goToMonth(1)}
-            className="p-1 hover:text-gold transition-colors"
+            className="p-1 hover:text-terracotta-dark transition-colors"
             aria-label={t('calendar.next')}
           >
             <NextIcon className="w-4 h-4" />
@@ -179,7 +179,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
       {stale && (
         <p className="mb-3 text-center text-micro text-stone-600 italic">
           {t('calendar.fallbackNotice')}{' '}
-          <button type="button" onClick={load} className="underline text-gold uppercase tracking-widest">
+          <button type="button" onClick={load} className="underline text-terracotta-dark uppercase tracking-widest">
             {t('calendar.retry')}
           </button>
         </p>
@@ -231,8 +231,8 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
                       loading && 'animate-pulse opacity-60',
                       !inMonth && 'text-stone-200',
                       (past || booked) && inMonth && 'bg-stone-50 text-stone-500 cursor-not-allowed',
-                      selectable && 'hover:bg-gold/10 cursor-pointer text-stone-700',
-                      isSelected && 'bg-gold text-white hover:bg-gold'
+                      selectable && 'hover:bg-terracotta/10 cursor-pointer text-stone-700',
+                      isSelected && 'bg-terracotta text-white hover:bg-terracotta'
                     )}
                   >
                     <span>{format(date, 'd')}</span>
@@ -254,7 +254,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
       ) : (
         <div className="mt-6 flex flex-wrap gap-4 justify-center">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-gold rounded-full" />
+            <div className="w-2 h-2 bg-terracotta rounded-full" />
             <span className="text-micro uppercase tracking-widest text-stone-600">{t('calendar.available')}</span>
           </div>
           <div className="flex items-center gap-2">

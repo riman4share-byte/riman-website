@@ -137,7 +137,7 @@ export default function AdminOrders() {
               placeholder="Search by name, email, or order ID..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 text-xs tracking-widest outline-none focus:border-gold transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 text-xs tracking-widest outline-none focus:border-terracotta transition-colors"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -158,7 +158,7 @@ export default function AdminOrders() {
 
         {isLoading ? (
           <div className="p-12 text-center">
-            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-8 h-8 border-2 border-terracotta border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-micro tracking-widest text-stone-600 uppercase">Loading orders...</p>
           </div>
         ) : error ? (
@@ -231,7 +231,7 @@ export default function AdminOrders() {
                             setSelectedOrder(order);
                             setAdminNotes(order.admin_notes || '');
                           }}
-                          className="p-2 border border-stone-200 text-stone-400 hover:text-gold hover:border-gold transition-all"
+                          className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all"
                           aria-label="View order details"
                         >
                           <Eye className="w-3 h-3" />
@@ -293,7 +293,7 @@ export default function AdminOrders() {
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Type</span><span className="text-micro tracking-widest uppercase text-stone-600 font-medium">{selectedOrder.type}</span></p>
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Payment Method</span><span className="text-micro tracking-widest uppercase text-stone-600 font-medium flex items-center gap-1.5">{selectedOrder.payment_method === 'card' ? <><CreditCard className="w-3 h-3" /> Card</> : <><Building2 className="w-3 h-3" /> Atelier</>}</span></p>
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Payment Status</span><span className={cn("text-micro tracking-widest uppercase font-bold", selectedOrder.payment_status === 'paid' ? 'text-emerald-600' : selectedOrder.payment_status === 'failed' ? 'text-rose-600' : 'text-stone-600')}>{selectedOrder.payment_status || 'pending'}</span></p>
-                      <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Total</span><span className="text-gold font-heading font-bold">{formatPrice(selectedOrder.subtotal)}</span></p>
+                      <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Total</span><span className="text-terracotta-dark font-heading font-bold">{formatPrice(selectedOrder.subtotal)}</span></p>
                     </div>
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export default function AdminOrders() {
                       value={adminNotes}
                       onChange={e => setAdminNotes(e.target.value)}
                       rows={4}
-                      className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest outline-none focus:border-gold transition-all resize-none"
+                      className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest outline-none focus:border-terracotta transition-all resize-none"
                       placeholder="Internal notes about this order..."
                     />
                     <button

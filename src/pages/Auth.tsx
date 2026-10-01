@@ -78,14 +78,14 @@ export default function Auth() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-md w-full bg-ivory p-10 md:p-12 relative overflow-hidden"
       >
-        <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-terracotta/5 blur-3xl -translate-y-1/2 translate-x-1/2" />
 
         <div className="text-center mb-10 relative z-10 flex flex-col items-center">
           <Logo variant="gold" className="w-20 mb-6" />
           <h1 className="font-heading text-3xl text-stone-800 tracking-wider uppercase mb-3">
             {isLogin ? t('auth.signin') : t('auth.signup')}
           </h1>
-          <div className="w-12 h-px bg-gold mb-3" />
+          <div className="w-12 h-px bg-terracotta mb-3" />
           <p className="font-body text-stone-600 text-micro tracking-[0.2em] uppercase">
             {isLogin ? t('auth.welcome_back') : t('auth.join')}
           </p>
@@ -103,7 +103,7 @@ export default function Auth() {
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h3 className="font-heading text-xl text-stone-800 mb-2 uppercase tracking-widest">{t('auth.authenticated')}</h3>
-              <div className="w-12 h-px bg-gold mx-auto mb-3" />
+              <div className="w-12 h-px bg-terracotta mx-auto mb-3" />
               <p className="text-stone-600 text-micro tracking-widest uppercase">{t('auth.redirecting')}</p>
             </motion.div>
           ) : (
@@ -118,7 +118,7 @@ export default function Auth() {
               {!isLogin && (
                 <div className="space-y-2">
                   <label htmlFor="auth-name" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                    <User className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.full_name')}
+                    <User className="w-3 h-3 text-terracotta-dark" aria-hidden="true" /> {t('auth.full_name')}
                   </label>
                   <input
                     id="auth-name"
@@ -136,7 +136,7 @@ export default function Auth() {
 
               <div className="space-y-2">
                 <label htmlFor="auth-email" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                  <Mail className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.email')}
+                  <Mail className="w-3 h-3 text-terracotta-dark" aria-hidden="true" /> {t('auth.email')}
                 </label>
                 <input
                   id="auth-email"
@@ -154,7 +154,7 @@ export default function Auth() {
 
               <div className="space-y-2">
                 <label htmlFor="auth-password" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                  <Lock className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.password')}
+                  <Lock className="w-3 h-3 text-terracotta-dark" aria-hidden="true" /> {t('auth.password')}
                 </label>
                 <input
                   id="auth-password"
@@ -184,7 +184,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => { setIsLogin(!isLogin); setLocalError(''); }}
-                  className="text-micro text-stone-600 uppercase tracking-[0.2em] hover:text-gold transition-colors block w-full"
+                  className="text-micro text-stone-600 uppercase tracking-[0.2em] hover:text-terracotta-dark transition-colors block w-full"
                 >
                   {isLogin ? t('auth.no_account') : t('auth.has_account')}
                 </button>

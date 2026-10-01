@@ -106,7 +106,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
-        <Loader2 className="w-8 h-8 text-gold animate-spin" />
+        <Loader2 className="w-8 h-8 text-terracotta-dark animate-spin" />
       </div>
     );
   }
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
             <h3 className="font-heading text-xl text-stone-800 tracking-wide uppercase">Recent Orders</h3>
             <p className="text-micro tracking-widest text-stone-600 uppercase mt-1">Latest order activity</p>
           </div>
-          <Link to="/admin/orders" className="group flex items-center gap-2 text-micro tracking-[0.2em] uppercase text-gold hover:text-stone-800 transition-colors">
+          <Link to="/admin/orders" className="group flex items-center gap-2 text-micro tracking-[0.2em] uppercase text-terracotta-dark hover:text-stone-800 transition-colors">
             Manage All Orders <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
@@ -229,9 +229,9 @@ export default function AdminDashboard() {
 
 function StatCard({ title, value, icon: Icon }: { title: string; value: string; icon: React.ComponentType<{ className?: string }> }) {
   return (
-    <div className="bg-ivory p-6 border border-stone-200 group hover:border-gold transition-all duration-300">
+    <div className="bg-ivory p-6 border border-stone-200 group hover:border-terracotta transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
-        <div className="p-3 bg-ivory text-gold group-hover:bg-gold group-hover:text-white transition-all duration-500">
+        <div className="p-3 bg-ivory text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition-all duration-500">
           <Icon className="w-5 h-5" />
         </div>
       </div>
@@ -246,7 +246,7 @@ function OrderRow({ order }: { key?: React.Key; order: Order }) {
     completed: 'bg-green-50 text-green-600',
     confirmed: 'bg-green-50 text-green-600',
     processing: 'bg-blue-50 text-blue-600',
-    shipped: 'bg-gold/10 text-gold',
+    shipped: 'bg-terracotta/10 text-terracotta-dark',
     pending: 'bg-stone-100 text-stone-600',
     cancelled: 'bg-rose-50 text-rose-600',
   };
@@ -264,7 +264,7 @@ function OrderRow({ order }: { key?: React.Key; order: Order }) {
       <td className="px-8 py-5 translate-y-[2px]">
         <span className={cn(
           "text-micro tracking-[0.2em] uppercase px-2 py-1 border",
-          order.type === 'sale' ? "border-gold text-gold" : "border-stone-300 text-stone-600"
+          order.type === 'sale' ? "border-terracotta text-terracotta-dark" : "border-stone-300 text-stone-600"
         )}>
           {order.type}
         </span>

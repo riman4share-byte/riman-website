@@ -7,7 +7,7 @@ export default function CalligraphicAccent({ word, className }: CalligraphicAcce
   return (
     <span
       aria-hidden="true"
-      className={`pointer-events-none absolute select-none font-arabic-heading leading-none text-gold/5 ${className ?? ''}`}
+      className={`pointer-events-none absolute select-none font-arabic-heading leading-none text-terracotta-dark/5 ${className ?? ''}`}
     >
       {word}
     </span>

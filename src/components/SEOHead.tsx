@@ -18,7 +18,7 @@ import {
   resolveMediaUrl,
 } from '../lib/seo';
 
-const SITE_NAME = 'Atelier Riman | Sharjah Bridal & Evening Couture';
+const SITE_NAME = 'Riman Fashion | Sharjah Bridal & Evening Couture';
 const DEFAULT_DESCRIPTION = 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, and premium rentals.';
 const DEFAULT_OG_IMAGE = '/og-cover.png';
 
@@ -108,7 +108,7 @@ export default function SEOHead({ title, description, image, noIndex, product: p
   const activeBreadcrumbs = breadcrumbs ?? productBreadcrumbs;
 
   const pageTitle = title
-    ? `${title} | Atelier Riman`
+    ? `${title} | Riman Fashion`
     : routeMeta.title || SITE_NAME;
   const pageDesc = description || routeMeta.description || admin.metaDescription || DEFAULT_DESCRIPTION;
   const ogImage =
@@ -161,7 +161,7 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     setMeta('og:image', ogImage, true);
     setMeta('og:url', canonical, true);
     setMeta('og:type', ogType, true);
-    setMeta('og:site_name', 'Atelier Riman', true);
+    setMeta('og:site_name', 'Riman Fashion', true);
     setMeta('og:locale', language === 'ar' ? 'ar_AE' : 'en_AE', true);
 
     // Twitter Card

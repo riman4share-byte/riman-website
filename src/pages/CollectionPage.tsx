@@ -106,7 +106,7 @@ export default function CollectionPage() {
       <header className="section-padding !py-12 bg-ivory border-b border-stone-100">
         <div className="container mx-auto">
           <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-4">
-            <Link to="/" className="hover:text-terracotta-dark-ink transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-terracotta-dark transition-colors">{t('nav.home')}</Link>
             <span>/</span>
             <span className="text-stone-800 font-medium">{t('cat.collection')}</span>
           </nav>
@@ -156,7 +156,7 @@ export default function CollectionPage() {
                             onClick={() => { setSortBy(option); setShowSortMenu(false); }}
                             className={cn(
                               "text-left px-5 py-3 text-xs tracking-widest uppercase transition-colors font-medium cursor-pointer",
-                              sortBy === option ? "bg-terracotta/10 text-terracotta-dark-ink" : "text-stone-600 hover:bg-stone-50 hover:text-stone-800"
+                              sortBy === option ? "bg-terracotta/10 text-terracotta-dark" : "text-stone-600 hover:bg-stone-50 hover:text-stone-800"
                             )}
                           >
                             {label}
@@ -173,7 +173,7 @@ export default function CollectionPage() {
           {hasActiveFilters && (
             <div className="flex items-center gap-4 mt-3 pt-3 border-t border-stone-100">
               <span className="text-micro tracking-widest uppercase text-stone-600">{filteredProducts.length} {t('collection.results')}</span>
-              <button onClick={clearFilters} className="text-micro tracking-[0.2em] uppercase text-terracotta-dark-ink hover:text-stone-800 transition-colors font-bold">{t('collection.clear_all')}</button>
+              <button onClick={clearFilters} className="text-micro tracking-[0.2em] uppercase text-terracotta-dark hover:text-stone-800 transition-colors font-bold">{t('collection.clear_all')}</button>
             </div>
           )}
         </div>

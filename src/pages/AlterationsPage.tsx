@@ -17,7 +17,7 @@ export default function AlterationsPage() {
   return (
     <div className="pt-24 bg-ivory min-h-screen">
       {/* Hero */}
-      <section className="bg-ivory py-32 border-b border-gold/10">
+      <section className="bg-ivory py-32 border-b border-terracotta/10">
         <div className="container mx-auto px-6 text-center max-w-4xl">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -61,7 +61,7 @@ export default function AlterationsPage() {
         <div className="container mx-auto px-6">
           <div className="flex flex-col items-center text-center mb-20">
             <h2 className="font-heading text-4xl mb-4 uppercase tracking-widest">{t('alt.fitting_journey')}</h2>
-            <div className="w-20 h-px bg-gold" />
+            <div className="w-20 h-px bg-terracotta" />
           </div>
 
           <div className="relative ml-6 md:ml-0 md:grid md:grid-cols-4 gap-8">
@@ -73,7 +73,7 @@ export default function AlterationsPage() {
                 transition={{ delay: idx * 0.1 }}
                 className="mb-12 md:mb-0 relative pl-10 md:pl-0 md:text-center"
               >
-                <div className="absolute left-0 top-0 md:relative md:left-0 md:mx-auto w-10 h-10 bg-gold text-stone-900 flex items-center justify-center font-heading text-xl mb-6">
+                <div className="absolute left-0 top-0 md:relative md:left-0 md:mx-auto w-10 h-10 bg-terracotta text-stone-900 flex items-center justify-center font-heading text-xl mb-6">
                   {idx + 1}
                 </div>
                 <h4 className="font-heading text-lg mb-3 tracking-widest uppercase">{step.title}</h4>
@@ -102,13 +102,13 @@ export default function AlterationsPage() {
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-4 text-xs tracking-widest text-stone-800 uppercase font-bold">
-                 <Calendar className="w-4 h-4 text-gold" /> {t('alt.available')}
+                 <Calendar className="w-4 h-4 text-terracotta-dark" /> {t('alt.available')}
               </div>
               <div className="flex items-center gap-4 text-xs tracking-widest text-stone-800 uppercase font-bold">
-                 <Ruler className="w-4 h-4 text-gold" /> {t('alt.guarantee')}
+                 <Ruler className="w-4 h-4 text-terracotta-dark" /> {t('alt.guarantee')}
               </div>
             </div>
-            <Link to="/contact" className="mt-12 group flex items-center gap-4 text-micro uppercase tracking-[0.4em] text-gold font-black transition-all hover:gap-6">
+            <Link to="/contact" className="mt-12 group flex items-center gap-4 text-micro uppercase tracking-[0.4em] text-terracotta-dark font-black transition-all hover:gap-6">
               {t('alt.inquire')} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -125,8 +125,8 @@ export default function AlterationsPage() {
 
 function ServiceCard({ icon: Icon, title, desc }: any) {
   return (
-    <div className="bg-ivory p-12 border border-stone-100 hover:border-gold/30 transition-all duration-500 group">
-      <div className="w-12 h-12 bg-ivory text-gold flex items-center justify-center mb-8 rounded-sm group-hover:bg-gold group-hover:text-white transition-colors">
+    <div className="bg-ivory p-12 border border-stone-100 hover:border-terracotta/30 transition-all duration-500 group">
+      <div className="w-12 h-12 bg-ivory text-terracotta-dark flex items-center justify-center mb-8 rounded-sm group-hover:bg-terracotta group-hover:text-white transition-colors">
         <Icon className="w-5 h-5" />
       </div>
       <h3 className="font-heading text-xl mb-4 tracking-widest uppercase text-stone-800">{title}</h3>

@@ -10,7 +10,7 @@ Bridal and evening wear shoppers — primarily women in the UAE and Gulf region 
 
 ## Product Purpose
 
-Atelier Riman is Sharjah's premier bridal and evening couture house. It exists to provide exquisitely crafted gowns and formal wear that blend heritage craftsmanship with modern sophistication. Success is measured by the confidence and joy clients feel in their garments, the atelier's reputation for uncompromising quality, and its position as the definitive luxury fashion destination in the region.
+Riman Fashion is Sharjah's premier bridal and evening couture house. It exists to provide exquisitely crafted gowns and formal wear that blend heritage craftsmanship with modern sophistication. Success is measured by the confidence and joy clients feel in their garments, the atelier's reputation for uncompromising quality, and its position as the definitive luxury fashion destination in the region.
 
 ## Brand Personality
 

@@ -29,7 +29,7 @@ export default function BookingCTA21st() {
           <ul className="max-w-2xl mx-auto grid sm:grid-cols-2 gap-3 text-start mb-10">
             {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
               <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-300">
-                <CheckCircle2 className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
                 <span>{promise}</span>
               </li>
             ))}
@@ -38,7 +38,7 @@ export default function BookingCTA21st() {
           <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <Link
               to="/appointment"
-              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-12 bg-gold text-onyx font-label text-xs tracking-[0.25em] uppercase font-bold hover:bg-gold-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none"
+              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-12 bg-terracotta text-onyx font-label text-xs tracking-[0.25em] uppercase font-bold hover:bg-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none"
             >
               <CalendarCheck className="w-4 h-4 mr-2" /> {t('cta.book_fitting')}
             </Link>
@@ -46,7 +46,7 @@ export default function BookingCTA21st() {
               href={wa}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-ivory border border-ivory/30 hover:border-gold hover:text-gold transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none"
+              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-ivory border border-ivory/30 hover:border-terracotta hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none"
             >
               <MessageCircle className="w-4 h-4 mr-2" /> {t('cta.ask_about')} {dressCode}
             </a>

@@ -388,7 +388,7 @@ async function handleVerify(sessionId: string) {
           await enqueue(
             'order_confirmed',
             orderEmail,
-            `Payment Confirmed — ${String(orderId).slice(0, 8)} | Atelier Riman`,
+            `Payment Confirmed — ${String(orderId).slice(0, 8)} | Riman Fashion`,
             confirmationEmailHtml(o, String(orderId)),
           );
         }

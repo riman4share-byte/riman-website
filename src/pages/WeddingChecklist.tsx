@@ -17,7 +17,7 @@ export default function WeddingChecklist() {
   return (
     <div className="pt-32 pb-20 container mx-auto px-6 max-w-4xl">
       <div className="text-center mb-20">
-        <h2 className="heading-editorial text-gold-ink text-micro mb-4">{t('wedding.checklist.eyebrow')}</h2>
+        <h2 className="heading-editorial text-terracotta-dark text-micro mb-4">{t('wedding.checklist.eyebrow')}</h2>
         <h1 className="font-heading text-4xl md:text-5xl text-stone-800 tracking-wider mb-6">{t('wedding.checklist.title')}</h1>
         <div className="divider-gold" />
       </div>
@@ -26,10 +26,10 @@ export default function WeddingChecklist() {
         {steps.map((s, i) => (
           <div key={i} className="flex gap-8 group">
             <div className="text-end w-1/4 shrink-0">
-              <span className="font-heading text-2xl text-gold-ink/40 group-hover:text-gold-ink transition-colors">{s.month}</span>
+              <span className="font-heading text-2xl text-terracotta-dark/40 group-hover:text-terracotta-dark transition-colors">{s.month}</span>
             </div>
             <div className="w-px bg-stone-100 relative">
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gold" />
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-terracotta" />
             </div>
             <div className="pb-12 border-b border-stone-50 w-full">
               <p className="font-body text-stone-700 tracking-wide leading-relaxed italic">{s.task}</p>
@@ -39,7 +39,7 @@ export default function WeddingChecklist() {
       </div>
 
       {/* R6 — a planning page with no path to the next step. This is the CTA. */}
-      <div className="mt-16 border border-gold/30 bg-gold/[0.04] p-8 md:p-10 text-center">
+      <div className="mt-16 border border-terracotta/30 bg-terracotta/[0.04] p-8 md:p-10 text-center">
         <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
           {t('wedding.checklist.cta_heading')}
         </h2>
@@ -49,7 +49,7 @@ export default function WeddingChecklist() {
         <ul className="max-w-xl mx-auto grid sm:grid-cols-2 gap-3 text-start mb-8">
           {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
             <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-700">
-              <CheckCircle2 className="w-4 h-4 text-gold-ink shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
               <span>{promise}</span>
             </li>
           ))}

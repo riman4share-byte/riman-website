@@ -85,7 +85,7 @@ export default function App() {
                       <Suspense fallback={
                         <div className="min-h-screen bg-ivory flex items-center justify-center" role="status" aria-live="polite">
                           <div className="text-center">
-                            <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
+                            <div className="w-8 h-8 border-2 border-terracotta border-t-transparent rounded-full animate-spin mx-auto" aria-hidden="true" />
                             <p className="sr-only">Loading page…</p>
                           </div>
                         </div>
@@ -114,14 +114,14 @@ function MaintenanceGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (settings.advanced.maintenanceMode && !isAdmin) {
-      document.title = 'Maintenance | Atelier Riman';
+      document.title = 'Maintenance | Riman Fashion';
     }
   }, [settings.advanced.maintenanceMode, isAdmin]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-ivory flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-terracotta border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -130,8 +130,8 @@ function MaintenanceGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="min-h-screen bg-onyx flex items-center justify-center text-center px-6">
         <div className="max-w-md">
-          <h1 className="font-heading text-4xl md:text-5xl text-gold uppercase tracking-widest mb-4">Atelier Riman</h1>
-          <div className="w-16 h-px bg-gold mx-auto mb-8" />
+          <h1 className="font-heading text-4xl md:text-5xl text-terracotta-dark uppercase tracking-widest mb-4">Riman Fashion</h1>
+          <div className="w-16 h-px bg-terracotta mx-auto mb-8" />
           <p className="font-body text-ivory/60 text-sm tracking-widest uppercase mb-2">
             {settings.advanced.maintenanceMessage || 'We are currently updating our atelier.'}
           </p>

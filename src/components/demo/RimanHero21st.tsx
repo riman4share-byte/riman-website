@@ -21,11 +21,11 @@ export default function RimanHero21st({ dressCode = 'RF-BR-2514' }: { dressCode?
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="font-label text-xs tracking-[0.35em] uppercase text-gold mb-4">
+          <p className="font-label text-xs tracking-[0.35em] uppercase text-terracotta-dark mb-4">
             Riman Fashion — Bridal · Engagement · Evening
           </p>
           <h1 className="font-heading font-light leading-[1.02] text-[clamp(2.5rem,6vw,5rem)] mb-6">
-            Sharjah Couture, <em className="font-editorial italic text-gold">Made to Measure</em>
+            Sharjah Couture, <em className="font-editorial italic text-terracotta-dark">Made to Measure</em>
           </h1>
           <p className="font-body text-white/70 max-w-md mb-10 leading-relaxed">
             {t('hero.subtitle')}
@@ -33,7 +33,7 @@ export default function RimanHero21st({ dressCode = 'RF-BR-2514' }: { dressCode?
           <div className={`flex flex-wrap gap-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <Link
               to="/appointment"
-              className="inline-flex items-center gap-2 bg-gold text-onyx px-8 py-4 text-xs tracking-[0.25em] uppercase font-bold hover:bg-gold-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none min-h-[44px]"
+              className="inline-flex items-center gap-2 bg-terracotta text-onyx px-8 py-4 text-xs tracking-[0.25em] uppercase font-bold hover:bg-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none min-h-[44px]"
             >
               <CalendarCheck className="w-4 h-4" /> Book a Fitting
             </Link>
@@ -41,7 +41,7 @@ export default function RimanHero21st({ dressCode = 'RF-BR-2514' }: { dressCode?
               href={wa}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 border border-ivory/30 px-8 py-4 text-xs tracking-[0.25em] uppercase hover:border-gold hover:text-gold transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none min-h-[44px]"
+              className="inline-flex items-center gap-2 border border-ivory/30 px-8 py-4 text-xs tracking-[0.25em] uppercase hover:border-terracotta hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none min-h-[44px]"
             >
               <MessageCircle className="w-4 h-4" /> Ask about {dressCode}
             </a>
@@ -66,7 +66,7 @@ export default function RimanHero21st({ dressCode = 'RF-BR-2514' }: { dressCode?
           )}
           <div className="absolute bottom-4 start-4 end-4 flex items-center justify-between bg-onyx/70 backdrop-blur px-4 py-3 text-xs tracking-[0.2em] uppercase">
             <span>{dressCode} · Bridal</span>
-            <span className="text-gold">Rental / Sale</span>
+            <span className="text-terracotta-dark">Rental / Sale</span>
           </div>
         </motion.div>
       </div>

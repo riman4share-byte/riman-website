@@ -62,8 +62,13 @@ export default function ContactPage() {
       );
       addToast({ type: 'success', title: t('contact.toast_whatsapp_title'), message: t('contact.toast_whatsapp_msg') });
       window.open(url, '_blank', 'noopener,noreferrer');
-    } catch {
-      addToast({ type: 'error', title: t('contact.toast_error_title'), message: t('contact.toast_error_msg') });
+    } catch (err: any) {
+      const rateLimited = err?.code === 'P0001';
+      addToast({
+        type: 'error',
+        title: t('contact.toast_error_title'),
+        message: rateLimited ? t('contact.rate_limited') : t('contact.toast_error_msg'),
+      });
     }
   };
 
@@ -185,7 +190,7 @@ export default function ContactPage() {
                           {...register('type')}
                           disabled={isSubmitted}
                           className={cn(
-                            "w-full bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-gold outline-none p-4 text-sm transition-all appearance-none cursor-pointer",
+                            "w-full bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-terracotta outline-none p-4 text-sm transition-all appearance-none cursor-pointer",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
                         >
@@ -254,7 +259,7 @@ export default function ContactPage() {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-4"
                           >
-                            <div className="flex items-center justify-center gap-2 text-gold py-2">
+                            <div className="flex items-center justify-center gap-2 text-terracotta-dark py-2">
                               <CheckCircle2 className="w-5 h-5" />
                               <span className="font-body text-micro font-bold tracking-[0.3em] uppercase">{t('contact.success_title')}</span>
                             </div>
@@ -273,7 +278,7 @@ export default function ContactPage() {
               </motion.div>
             </AnimatePresence>
             
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-terracotta/5 blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-stone-100/30 blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
           </div>
         </div>
@@ -290,7 +295,7 @@ export default function ContactPage() {
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
           className="grayscale hover:grayscale-0 transition-all duration-1000 contrast-[1.1] brightness-[0.95]"
-          title="Atelier Riman — Sharjah"
+          title="Riman Fashion — Sharjah"
         />
         <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.15)] border-y border-stone-200/50" />
       </section>
@@ -301,7 +306,7 @@ export default function ContactPage() {
 function ContactInfoItem({ icon, title, content }: { icon: React.ReactNode, title: string, content: React.ReactNode }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all duration-500 shrink-0">
+      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition-all duration-500 shrink-0">
         {icon}
       </div>
       <div>

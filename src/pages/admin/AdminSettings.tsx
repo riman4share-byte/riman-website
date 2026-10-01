@@ -109,7 +109,7 @@ export default function AdminSettings() {
   const handleReset = async () => {
     const defaults = {
       branding: {
-        siteName: "Atelier Riman",
+        siteName: "Riman Fashion",
         tagline: "Sharjah's Most Majestic Couture",
         logoText: "Riman",
       },
@@ -158,7 +158,7 @@ export default function AdminSettings() {
       },
       advanced: {
         metaDescription:
-          "Atelier Riman — Sharjah's premier bridal and evening couture.",
+          "Riman Fashion — Sharjah's premier bridal and evening couture.",
         ogImageUrl: "",
         keywords: "bridal gowns, evening dresses, couture, Sharjah, UAE",
         gaId: "",
@@ -184,11 +184,11 @@ export default function AdminSettings() {
     });
   };
   const inputCls =
-    "w-full bg-stone-50 border border-stone-200 px-4 py-3 text-xs tracking-widest outline-none focus:border-gold transition-colors";
+    "w-full bg-stone-50 border border-stone-200 px-4 py-3 text-xs tracking-widest outline-none focus:border-terracotta transition-colors";
   const labelCls =
     "text-micro font-bold text-stone-600 uppercase tracking-widest block mb-1.5";
   const textareaCls =
-    "w-full bg-stone-50 border border-stone-200 px-4 py-3 text-xs outline-none focus:border-gold transition-colors resize-none";
+    "w-full bg-stone-50 border border-stone-200 px-4 py-3 text-xs outline-none focus:border-terracotta transition-colors resize-none";
   const tabs = [
     {
       id: "brand" as const,
@@ -259,7 +259,7 @@ export default function AdminSettings() {
             className={cn(
               "flex items-center gap-2 px-5 py-3 text-micro tracking-[0.2em] uppercase font-bold transition-colors border-b-2 -mb-px shrink-0",
               tab === t.id
-                ? "border-gold text-gold"
+                ? "border-terracotta text-terracotta-dark"
                 : "border-transparent text-stone-600 hover:text-stone-800",
             )}
           >
@@ -275,7 +275,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <PenTool className="w-4 h-4 text-gold" /> Brand Identity
+              <PenTool className="w-4 h-4 text-terracotta-dark" /> Brand Identity
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -314,7 +314,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Mail className="w-4 h-4 text-gold" /> Contact
+              <Mail className="w-4 h-4 text-terracotta-dark" /> Contact
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -355,7 +355,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Globe className="w-4 h-4 text-gold" /> Social Links
+              <Globe className="w-4 h-4 text-terracotta-dark" /> Social Links
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -397,7 +397,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Camera className="w-4 h-4 text-gold" /> Hero Section
+              <Camera className="w-4 h-4 text-terracotta-dark" /> Hero Section
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -446,7 +446,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-gold" /> About & Quote
+              <BookOpen className="w-4 h-4 text-terracotta-dark" /> About & Quote
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -493,7 +493,7 @@ export default function AdminSettings() {
                 />
               </div>{" "}
             </div>{" "}
-            <div className="mt-6 p-4 bg-gold/5 border border-gold/20">
+            <div className="mt-6 p-4 bg-terracotta/5 border border-terracotta/20">
               {" "}
               <p className="text-micro text-stone-600 italic">
                 Changes here take effect after clicking{" "}
@@ -510,7 +510,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <ShoppingBag className="w-4 h-4 text-gold" /> Rental Policy
+              <ShoppingBag className="w-4 h-4 text-terracotta-dark" /> Rental Policy
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -566,7 +566,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Truck className="w-4 h-4 text-gold" /> Shipping & Returns
+              <Truck className="w-4 h-4 text-terracotta-dark" /> Shipping & Returns
             </h3>{" "}
             <div className="grid grid-cols-1 gap-6">
               {" "}
@@ -656,7 +656,7 @@ export default function AdminSettings() {
                 {" "}
                 <div className="flex items-center gap-3">
                   {" "}
-                  <div className="w-9 h-9 bg-gold/10 text-gold flex items-center justify-center">
+                  <div className="w-9 h-9 bg-terracotta/10 text-terracotta-dark flex items-center justify-center">
                     {f.icon}
                   </div>{" "}
                   <div>
@@ -674,7 +674,7 @@ export default function AdminSettings() {
                   }
                   className={cn(
                     "relative w-11 h-5 transition-colors duration-300 shrink-0",
-                    settings.features[f.key] ? "bg-gold" : "bg-stone-200",
+                    settings.features[f.key] ? "bg-terracotta" : "bg-stone-200",
                   )}
                   aria-label={`Toggle ${f.label}`}
                 >
@@ -700,7 +700,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Search className="w-4 h-4 text-gold" /> SEO
+              <Search className="w-4 h-4 text-terracotta-dark" /> SEO
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
@@ -771,7 +771,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-gold" /> Maintenance Mode
+              <AlertTriangle className="w-4 h-4 text-terracotta-dark" /> Maintenance Mode
             </h3>{" "}
             <div className="p-6 bg-ivory border border-stone-100">
               {" "}
@@ -826,7 +826,7 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Code className="w-4 h-4 text-gold" /> Custom Code
+              <Code className="w-4 h-4 text-terracotta-dark" /> Custom Code
             </h3>{" "}
             <div>
               <label className={labelCls}>Custom &lt;head&gt; Code</label>
@@ -849,16 +849,16 @@ export default function AdminSettings() {
           <section>
             {" "}
             <h3 className="font-heading text-lg text-stone-800 tracking-wider uppercase mb-6 flex items-center gap-2">
-              <Download className="w-4 h-4 text-gold" /> Backup & System
+              <Download className="w-4 h-4 text-terracotta-dark" /> Backup & System
             </h3>{" "}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {" "}
               <button
                 onClick={handleExport}
-                className="flex items-center gap-3 px-6 py-5 border border-stone-200 bg-ivory hover:border-gold/30 transition-colors text-left"
+                className="flex items-center gap-3 px-6 py-5 border border-stone-200 bg-ivory hover:border-terracotta/30 transition-colors text-left"
               >
                 {" "}
-                <Download className="w-5 h-5 text-gold" />{" "}
+                <Download className="w-5 h-5 text-terracotta-dark" />{" "}
                 <div>
                   <p className="text-xs font-bold text-stone-800 uppercase tracking-widest">
                     Export Data
@@ -871,13 +871,13 @@ export default function AdminSettings() {
               <div className="border border-stone-200 bg-ivory p-5">
                 {" "}
                 <div className="flex items-center gap-3 mb-3">
-                  <Upload className="w-5 h-5 text-gold" />
+                  <Upload className="w-5 h-5 text-terracotta-dark" />
                   <p className="text-xs font-bold text-stone-800 uppercase tracking-widest">
                     Import Data
                   </p>
                 </div>{" "}
                 <textarea
-                  className="w-full bg-stone-50 border border-stone-100 p-3 text-micro outline-none focus:border-gold font-mono resize-none h-20"
+                  className="w-full bg-stone-50 border border-stone-100 p-3 text-micro outline-none focus:border-terracotta font-mono resize-none h-20"
                   placeholder="Paste exported JSON..."
                   value={importData}
                   onChange={(e) => setImportData(e.target.value)}

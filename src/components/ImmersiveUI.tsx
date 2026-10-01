@@ -113,7 +113,7 @@ export default function ImmersiveUI() {
       {/* Scroll Progress Bar — disabled with prefers-reduced-motion */}
       {!prefersReducedMotion && (
         <motion.div
-          className="fixed top-0 left-0 right-0 h-[2px] bg-gold z-[1001] origin-left"
+          className="fixed top-0 left-0 right-0 h-[2px] bg-terracotta z-[1001] origin-left"
           style={{ scaleX }}
         />
       )}
@@ -144,7 +144,7 @@ export default function ImmersiveUI() {
                 ))}
               </h1>
             </div>
-            <div className="absolute bottom-8 left-8 text-micro uppercase tracking-[0.35em] text-gold/60">
+            <div className="absolute bottom-8 left-8 text-micro uppercase tracking-[0.35em] text-terracotta-dark/60">
               Maison de Couture
             </div>
             <div className="absolute bottom-8 right-8 text-sm tabular-nums text-ivory">
@@ -160,7 +160,7 @@ export default function ImmersiveUI() {
           {/* Trail ring — follows with lag (skipped if reduced motion) */}
           {!prefersReducedMotion && (
             <motion.div
-              className="fixed top-0 left-0 w-12 h-12 border border-gold/40 rounded-full pointer-events-none z-[9998]"
+              className="fixed top-0 left-0 w-12 h-12 border border-terracotta/40 rounded-full pointer-events-none z-[9998]"
               animate={{
                 x: mousePos.x - 24,
                 y: mousePos.y - 24,
@@ -230,7 +230,7 @@ export default function ImmersiveUI() {
                     ease: 'easeOut',
                   }}
                 >
-                  <div className="w-1 h-1 rounded-full bg-gold/80" />
+                  <div className="w-1 h-1 rounded-full bg-terracotta/80" />
                 </motion.div>
               ))}
             </>

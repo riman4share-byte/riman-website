@@ -40,7 +40,7 @@ export default function WishlistPage() {
   const shareUrl = `${window.location.origin}/wishlist?ids=${wishlist.map(p => p.id).join(',')}`;
 
   const handleShare = async () => {
-    const message = `${t('selection.shared_title')} — Atelier Riman`;
+    const message = `${t('selection.shared_title')} — Riman Fashion`;
     if (navigator.share) {
       try {
         await navigator.share({ title: message, url: shareUrl });

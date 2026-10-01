@@ -57,7 +57,7 @@ export default function PaymentSuccess() {
     <div className="pt-40 pb-20 px-6 min-h-screen flex flex-col items-center justify-center text-center bg-ivory">
       {status === 'verifying' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <Loader2 className="w-12 h-12 text-gold animate-spin mx-auto mb-8" />
+          <Loader2 className="w-12 h-12 text-terracotta-dark animate-spin mx-auto mb-8" />
           <h2 className="font-heading text-3xl text-stone-800 uppercase mb-4">{t('payment.verifying')}</h2>
           <p className="font-body text-stone-400 text-xs tracking-widest uppercase">{t('payment.please_wait')}</p>
         </motion.div>

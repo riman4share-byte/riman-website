@@ -190,7 +190,7 @@ async function fulfillOrder(ev: WebhookEvent) {
   // --- Confirmation email (durable queue) ---
   const customerEmail = order.customers?.email;
   if (customerEmail) {
-    await enqueue('order_confirmed', customerEmail, `Payment Confirmed — ${ev.orderId.slice(0, 8)} | Atelier Riman`,
+    await enqueue('order_confirmed', customerEmail, `Payment Confirmed — ${ev.orderId.slice(0, 8)} | Riman Fashion`,
       confirmationEmailHtml(order, ev.orderId));
   }
 }

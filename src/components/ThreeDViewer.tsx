@@ -106,7 +106,7 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
             orbit-sensitivity="0.8"
             min-camera-orbit="auto auto 5%"
             max-camera-orbit="auto auto 200%"
-            className="w-full h-full border border-gold/20"
+            className="w-full h-full border border-terracotta/20"
             style={{ width: '100%', height: '100%', backgroundColor: 'transparent' }}
           >
             {/* Custom Progress Bar */}
@@ -120,12 +120,12 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
                   className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-stone-50/80 backdrop-blur-[2px]"
                 >
                   <div className="relative flex flex-col items-center">
-                    <Loader2 className="w-10 h-10 text-gold animate-spin mb-4" />
+                    <Loader2 className="w-10 h-10 text-terracotta-dark animate-spin mb-4" />
                     <div className="w-48 h-[2px] bg-stone-200 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${loadingProgress}%` }}
-                        className="h-full bg-gold"
+                        className="h-full bg-terracotta"
                       />
                     </div>
                     <span className="mt-2 text-micro uppercase tracking-[0.2em] text-stone-600 font-bold">
@@ -167,7 +167,7 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
               <img src={poster} alt={alt || '3D model poster'} loading="lazy" className="w-full h-full object-cover opacity-50" />
             ) : (
               <div className="flex flex-col items-center gap-3">
-                <Box className="w-8 h-8 text-gold/30 animate-pulse" />
+                <Box className="w-8 h-8 text-terracotta-dark/30 animate-pulse" />
                 <span className="text-micro uppercase tracking-[0.2em] text-stone-600">{t('threed.initializing')}</span>
               </div>
             )}
@@ -176,14 +176,14 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
           <div className="absolute bottom-6 right-6 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={handleReset}
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-gold hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
               title={t('threed.reset_view')}
               aria-label={t('threed.reset_view')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button 
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-gold hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
               title="View in AR"
               aria-label="View in augmented reality"
               onClick={() => modelRef.current?.activateAR()}
@@ -193,9 +193,9 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
           </div>
 
           <div className="absolute top-6 left-6 pointer-events-none">
-            <div className="flex items-center gap-2 px-3 py-1 bg-gold/10 backdrop-blur-sm border border-gold/20 rounded-full">
-              <div className="w-1.5 h-1.5 bg-gold rounded-full animate-pulse" />
-              <span className="text-micro font-bold uppercase tracking-[0.2em] text-gold">3D Perspective</span>
+            <div className="flex items-center gap-2 px-3 py-1 bg-terracotta/10 backdrop-blur-sm border border-terracotta/20 rounded-full">
+              <div className="w-1.5 h-1.5 bg-terracotta rounded-full animate-pulse" />
+              <span className="text-micro font-bold uppercase tracking-[0.2em] text-terracotta-dark">3D Perspective</span>
             </div>
           </div>
         </model-viewer>

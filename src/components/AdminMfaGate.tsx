@@ -109,7 +109,7 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
   if (stage === 'checking') {
     return (
       <div className="min-h-screen bg-ivory flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-gold animate-spin" />
+        <Loader2 className="w-8 h-8 text-terracotta-dark animate-spin" />
       </div>
     );
   }
@@ -121,13 +121,13 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
     return (
       <>
         <div className="bg-onyx text-bone px-6 py-3 flex items-center justify-center gap-3 text-center">
-          <ShieldAlert className="w-4 h-4 text-gold shrink-0" />
+          <ShieldAlert className="w-4 h-4 text-terracotta-dark shrink-0" />
           <p className="font-label text-xs tracking-[0.2em] uppercase">
             Owner tip: protect the atelier — enroll an authenticator app below, then set VITE_REQUIRE_ADMIN_MFA=true
           </p>
           <button
             onClick={startEnroll}
-            className="font-label text-xs tracking-[0.2em] uppercase text-gold hover:text-gold-light underline underline-offset-4 shrink-0"
+            className="font-label text-xs tracking-[0.2em] uppercase text-terracotta-dark hover:text-terracotta-light underline underline-offset-4 shrink-0"
           >
             Enroll now
           </button>
@@ -140,11 +140,11 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-ivory flex items-center justify-center px-6 py-20">
       <div className="max-w-md w-full bg-ivory border border-stone-200 p-10 text-center">
-        <ShieldCheck className="w-10 h-10 text-gold mx-auto mb-6" />
+        <ShieldCheck className="w-10 h-10 text-terracotta-dark mx-auto mb-6" />
         <h1 className="font-heading text-2xl text-stone-800 uppercase tracking-widest mb-2">
           {stage === 'enrolling' ? 'Link authenticator' : 'Owner verification'}
         </h1>
-        <div className="w-12 h-px bg-gold mx-auto mb-6" />
+        <div className="w-12 h-px bg-terracotta mx-auto mb-6" />
         {stage === 'needed' && (
           <>
             <p className="font-body text-stone-600 text-sm leading-relaxed mb-8">
@@ -159,7 +159,7 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
               In your authenticator app choose <strong>Enter a setup key</strong> and type:
             </p>
             <p className="font-mono text-sm bg-stone-100 border border-stone-200 px-4 py-3 mb-4 break-all select-all">{secret}</p>
-            <p className="font-body text-stone-500 text-xs mb-6">Account: Atelier Riman (owner)</p>
+            <p className="font-body text-stone-500 text-xs mb-6">Account: Riman Fashion (owner)</p>
             <CodeInput code={code} setCode={setCode} />
             {error && <p className="text-micro text-rose-500 uppercase tracking-widest mt-4">{error}</p>}
             <button onClick={confirmEnroll} className="btn-luxury w-full mt-6">Verify &amp; finish</button>
@@ -188,7 +188,7 @@ function CodeInput({ code, setCode }: { code: string; setCode: (v: string) => vo
       inputMode="numeric"
       autoComplete="one-time-code"
       placeholder="000000"
-      className="w-full text-center font-mono text-2xl tracking-[0.5em] bg-stone-50 border border-stone-200 px-4 py-4 outline-none focus:border-gold transition-colors"
+      className="w-full text-center font-mono text-2xl tracking-[0.5em] bg-stone-50 border border-stone-200 px-4 py-4 outline-none focus:border-terracotta transition-colors"
     />
   );
 }

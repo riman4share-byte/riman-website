@@ -28,14 +28,14 @@ export default function GalleryFilters({ activeCategory, onCategoryChange, class
           className={cn(
             'relative px-5 py-2 text-micro tracking-[0.3em] uppercase font-bold transition-all duration-300 border overflow-hidden',
             activeCategory === cat.key
-              ? 'bg-gold text-onyx border-gold'
-              : 'border-stone-200 text-stone-600 hover:border-gold hover:text-gold'
+              ? 'bg-terracotta text-onyx border-terracotta'
+              : 'border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-dark'
           )}
         >
           {activeCategory === cat.key && (
             <motion.span
               layoutId="activeFilter"
-              className="absolute inset-0 bg-gold"
+              className="absolute inset-0 bg-terracotta"
               transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
             />
           )}

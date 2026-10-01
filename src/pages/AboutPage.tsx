@@ -41,7 +41,7 @@ export default function AboutPage() {
           >
             {t('about.hero_title').split(' ').map((word, i) => i === 2 ? <span key={i} className="italic font-serif">{word}</span> : word + ' ')}
           </motion.h1>
-          <div className="w-px h-24 bg-gold/50 mx-auto" />
+          <div className="w-px h-24 bg-terracotta/50 mx-auto" />
         </div>
       </section>
 
@@ -96,7 +96,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
             <h2 className="font-heading text-4xl tracking-widest uppercase mb-4 text-white">{t('about.pillars')}</h2>
-            <div className="w-20 h-px bg-gold mx-auto" />
+            <div className="w-20 h-px bg-terracotta mx-auto" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
@@ -156,12 +156,12 @@ export default function AboutPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             <img src="/assets/rimanfashion_3542687554351211237_227867687_2_2025-01-10.jpg" className="w-full aspect-square object-cover" alt="Riman atelier beadwork detail" loading="lazy" />
             <div className="bg-ivory flex flex-col justify-center p-8 text-center border border-stone-50">
-               <h4 className="font-heading text-3xl text-gold mb-2">10k+</h4>
+               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">10k+</h4>
                 <p className="text-micro text-stone-600 uppercase tracking-widest">{t('about.stat_beads')}</p>
             </div>
             <img src="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg" className="w-full aspect-square object-cover" alt="Riman couture runway collection" loading="lazy" />
             <div className="bg-stone-900 text-ivory flex flex-col justify-center p-8 text-center">
-               <h4 className="font-heading text-3xl text-gold mb-2">120</h4>
+               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">120</h4>
                 <p className="text-micro text-ivory/40 uppercase tracking-widest">{t('about.stat_runways')}</p>
             </div>
           </div>
@@ -182,11 +182,11 @@ function TeamMember({ name, role, image }: { name: string, role: string, image: 
           loading="lazy"
         />
         <div className="absolute inset-0 bg-onyx/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <span className="w-12 h-px bg-gold" />
+          <span className="w-12 h-px bg-terracotta" />
         </div>
       </div>
       <h4 className="font-heading text-lg text-stone-800 mb-1">{name}</h4>
-      <p className="text-micro tracking-widest text-gold uppercase">{role}</p>
+      <p className="text-micro tracking-widest text-terracotta-dark uppercase">{role}</p>
     </div>
   );
 }
@@ -194,8 +194,8 @@ function TeamMember({ name, role, image }: { name: string, role: string, image: 
 function Pillar({ icon: Icon, title, desc }: any) {
   return (
     <div className="text-center group">
-      <div className="w-16 h-16 rounded-full border border-stone-700 flex items-center justify-center mx-auto mb-8 group-hover:border-gold group-hover:bg-gold/5 transition-all duration-500">
-        <Icon className="w-6 h-6 text-gold" />
+      <div className="w-16 h-16 rounded-full border border-stone-700 flex items-center justify-center mx-auto mb-8 group-hover:border-terracotta group-hover:bg-terracotta/5 transition-all duration-500">
+        <Icon className="w-6 h-6 text-terracotta-dark" />
       </div>
       <h3 className="font-heading text-xl mb-4 tracking-widest uppercase">{title}</h3>
       <p className="font-body text-xs text-ivory leading-relaxed uppercase tracking-wider">{desc}</p>

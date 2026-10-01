@@ -10,7 +10,7 @@ export default function Logo({ className, variant = 'gold', showText = true }: L
   const colors = {
     light: 'text-white',
     dark: 'text-stone-900',
-    gold: 'text-gold'
+    gold: 'text-terracotta-dark'
   };
 
   const currentColor = colors[variant];
@@ -19,7 +19,7 @@ export default function Logo({ className, variant = 'gold', showText = true }: L
     <div className={cn("flex flex-col items-center gap-2", className)}>
       <img 
         src="/riman-logo.png" 
-        alt="Atelier Riman" 
+        alt="Riman Fashion" 
         className="w-full h-auto object-contain"
         loading="eager"
       />
@@ -34,7 +34,7 @@ export default function Logo({ className, variant = 'gold', showText = true }: L
           >
             Riman Fashion
           </span>
-          <div className={cn("w-12 h-px mt-1", variant === 'gold' ? "bg-gold/30" : "bg-current opacity-20")} />
+          <div className={cn("w-12 h-px mt-1", variant === 'gold' ? "bg-terracotta/30" : "bg-current opacity-20")} />
         </div>
       )}
     </div>

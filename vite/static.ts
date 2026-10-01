@@ -59,26 +59,26 @@ export function safeJsonLdScript(data: unknown): string {
 }
 
 const PUBLIC_STATIC_ROUTES: { route: string; title: string; description: string }[] = [
-  { route: '/', title: 'Atelier Riman | Sharjah Bridal & Evening Couture', description: 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, premium rentals, and fine jewelry at our flagship atelier.' },
-  { route: '/about', title: 'Our Story | Atelier Riman', description: 'Discover the heritage of Atelier Riman — Sharjah\'s premier bridal and evening couture house. Where tradition meets contemporary luxury.' },
-  { route: '/contact', title: 'Contact | Atelier Riman', description: 'Visit our Sharjah atelier for a private consultation. Book an appointment to explore our bridal and evening collections with our master stylists.' },
-  { route: '/collections', title: 'The Collections | Atelier Riman', description: 'Browse every Atelier Riman collection — bridal gowns, couture evening wear, premium rentals, accessories and fine jewelry.' },
-  { route: '/journal', title: 'The Journal | Atelier Riman', description: 'Stories, styling notes and behind-the-scenes from the Atelier Riman Sharjah atelier.' },
-  { route: '/collection/all', title: 'All Designs | Atelier Riman', description: 'Browse the complete Atelier Riman collection — bridal gowns, evening dresses, luxurious rentals, and fine jewelry. Each piece is handcrafted in Sharjah.' },
-  { route: '/collection/bridal', title: 'Bridal Collection | Atelier Riman', description: 'Discover exquisite bridal gowns at Atelier Riman in Sharjah. From classic A-line to dramatic ballgowns — each gown is a masterpiece of couture craftsmanship.' },
-  { route: '/collection/evening', title: 'Evening Gowns | Atelier Riman', description: 'Shop luxurious evening gowns and formal wear for galas, red carpets, and special occasions. Exclusive designs available for purchase and premium rental.' },
-  { route: '/collection/couture', title: 'Couture Evening Wear | Atelier Riman', description: 'Couture evening silhouettes cut from silk and crystal — hand-finished in our Sharjah atelier for the grandest entrances.' },
-  { route: '/collection/rental', title: 'Premium Rentals | Atelier Riman', description: 'Rent designer bridal and evening gowns from Atelier Riman. 7-day premium rental includes dry cleaning and insurance. Perfect for your special occasion.' },
-  { route: '/collection/accessories', title: 'Accessories | Atelier Riman', description: 'Veils, straps and couture finishing details, hand-made in our Sharjah atelier alongside every gown.' },
-  { route: '/collection/jewelry', title: 'Fine Jewelry | Atelier Riman', description: 'Discover Atelier Riman\'s fine jewelry collection — handcrafted pieces that complement our bridal and evening couture. Gold, diamonds, and precious gems.' },
-  { route: '/faq', title: 'FAQ | Atelier Riman', description: 'Find answers to common questions about Atelier Riman\'s bridal and evening wear, including sizing, rentals, alterations, and ordering.' },
-  { route: '/alterations', title: 'Bespoke Alterations | Atelier Riman', description: 'Expert bespoke tailoring and alterations at our Sharjah atelier. From hem adjustments to complete gown restructuring by our master seamstresses.' },
-  { route: '/gallery', title: 'Gallery | Atelier Riman', description: 'Browse our gallery of Atelier Riman creations — bridal gowns, evening wear, and editorial features from our Sharjah atelier.' },
-  { route: '/style-quiz', title: 'Style Quiz | Atelier Riman', description: 'Discover your perfect bridal or evening silhouette with Atelier Riman\'s style consultation quiz. Find the gown that matches your vision.' },
-  { route: '/appointment', title: 'Book Appointment | Atelier Riman', description: 'Schedule a private consultation at our Sharjah atelier. Experience our bridal and evening collections with personalised styling guidance.' },
-  { route: '/wedding-checklist', title: 'Wedding Checklist | Atelier Riman', description: 'Your complete wedding planning checklist from Atelier Riman. Stay organised from engagement to your grand entrance.' },
-  { route: '/privacy', title: 'Privacy Policy | Atelier Riman', description: 'Atelier Riman privacy policy — how we protect and handle your personal information.' },
-  { route: '/terms', title: 'Terms & Conditions | Atelier Riman', description: 'Atelier Riman terms and conditions for purchases, rentals, and appointments.' },
+  { route: '/', title: 'Riman Fashion | Sharjah Bridal & Evening Couture', description: 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, premium rentals, and fine jewelry at our flagship atelier.' },
+  { route: '/about', title: 'Our Story | Riman Fashion', description: 'Discover the heritage of Riman Fashion — Sharjah\'s premier bridal and evening couture house. Where tradition meets contemporary luxury.' },
+  { route: '/contact', title: 'Contact | Riman Fashion', description: 'Visit our Sharjah atelier for a private consultation. Book an appointment to explore our bridal and evening collections with our master stylists.' },
+  { route: '/collections', title: 'The Collections | Riman Fashion', description: 'Browse every Riman Fashion collection — bridal gowns, couture evening wear, premium rentals, accessories and fine jewelry.' },
+  { route: '/journal', title: 'The Journal | Riman Fashion', description: 'Stories, styling notes and behind-the-scenes from the Riman Fashion Sharjah atelier.' },
+  { route: '/collection/all', title: 'All Designs | Riman Fashion', description: 'Browse the complete Riman Fashion collection — bridal gowns, evening dresses, luxurious rentals, and fine jewelry. Each piece is handcrafted in Sharjah.' },
+  { route: '/collection/bridal', title: 'Bridal Collection | Riman Fashion', description: 'Discover exquisite bridal gowns at Riman Fashion in Sharjah. From classic A-line to dramatic ballgowns — each gown is a masterpiece of couture craftsmanship.' },
+  { route: '/collection/evening', title: 'Evening Gowns | Riman Fashion', description: 'Shop luxurious evening gowns and formal wear for galas, red carpets, and special occasions. Exclusive designs available for purchase and premium rental.' },
+  { route: '/collection/couture', title: 'Couture Evening Wear | Riman Fashion', description: 'Couture evening silhouettes cut from silk and crystal — hand-finished in our Sharjah atelier for the grandest entrances.' },
+  { route: '/collection/rental', title: 'Premium Rentals | Riman Fashion', description: 'Rent designer bridal and evening gowns from Riman Fashion. 7-day premium rental includes dry cleaning and insurance. Perfect for your special occasion.' },
+  { route: '/collection/accessories', title: 'Accessories | Riman Fashion', description: 'Veils, straps and couture finishing details, hand-made in our Sharjah atelier alongside every gown.' },
+  { route: '/collection/jewelry', title: 'Fine Jewelry | Riman Fashion', description: 'Discover Riman Fashion\'s fine jewelry collection — handcrafted pieces that complement our bridal and evening couture. Gold, diamonds, and precious gems.' },
+  { route: '/faq', title: 'FAQ | Riman Fashion', description: 'Find answers to common questions about Riman Fashion\'s bridal and evening wear, including sizing, rentals, alterations, and ordering.' },
+  { route: '/alterations', title: 'Bespoke Alterations | Riman Fashion', description: 'Expert bespoke tailoring and alterations at our Sharjah atelier. From hem adjustments to complete gown restructuring by our master seamstresses.' },
+  { route: '/gallery', title: 'Gallery | Riman Fashion', description: 'Browse our gallery of Riman Fashion creations — bridal gowns, evening wear, and editorial features from our Sharjah atelier.' },
+  { route: '/style-quiz', title: 'Style Quiz | Riman Fashion', description: 'Discover your perfect bridal or evening silhouette with Riman Fashion\'s style consultation quiz. Find the gown that matches your vision.' },
+  { route: '/appointment', title: 'Book Appointment | Riman Fashion', description: 'Schedule a private consultation at our Sharjah atelier. Experience our bridal and evening collections with personalised styling guidance.' },
+  { route: '/wedding-checklist', title: 'Wedding Checklist | Riman Fashion', description: 'Your complete wedding planning checklist from Riman Fashion. Stay organised from engagement to your grand entrance.' },
+  { route: '/privacy', title: 'Privacy Policy | Riman Fashion', description: 'Riman Fashion privacy policy — how we protect and handle your personal information.' },
+  { route: '/terms', title: 'Terms & Conditions | Riman Fashion', description: 'Riman Fashion terms and conditions for purchases, rentals, and appointments.' },
 ];
 
 /** Routes that must NEVER be prerendered or listed in the sitemap. */
@@ -132,8 +132,8 @@ export function buildPrerenderPages(siteUrl: string, products: SeedProduct[]): P
     const image = product.images?.[0] ? resolveAssetUrl(siteUrl, product.images[0]) : absoluteUrl(siteUrl, '/og-cover.png');
     pages.push({
       route,
-      title: `${product.name} | Atelier Riman`,
-      description: (product.description || `${product.name} — hand-finished couture from the Atelier Riman Sharjah atelier.`).slice(0, 300),
+      title: `${product.name} | Riman Fashion`,
+      description: (product.description || `${product.name} — hand-finished couture from the Riman Fashion Sharjah atelier.`).slice(0, 300),
       ogType: 'product',
       canonical: absoluteUrl(siteUrl, route),
       ogImage: image,
@@ -144,7 +144,7 @@ export function buildPrerenderPages(siteUrl: string, products: SeedProduct[]): P
         description: product.description || '',
         image,
         category: product.category || '',
-        brand: { '@type': 'Brand', name: 'Atelier Riman' },
+        brand: { '@type': 'Brand', name: 'Riman Fashion' },
         offers: offers.length === 1 ? offers[0] : offers,
       }],
       bodyHtml: staticBody(product.name, product.description || '', [{ label: 'Back to the collection', href: '/collections' }], product.images?.[0]),
@@ -160,7 +160,7 @@ export function siteSchemas(siteUrl: string): Record<string, unknown>[] {
     {
       '@context': 'https://schema.org',
       '@type': 'ClothingStore',
-      name: 'Atelier Riman',
+      name: 'Riman Fashion',
       description: "Sharjah's premier bridal and evening couture house. Bespoke gowns, premium rentals, and fine jewelry.",
       url: absoluteUrl(siteUrl, '/'),
       image: absoluteUrl(siteUrl, '/og-cover.png'),
@@ -177,10 +177,10 @@ export function siteSchemas(siteUrl: string): Record<string, unknown>[] {
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'Atelier Riman',
+      name: 'Riman Fashion',
       url: absoluteUrl(siteUrl, '/'),
       inLanguage: ['en', 'ar'],
-      publisher: { '@type': 'ClothingStore', name: 'Atelier Riman', '@id': `${absoluteUrl(siteUrl, '/')}#store` },
+      publisher: { '@type': 'ClothingStore', name: 'Riman Fashion', '@id': `${absoluteUrl(siteUrl, '/')}#store` },
     },
   ];
 }
@@ -203,7 +203,7 @@ function staticBody(title: string, description: string, links: { label: string; 
     : '';
   return [
     `<header class="prerender-shell" style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;">`,
-    `<p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Atelier Riman — Sharjah</p>`,
+    `<p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Riman Fashion — Sharjah</p>`,
     `<h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">${escapeHtml(title)}</h1>`,
     `<p style="font-size:16px;line-height:1.7;">${escapeHtml(description)}</p>`,
     img,

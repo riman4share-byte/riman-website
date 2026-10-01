@@ -121,7 +121,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
           )}
           {product.glbUrl && (
             <span className="bg-ivory text-onyx text-micro tracking-[0.3em] uppercase px-4 py-1.5 flex items-center gap-2 border border-stone-200">
-              <Box className="w-3 h-3 text-terracotta-dark-ink" />
+              <Box className="w-3 h-3 text-terracotta-dark" />
               {t('badge.3d')}
             </span>
           )}
@@ -175,7 +175,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                       "min-w-[2.5rem] h-9 px-2 flex items-center justify-center border text-micro tracking-wider transition-all",
                       selectedSize === size
                         ? "border-terracotta bg-terracotta text-white"
-                        : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-dark-ink"
+                        : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
                     )}
                   >
                     {size}
@@ -197,7 +197,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                 "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-all duration-300 flex items-center justify-center gap-1.5",
                 isAdded
                   ? "text-emerald-400"
-                  : "text-white hover:text-terracotta-dark-ink"
+                  : "text-white hover:text-terracotta-dark"
               )}
             >
               {isAdded ? (
@@ -233,11 +233,11 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
         <div>
           <p className="text-micro tracking-widest text-stone-600 uppercase mb-1">{product.category}</p>
         {lookNumber && (
-          <span className="font-label text-micro tracking-[0.3em] uppercase text-terracotta-dark-ink">
+          <span className="font-label text-micro tracking-[0.3em] uppercase text-terracotta-dark">
             {t('silhouettes.look')} {lookNumber}
           </span>
         )}
-          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-terracotta-dark-ink transition-colors leading-[1.1]">
+          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-terracotta-dark transition-colors leading-[1.1]">
             {productName}
         </Link>
         {product.fabric && (
@@ -256,7 +256,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                   {t('product.rent')}: <span className="text-stone-700"><span className="me-1 text-micro uppercase tracking-wider text-stone-600">{t('pricing.from')}</span>{' '}{formatPrice(product.rentalPrice || 0)}</span>
                 </p>
                 {isAvailable && start && end && (
-                  <p className="flex items-center gap-1 text-micro text-terracotta-dark-ink/80 tracking-wider">
+                  <p className="flex items-center gap-1 text-micro text-terracotta-dark/80 tracking-wider">
                     <Calendar className="w-3 h-3" />
                     <span className="tracking-widest uppercase font-medium">
                       {availabilityDateFormatter.format(start)}–{availabilityDayFormatter.format(end)} {t('product.available')}
@@ -275,7 +275,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           <Link
             to={`/product/${product.id}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-terracotta-dark-ink transition-colors duration-500 mt-2"
+            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-terracotta-dark transition-colors duration-500 mt-2"
           >
             {t('silhouettes.enquire')}
             <ArrowRight className="w-3 h-3" />

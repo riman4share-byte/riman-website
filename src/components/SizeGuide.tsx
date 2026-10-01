@@ -87,23 +87,23 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
                 <h4 className="font-heading text-xs tracking-widest uppercase text-stone-800 font-bold mb-3">{t('size_guide.how_to_measure')}</h4>
                 <div className="space-y-3">
                   <div className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-gold/10 text-gold flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    <span className="w-6 h-6 rounded-full bg-terracotta/10 text-terracotta-dark flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
                     <p className="font-body text-stone-600 text-sm"><span className="text-stone-800 font-semibold">{t('size_guide.measure_bust')}</span> {t('size_guide.measure_bust_desc')}</p>
                   </div>
                   <div className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-gold/10 text-gold flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    <span className="w-6 h-6 rounded-full bg-terracotta/10 text-terracotta-dark flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
                     <p className="font-body text-stone-600 text-sm"><span className="text-stone-800 font-semibold">{t('size_guide.measure_waist')}</span> {t('size_guide.measure_waist_desc')}</p>
                   </div>
                   <div className="flex gap-3">
-                    <span className="w-6 h-6 rounded-full bg-gold/10 text-gold flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                    <span className="w-6 h-6 rounded-full bg-terracotta/10 text-terracotta-dark flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
                     <p className="font-body text-stone-600 text-sm"><span className="text-stone-800 font-semibold">{t('size_guide.measure_hips')}</span> {t('size_guide.measure_hips_desc')}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 p-4 bg-gold/5">
+              <div className="mt-6 p-4 bg-terracotta/5">
                 <p className="font-body text-stone-600 text-sm leading-relaxed">
-                  <span className="font-bold text-gold">{t('size_guide.alterations_title')}</span> {t('size_guide.alterations_desc')}
+                  <span className="font-bold text-terracotta-dark">{t('size_guide.alterations_title')}</span> {t('size_guide.alterations_desc')}
                 </p>
               </div>
             </div>

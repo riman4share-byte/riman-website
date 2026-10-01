@@ -37,7 +37,7 @@ export default function SearchPage() {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
              <div className="relative group">
-                <SearchIcon className="absolute start-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-gold transition-colors" />
+                <SearchIcon className="absolute start-6 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500 group-focus-within:text-terracotta-dark transition-colors" />
                 <input
                   id="site-search"
                   type="text"
@@ -66,7 +66,7 @@ export default function SearchPage() {
                     onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                     className={cn(
                       "px-6 py-2 text-micro tracking-[0.2em] uppercase transition-all border",
-                      activeCategory === cat ? "bg-onyx text-white border-onyx" : "bg-ivory text-stone-600 border-stone-100 hover:border-gold"
+                      activeCategory === cat ? "bg-onyx text-white border-onyx" : "bg-ivory text-stone-600 border-stone-100 hover:border-terracotta"
                     )}
                   >
                     {categoryLabel(cat)}
@@ -83,7 +83,7 @@ export default function SearchPage() {
            <h1 className="font-heading text-lg text-stone-800 tracking-widest uppercase">
              {t('search.results')} <span className="text-stone-500 font-normal ml-2">({filteredProducts.length})</span>
            </h1>
-           <button onClick={() => document.getElementById('search-categories')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-gold transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none">
+           <button onClick={() => document.getElementById('search-categories')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none">
               <SlidersHorizontal className="w-3 h-3" /> {t('search.advanced_filters')}
            </button>
         </div>
@@ -115,7 +115,7 @@ export default function SearchPage() {
                    <SearchIcon className="w-8 h-8 text-stone-500" />
                  </div>
                   <h3 className="font-heading text-2xl text-stone-800 mb-4 tracking-widest uppercase">{t('search.empty_heading')}</h3>
-                 <div className="w-12 h-px bg-gold mx-auto mb-4" />
+                 <div className="w-12 h-px bg-terracotta mx-auto mb-4" />
                    <p className="font-body text-stone-600 text-xs uppercase tracking-widest mb-10 max-w-md mx-auto leading-relaxed italic">
                     {t('search.empty_desc')}
                   </p>
@@ -135,7 +135,7 @@ export default function SearchPage() {
          <section className="bg-ivory py-32 border-t border-stone-100">
            <div className="container mx-auto px-6 text-center mb-16">
                <h2 className="font-heading text-4xl text-stone-800 tracking-tight mb-4">{t('search.recommended')}</h2>
-              <div className="w-16 h-px bg-gold mx-auto" />
+              <div className="w-16 h-px bg-terracotta mx-auto" />
            </div>
 <div className="container mx-auto px-6 overflow-x-auto pb-8 no-scrollbar">
                <div className="flex gap-10">

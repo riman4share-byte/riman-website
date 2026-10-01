@@ -5,7 +5,7 @@ export default function Marquee21st() {
     <section className="bg-onyx py-8 overflow-hidden" aria-label="Marquee">
       <div className="marquee-track flex gap-12 whitespace-nowrap">
         {[...items, ...items].map((item, i) => (
-          <span key={i} className="font-label text-xs tracking-[0.35em] uppercase text-gold">
+          <span key={i} className="font-label text-xs tracking-[0.35em] uppercase text-terracotta-dark">
             {item}
           </span>
         ))}

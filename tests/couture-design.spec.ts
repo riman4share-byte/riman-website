@@ -26,7 +26,7 @@ test('couture palette + Prata display face are active', async ({ page }) => {
   expect(probe.warmColor).toBe('rgb(101, 92, 73)');
 });
 
-test('hero CTAs are borderless ink + ghost-underline, no boxes', async ({ page }) => {
+test('hero CTA is a borderless ghost link, no fill and no shadow', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const primary = page.locator('#hero a[href="/appointment"]');
@@ -37,8 +37,13 @@ test('hero CTAs are borderless ink + ghost-underline, no boxes', async ({ page }
   });
   expect(styles.borderWidth).toBe('0px');
   expect(styles.boxShadow).toBe('none');
-  expect(styles.bg).toBe('rgb(15, 13, 10)'); // couture ink
-  await expect(page.locator('#hero .btn-couture-ghost')).toHaveCount(1);
+  // The editorial direction is an unfilled ghost CTA: the hero sits on imagery,
+  // so a solid ink block would read as a box. Emphasis comes from the rule and
+  // the type, not a fill.
+  expect(styles.bg).toBe('rgba(0, 0, 0, 0)');
+  // The hero now carries two ghost CTAs (reserve a viewing / book a rental).
+  // Assert the component is in use rather than pinning the exact number.
+  expect(await page.locator('#hero .btn-couture-ghost').count()).toBeGreaterThanOrEqual(1);
 });
 
 test('couture hairline form-field base rule is active', async ({ page }) => {
@@ -99,7 +104,9 @@ test('phase 2: .card-couture and .field-couture classes are live in the bundle',
     card.remove(); field.remove();
     return out;
   });
-  expect(probe.cardBorder).toBe('0px');
+  // Hairline border rather than a shadow: the flat direction uses a 1px tonal
+  // edge, so the card still has no drop shadow and no radius.
+  expect(probe.cardBorder).toBe('1px');
   expect(probe.cardShadow).toBe('none');
   expect(probe.cardRadius).toBe('0px');
   expect(probe.cardOverflow).toBe('hidden');
@@ -110,7 +117,7 @@ test('phase 2: .card-couture and .field-couture classes are live in the bundle',
   expect(probe.fieldBg).toBe('rgba(0, 0, 0, 0)');
 });
 
-test('phase 2: mobile bottom-nav is an ink band with gold active state', async ({ page }) => {
+test('phase 2: mobile bottom-nav is an ink band with terracotta active state', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -118,16 +125,16 @@ test('phase 2: mobile bottom-nav is an ink band with gold active state', async (
   await expect(nav).toBeVisible({ timeout: 45000 });
   const styles = await nav.evaluate((el) => {
     const cs = getComputedStyle(el);
-    const active = el.querySelector('a.text-gold-light') as HTMLElement | null;
+    const active = el.querySelector('a.text-terracotta-light') as HTMLElement | null;
     const linkCs = active ? getComputedStyle(active) : null;
     return { bg: cs.backgroundColor, hasActive: !!active, activeColor: linkCs?.color ?? null };
   });
   expect(styles.bg).toBe('rgb(15, 13, 10)');
   expect(styles.hasActive).toBe(true);
-  expect(styles.activeColor).toBe('rgb(201, 169, 111)');
+  expect(styles.activeColor).toBe('rgb(196, 90, 60)'); // terracotta-light on ink
 });
 
-test('phase 2: collections page renders borderless couture cards', async ({ page }) => {
+test('phase 2: collections page renders hairline couture cards', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   await page.goto('/collections', { waitUntil: 'domcontentloaded' });
   const card = page.locator('.card-couture').first();
@@ -136,7 +143,7 @@ test('phase 2: collections page renders borderless couture cards', async ({ page
     const cs = getComputedStyle(el);
     return { border: cs.borderTopWidth, radius: cs.borderTopLeftRadius, overflow: cs.overflow };
   });
-  expect(styles.border).toBe('0px');
+  expect(styles.border).toBe('1px');
   expect(styles.radius).toBe('0px');
   expect(styles.overflow).toBe('hidden');
 });
@@ -182,21 +189,27 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
   expect(probe.plates).toBe(0);
 });
 
-test('phase 3: btn-luxury has champagne sheen pseudo-element', async ({ page }) => {
+test('phase 3: btn-luxury stays flat — no gradient sheen', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const btn = page.locator('#hero a.btn-luxury').first();
+  // btn-luxury lives on the booking/checkout surfaces, not the homepage hero
+  // (the hero uses the unfilled ghost CTA).
+  await page.goto('/appointment', { waitUntil: 'domcontentloaded' });
+  const btn = page.locator('.btn-luxury').first();
   await btn.waitFor({ timeout: 45000 });
   const styles = await btn.evaluate((el) => {
     const cs = getComputedStyle(el);
     const pre = getComputedStyle(el, '::before');
-    return { overflow: cs.overflow, pos: cs.position, preTransition: pre.transitionDuration, preW: parseFloat(pre.width) > 0, preBg: pre.backgroundImage.includes('gradient') };
+    return {
+      bgImage: cs.backgroundImage,
+      preBg: pre.backgroundImage,
+      boxShadow: cs.boxShadow,
+    };
   });
-  expect(styles.overflow).toBe('hidden');
-  expect(styles.pos).toBe('relative');
-  expect(styles.preTransition).toContain('0.9s');
-  expect(styles.preW).toBe(true);
-  expect(styles.preBg).toBe(true);
+  // The editorial flat direction dropped the champagne sheen: no gradient fills,
+  // no shadow. Hover is carried by the border and text colour instead.
+  expect(styles.bgImage).toBe('none');
+  expect(styles.preBg === 'none' || !styles.preBg.includes('gradient')).toBe(true);
+  expect(styles.boxShadow).toBe('none');
 });
 
 test('phase 3: hero headline letter-splits EN, stays plain AR + reduced-motion', async ({ page }) => {

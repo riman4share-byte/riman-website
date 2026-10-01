@@ -28,7 +28,7 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="pt-40 flex justify-center">
-        <div className="w-8 h-8 border-2 border-gold border-t-transparent animate-spin" />
+        <div className="w-8 h-8 border-2 border-terracotta border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -48,10 +48,10 @@ export default function ProfilePage() {
           {/* Sidebar */}
           <aside className="w-full lg:w-80">
             <div className="bg-ivory p-8 relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-2xl -translate-y-1/2 translate-x-1/2" />
+               <div className="absolute top-0 right-0 w-24 h-24 bg-terracotta/5 blur-2xl -translate-y-1/2 translate-x-1/2" />
                
                <div className="flex items-center gap-4 mb-10 relative z-10">
-                 <div className="w-16 h-16 bg-gold/10 flex items-center justify-center text-gold border border-gold/20">
+                 <div className="w-16 h-16 bg-terracotta/10 flex items-center justify-center text-terracotta-dark border border-terracotta/20">
                    <User className="w-8 h-8" />
                  </div>
                  <div>
@@ -79,7 +79,7 @@ export default function ProfilePage() {
           <div className="flex-1 space-y-12">
             <header>
                <h1 className="font-heading text-4xl text-stone-800 tracking-wider uppercase mb-3">{t('profile.dashboard')}</h1>
-               <div className="w-12 h-px bg-gold mb-3" />
+               <div className="w-12 h-px bg-terracotta mb-3" />
                <p className="font-body text-stone-600 text-micro tracking-[0.2em] uppercase italic">{t('profile.welcome')}</p>
             </header>
 
@@ -94,7 +94,7 @@ export default function ProfilePage() {
             <section>
                <div className="border-b border-stone-100 pb-4 mb-8">
                  <h3 className="font-heading text-xl text-stone-800 tracking-widest uppercase">{t('profile.recent_engagements')}</h3>
-                 <div className="w-8 h-px bg-gold mt-3" />
+                 <div className="w-8 h-px bg-terracotta mt-3" />
                </div>
                {ordersLoading ? (
                  <div className="space-y-4">
@@ -114,7 +114,7 @@ export default function ProfilePage() {
                   <div className="bg-ivory p-12 text-center">
                    <Package className="w-10 h-10 text-stone-200 mx-auto mb-4" />
                     <p className="text-micro tracking-widest text-stone-600 uppercase mb-6">{t('profile.no_orders')}</p>
-                    <Link to="/collection/bridal" className="text-micro text-gold uppercase tracking-[0.3em] font-bold underline underline-offset-4">{t('profile.explore_new')}</Link>
+                    <Link to="/collection/bridal" className="text-micro text-terracotta-dark uppercase tracking-[0.3em] font-bold underline underline-offset-4">{t('profile.explore_new')}</Link>
                  </div>
                ) : (
                  <div className="space-y-4">
@@ -128,12 +128,12 @@ export default function ProfilePage() {
                          <p className="text-micro text-stone-500 uppercase tracking-widest">{order.created_at ? new Date(order.created_at).toLocaleDateString() : ''}</p>
                        </div>
                        <div className="flex items-center gap-4">
-                         <span className="text-gold font-heading text-sm font-bold">{formatPrice(order.subtotal)}</span>
+                         <span className="text-terracotta-dark font-heading text-sm font-bold">{formatPrice(order.subtotal)}</span>
                          <span className={cn(
                            "px-3 py-1 text-micro font-bold uppercase tracking-widest border",
                            order.status === 'cancelled' ? 'text-rose-400 border-rose-100 bg-rose-50/30' :
                            order.status === 'completed' || order.status === 'delivered' ? 'text-emerald-600 border-emerald-100 bg-emerald-50/30' :
-                           'text-gold border-gold/10 bg-ivory'
+                           'text-terracotta-dark border-terracotta/10 bg-ivory'
                          )}>
                            {order.status}
                          </span>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                  </div>
                )}
                {recentOrders.length > 0 && (
-                 <Link to="/collection/bridal" className="inline-flex items-center gap-3 text-micro text-gold uppercase tracking-[0.3em] font-bold mt-8 hover:gap-5 transition-all">
+                 <Link to="/collection/bridal" className="inline-flex items-center gap-3 text-micro text-terracotta-dark uppercase tracking-[0.3em] font-bold mt-8 hover:gap-5 transition-all">
                     {t('profile.explore_new')} <ChevronRight className="w-3 h-3" />
                  </Link>
                )}
@@ -161,7 +161,7 @@ function ProfileLink({ icon: Icon, label, active, onClick }: any) {
       onClick={onClick}
       className={cn(
         "w-full flex items-center gap-4 p-4 text-micro uppercase tracking-[0.2em] transition-all text-left border-l-2",
-        active ? "bg-gold/5 text-gold font-bold border-gold" : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-transparent"
+        active ? "bg-terracotta/5 text-terracotta-dark font-bold border-terracotta" : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-transparent"
       )}
     >
       <Icon className="w-4 h-4" /> {label}

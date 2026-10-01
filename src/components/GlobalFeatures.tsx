@@ -91,7 +91,7 @@ export default function GlobalFeatures() {
               </button>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-ivory rounded-full flex items-center justify-center mx-auto mb-6 text-gold">
+                <div className="w-16 h-16 bg-ivory rounded-full flex items-center justify-center mx-auto mb-6 text-terracotta-dark">
                   <Mail className="w-8 h-8" />
                 </div>
                 <h3 className="font-heading text-3xl text-stone-800 mb-4 tracking-wider uppercase">{t('newsletter.title')}</h3>
@@ -101,7 +101,7 @@ export default function GlobalFeatures() {
                   <input 
                     type="email" 
                     placeholder={t('newsletter.email_placeholder')} 
-                    className="w-full px-6 py-4 bg-stone-50 border border-stone-200 text-xs tracking-widest uppercase outline-none focus:border-gold"
+                    className="w-full px-6 py-4 bg-stone-50 border border-stone-200 text-xs tracking-widest uppercase outline-none focus:border-terracotta"
                     aria-label={t('newsletter.email_aria')}
                   />
                   <button className="w-full btn-luxury">{t('newsletter.cta')}</button>
@@ -124,7 +124,7 @@ export default function GlobalFeatures() {
             <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-center md:text-start">
                 <p className="text-micro tracking-widest uppercase text-stone-600 mb-1">{t('cookies.heading')}</p>
-                <p className="text-xs text-stone-800 tracking-wide">{t('cookies.body')} <Link to="/privacy" className="underline hover:text-gold">{t('cookies.learn')}</Link>.</p>
+                <p className="text-xs text-stone-800 tracking-wide">{t('cookies.body')} <Link to="/privacy" className="underline hover:text-terracotta-dark">{t('cookies.learn')}</Link>.</p>
               </div>
               <div className="flex gap-4">
                 <button

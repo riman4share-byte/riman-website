@@ -75,7 +75,7 @@ export default function GalleryLightbox({ items, currentIndex, isOpen, onClose, 
           {/* Close button */}
           <button
             onClick={(e) => { e.stopPropagation(); onClose(); }}
-            className="absolute top-6 right-6 z-[1001] text-white/60 hover:text-gold transition-colors"
+            className="absolute top-6 right-6 z-[1001] text-white/60 hover:text-terracotta-dark transition-colors"
             aria-label="Close lightbox"
           >
             <X className="w-8 h-8" />
@@ -90,7 +90,7 @@ export default function GalleryLightbox({ items, currentIndex, isOpen, onClose, 
           {currentIndex > 0 && (
             <button
               onClick={(e) => { e.stopPropagation(); goPrev(); }}
-              className="absolute left-4 md:left-8 z-[1001] text-white/40 hover:text-gold transition-colors"
+              className="absolute left-4 md:left-8 z-[1001] text-white/40 hover:text-terracotta-dark transition-colors"
               aria-label="Previous item"
             >
               <ChevronLeft className="w-10 h-10" />
@@ -101,7 +101,7 @@ export default function GalleryLightbox({ items, currentIndex, isOpen, onClose, 
           {currentIndex < items.length - 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); goNext(); }}
-              className="absolute right-4 md:right-8 z-[1001] text-white/40 hover:text-gold transition-colors"
+              className="absolute right-4 md:right-8 z-[1001] text-white/40 hover:text-terracotta-dark transition-colors"
               aria-label="Next item"
             >
               <ChevronRight className="w-10 h-10" />
@@ -140,7 +140,7 @@ export default function GalleryLightbox({ items, currentIndex, isOpen, onClose, 
             <h3 className="text-white font-heading text-lg tracking-widest uppercase mb-1">
               {currentItem.title}
             </h3>
-            <p className="text-gold text-micro tracking-[0.3em] uppercase">
+            <p className="text-terracotta-dark text-micro tracking-[0.3em] uppercase">
               {currentItem.category.replace('_', ' ')}
             </p>
           </div>

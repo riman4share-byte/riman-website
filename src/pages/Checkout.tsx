@@ -277,7 +277,7 @@ export default function Checkout() {
             <ArrowLeft className={cn("w-4 h-4", isRtl && "rotate-180")} />
             <span className="text-micro tracking-[0.2em] uppercase font-bold hidden sm:inline">{t('checkout.back_to_shop')}</span>
           </Link>
-          <Link to="/" className="font-heading text-sm tracking-[0.3em] uppercase text-stone-800">Atelier Riman</Link>
+          <Link to="/" className="font-heading text-sm tracking-[0.3em] uppercase text-stone-800">Riman Fashion</Link>
           <div className="w-20" />
         </div>
       </div>
@@ -421,6 +421,10 @@ id="co-country"
                           disabled
                           autoComplete="country-name"
                         />
+                        {/* The field is locked, so say why. Silently disabling an
+                            input reads as broken, and it contradicted the
+                            worldwide-delivery policy shown at review. */}
+                        <p className="text-micro text-stone-500 leading-relaxed">{t('checkout.country_locked_note')}</p>
                       </div>
                     </div>
                     <div className="flex gap-4 mt-4">
@@ -448,7 +452,7 @@ id="co-country"
                     <div className="bg-ivory/50 p-5 border border-terracotta/10 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-heading text-xs tracking-[0.2em] uppercase text-stone-600">{t('checkout.your_details')}</h3>
-                        <button onClick={() => setStep(1)} className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark-dark transition-colors">
+                        <button onClick={() => setStep(1)} className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark transition-colors">
                           {t('checkout.previous')}
                         </button>
                       </div>
@@ -630,7 +634,7 @@ id="co-country"
                           href={`https://wa.me/${WHATSAPP_NUMBER}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark-dark transition-colors"
+                          className="text-micro tracking-widest uppercase text-terracotta-dark font-bold hover:text-terracotta-dark transition-colors"
                         >
                           {t('checkout.whatsapp_support')} &rarr;
                         </a>

@@ -140,7 +140,7 @@ export default function AdminProducts() {
           style: [],
           color: [],
           sizes: ['XS', 'S', 'M', 'L', 'XL'],
-          designer: 'Riman Atelier',
+          designer: 'Riman Fashion',
           collectionYear: new Date().getFullYear(),
           isNew: true,
         });
@@ -161,7 +161,7 @@ export default function AdminProducts() {
           style: [],
           color: [],
           sizes: ['XS', 'S', 'M', 'L', 'XL'],
-          designer: 'Riman Atelier',
+          designer: 'Riman Fashion',
           collectionYear: new Date().getFullYear(),
           isNew: true,
         });
@@ -242,14 +242,14 @@ export default function AdminProducts() {
               placeholder="Search by name or category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 text-xs tracking-widest outline-none focus:border-gold transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 text-xs tracking-widest outline-none focus:border-terracotta transition-colors"
             />
           </div>
           <div className="flex flex-col gap-2">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-100 px-4 py-3 text-micro tracking-widest uppercase outline-none focus:border-gold cursor-pointer"
+              className="w-full bg-stone-50 border border-stone-100 px-4 py-3 text-micro tracking-widest uppercase outline-none focus:border-terracotta cursor-pointer"
               aria-label="Filter by category"
             >
               <option value="all">All Categories</option>
@@ -288,7 +288,7 @@ export default function AdminProducts() {
                         <button
                           onClick={() => moveProduct(p.id, -1)}
                           disabled={hasActiveFilters || position === 0}
-                          className="p-1 border border-stone-200 text-stone-400 hover:text-gold hover:border-gold transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
+                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
                           aria-label={`Move ${p.name} up`}
                           title={hasActiveFilters ? 'Clear filters to reorder' : 'Move up'}
                         >
@@ -297,7 +297,7 @@ export default function AdminProducts() {
                         <button
                           onClick={() => moveProduct(p.id, 1)}
                           disabled={hasActiveFilters || position === products.length - 1}
-                          className="p-1 border border-stone-200 text-stone-400 hover:text-gold hover:border-gold transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
+                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
                           aria-label={`Move ${p.name} down`}
                           title={hasActiveFilters ? 'Clear filters to reorder' : 'Move down'}
                         >
@@ -333,7 +333,7 @@ export default function AdminProducts() {
                   <td className="px-8 py-4">
                     <div className="space-y-1">
                       {p.salePrice && <p className="text-micro font-bold text-stone-800">{formatPrice(p.salePrice)}</p>}
-                      {p.rentalPrice && <p className="text-micro text-gold uppercase tracking-widest">Rent: {formatPrice(p.rentalPrice)}</p>}
+                      {p.rentalPrice && <p className="text-micro text-terracotta-dark uppercase tracking-widest">Rent: {formatPrice(p.rentalPrice)}</p>}
                     </div>
                   </td>
                   <td className="px-8 py-4">
@@ -345,7 +345,7 @@ export default function AdminProducts() {
                           setIsFormOpen(true);
                           loadBookings(p.id);
                         }}
-                        className="p-2 border border-stone-200 text-stone-400 hover:text-gold hover:border-gold transition-all"
+                        className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all"
                         aria-label="Edit product"
                       >
                         <Edit2 className="w-3 h-3" />
@@ -407,13 +407,13 @@ export default function AdminProducts() {
                         name="description"
                         defaultValue={editingProduct?.description}
                         required
-                        className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold transition-colors resize-none h-32"
+                        className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors resize-none h-32"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex flex-col gap-2">
                         <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Category</label>
-                        <select name="category" defaultValue={editingProduct?.category || 'Bridal Gown'} required className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold cursor-pointer">
+                        <select name="category" defaultValue={editingProduct?.category || 'Bridal Gown'} required className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta cursor-pointer">
                           {CATEGORIES.map(c => (
                             <option key={c} value={c}>{c}</option>
                           ))}
@@ -421,14 +421,14 @@ export default function AdminProducts() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Silhouette</label>
-                        <select name="silhouette" defaultValue={editingProduct?.silhouette || 'One Size'} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold cursor-pointer">
+                        <select name="silhouette" defaultValue={editingProduct?.silhouette || 'One Size'} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta cursor-pointer">
                           {SILHOUETTES.map(s => (
                             <option key={s} value={s}>{s}</option>
                           ))}
                         </select>
                       </div>
                     </div>
-                    <InputField label="Designer" name="designer" defaultValue={editingProduct?.designer || 'Riman Atelier'} />
+                    <InputField label="Designer" name="designer" defaultValue={editingProduct?.designer || 'Riman Fashion'} />
                   </div>
 
                   {/* Pricing & Types */}
@@ -442,7 +442,7 @@ export default function AdminProducts() {
 
                     <div className="flex flex-col gap-2">
                       <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Service Type</label>
-                      <select name="productType" defaultValue={editingProduct?.productType || 'both'} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold cursor-pointer">
+                      <select name="productType" defaultValue={editingProduct?.productType || 'both'} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta cursor-pointer">
                         <option value="both">Sale & Rental</option>
                         <option value="sale">Exclusive Sale</option>
                         <option value="rent">Boutique Rental</option>
@@ -489,7 +489,7 @@ export default function AdminProducts() {
                         </button>
                       </div>
                     ))}
-                    <div className="w-20 h-24 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-600 gap-1 cursor-pointer hover:border-gold/50 transition-colors relative" onClick={() => document.getElementById('product-image-upload')?.click()}>
+                    <div className="w-20 h-24 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-600 gap-1 cursor-pointer hover:border-terracotta/50 transition-colors relative" onClick={() => document.getElementById('product-image-upload')?.click()}>
                       <Plus className="w-4 h-4" />
                       <span className="text-micro tracking-widest uppercase">Upload</span>
                     </div>
@@ -520,7 +520,7 @@ export default function AdminProducts() {
                       value={imageUrlInput}
                       onChange={e => setImageUrlInput(e.target.value)}
                       placeholder="Paste image URL..."
-                      className="flex-1 bg-stone-50 border border-stone-100 p-3 text-micro tracking-widest outline-none focus:border-gold transition-colors"
+                      className="flex-1 bg-stone-50 border border-stone-100 p-3 text-micro tracking-widest outline-none focus:border-terracotta transition-colors"
                     />
                     <button
                       type="button"
@@ -531,7 +531,7 @@ export default function AdminProducts() {
                         }
                       }}
                       disabled={!imageUrlInput.trim()}
-                      className="px-4 py-3 bg-stone-800 text-white text-micro tracking-widest uppercase hover:bg-gold transition-colors disabled:opacity-40 flex items-center gap-2"
+                      className="px-4 py-3 bg-stone-800 text-white text-micro tracking-widest uppercase hover:bg-terracotta transition-colors disabled:opacity-40 flex items-center gap-2"
                     >
                       <LinkIcon className="w-3 h-3" /> Add
                     </button>
@@ -546,20 +546,20 @@ export default function AdminProducts() {
                       <div className="flex gap-4 flex-wrap">
                         <div className="flex-1 min-w-[180px] flex flex-col gap-2">
                           <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Block Start</label>
-                          <input type="date" value={blockStart} onChange={e => setBlockStart(e.target.value)} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold transition-colors" />
+                          <input type="date" value={blockStart} onChange={e => setBlockStart(e.target.value)} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors" />
                         </div>
                         <div className="flex-1 min-w-[180px] flex flex-col gap-2">
                           <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Block End</label>
-                          <input type="date" value={blockEnd} onChange={e => setBlockEnd(e.target.value)} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold transition-colors" />
+                          <input type="date" value={blockEnd} onChange={e => setBlockEnd(e.target.value)} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors" />
                         </div>
-                        <button onClick={addBlock} disabled={!blockStart || !blockEnd || isLoadingBookings} className="px-6 py-4 bg-gold text-white text-micro tracking-[0.2em] font-bold uppercase hover:bg-gold-dark transition-all flex items-center gap-2 self-end" >
+                        <button onClick={addBlock} disabled={!blockStart || !blockEnd || isLoadingBookings} className="px-6 py-4 bg-terracotta text-white text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2 self-end" >
                           <CalendarPlus className="w-4 h-4" /> Add Block
                         </button>
                       </div>
 
                       {isLoadingBookings ? (
                         <div className="flex items-center justify-center py-8">
-                          <div className="w-6 h-6 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                          <div className="w-6 h-6 border-2 border-terracotta border-t-transparent rounded-full animate-spin" />
                         </div>
                       ) : productBookings.length === 0 ? (
                         <p className="text-micro text-stone-500 italic">No blocks or bookings yet.</p>
@@ -601,7 +601,7 @@ export default function AdminProducts() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-gold text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-gold-dark transition-all flex items-center gap-2"
+                    className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2"
                   >
                     {isUploading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -635,7 +635,7 @@ export default function AdminProducts() {
                     value={importInput}
                     onChange={e => setImportInput(e.target.value)}
                     placeholder="Paste one /assets/... URL per line (or full https://... URLs)"
-                    className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold transition-colors resize-none h-48"
+                    className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors resize-none h-48"
                   />
                 </div>
                 <div className="space-y-6">
@@ -649,7 +649,7 @@ export default function AdminProducts() {
                         </button>
                       </div>
                     ))}
-                    <div className="w-20 h-24 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-600 gap-1 cursor-pointer hover:border-gold/50 transition-colors relative" onClick={() => document.getElementById('bulk-import-upload')?.click()}>
+                    <div className="w-20 h-24 border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-600 gap-1 cursor-pointer hover:border-terracotta/50 transition-colors relative" onClick={() => document.getElementById('bulk-import-upload')?.click()}>
                       <Plus className="w-4 h-4" />
                       <span className="text-micro tracking-widest uppercase">Upload</span>
                     </div>
@@ -670,7 +670,7 @@ export default function AdminProducts() {
               </div>
               <div className="p-8 bg-onyx border-t border-stone-100 flex justify-end gap-4 -mx-8 -mb-8 mt-12">
                 <button type="button" onClick={() => setIsImportOpen(false)} className="px-8 py-3 text-micro tracking-widest uppercase text-stone-400 hover:text-white transition-colors">Cancel</button>
-                <button type="button" onClick={handleBulkImport} disabled={isImporting} className="bg-gold text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-gold-dark transition-all flex items-center gap-2">
+                <button type="button" onClick={handleBulkImport} disabled={isImporting} className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2">
                   {isImporting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="w-4 h-4" />} Import {importInput.split('\n').filter(Boolean).length + importFiles.length} Products
                 </button>
               </div>
@@ -701,7 +701,7 @@ function InputField({ label, name, type = "text", defaultValue, required, placeh
         defaultValue={defaultValue}
         required={required}
         placeholder={placeholder}
-        className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-gold transition-colors"
+        className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors"
       />
     </div>
   );
@@ -723,7 +723,7 @@ function Checkbox({ label, name, defaultChecked }: CheckboxProps) {
           defaultChecked={defaultChecked}
           className="peer sr-only"
         />
-        <div className="w-5 h-5 border border-stone-300 bg-white group-hover:border-gold transition-all peer-checked:bg-gold peer-checked:border-gold" />
+        <div className="w-5 h-5 border border-stone-300 bg-white group-hover:border-terracotta transition-all peer-checked:bg-terracotta peer-checked:border-terracotta" />
         <Plus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
       </div>
       <span className="text-micro uppercase tracking-widest text-stone-600 font-bold">{label}</span>

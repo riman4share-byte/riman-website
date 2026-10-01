@@ -14,12 +14,12 @@ export default function ElegantCarousel21st() {
       <div className="container mx-auto px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="font-label text-xs tracking-[0.35em] uppercase text-gold mb-2">Real Riman</p>
+            <p className="font-label text-xs tracking-[0.35em] uppercase text-terracotta-dark mb-2">Real Riman</p>
             <h2 className="font-heading text-3xl md:text-5xl font-light text-stone-800">Lookbook</h2>
           </div>
           <Link
             to="/gallery"
-            className="inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-stone-600 hover:text-gold min-h-[44px]"
+            className="inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-stone-600 hover:text-terracotta-dark min-h-[44px]"
           >
             View gallery <ArrowRight className={cn('w-4 h-4', isRtl && 'rotate-180')} />
           </Link>

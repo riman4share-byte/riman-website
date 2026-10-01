@@ -100,7 +100,7 @@ export default function HeroSection21st() {
         <p className="font-label text-xs tracking-[0.25em] uppercase text-bone/90 mb-6 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {t('cat.bridal')} · {t('cat.evening')} · {t('cat.rentals')}
         </p>
-        <p className="font-label text-xs tracking-[0.3em] uppercase text-gold-light mb-5 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+        <p className="font-label text-xs tracking-[0.3em] uppercase text-terracotta-light mb-5 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {t('hero.title')}
         </p>
         <KineticHeading

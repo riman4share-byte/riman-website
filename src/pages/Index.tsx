@@ -10,7 +10,6 @@ import HeroSection21st from '../components/ui-21st/HeroSection';
 import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
 import Marquee21st from '../components/ui-21st/Marquee21st';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
-import FooterSection from '../components/ui-21st/FooterSection';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
 
 const DISCIPLINES = [
@@ -64,18 +63,18 @@ export default function Index() {
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-onyx/70 via-onyx/10 to-onyx/80" aria-hidden="true" />
         <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center gap-10 px-6 py-24 text-center">
-          <span className="h-px w-16 bg-gold/50" aria-hidden="true" />
+          <span className="h-px w-16 bg-terracotta/50" aria-hidden="true" />
           <RevealWords
             text={t('atelier.quote')}
             className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]"
           />
-          <span className="font-label text-caption uppercase tracking-[0.45em] text-gold-light">
+          <span className="font-label text-caption uppercase tracking-[0.45em] text-terracotta-light">
             {t('chapter.atelier')}
           </span>
         </div>
       </section>
 
-      <InvitationRule className="bg-bone border-t border-gold/15" />
+      <InvitationRule className="bg-bone border-t border-terracotta/15" />
 
       <section className="bg-champagne py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
@@ -92,7 +91,7 @@ export default function Index() {
         </div>
       </section>
 
-      <InvitationRule className="bg-champagne border-t border-gold/15" />
+      <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 
       <section className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
@@ -130,7 +129,7 @@ export default function Index() {
                   </div>
                   <h3 className="font-heading text-2xl font-light text-stone-800 mt-5">{t(d.titleKey)}</h3>
                   <p className="font-editorial italic text-stone-600 mt-2">{t(d.descKey)}</p>
-                  <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-gold">
+                  <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-terracotta-dark">
                     {t('disciplines.discover')}
                   </span>
                 </Link>
@@ -141,19 +140,18 @@ export default function Index() {
         </div>
       </section>
 
-      <InvitationRule className="bg-bone border-t border-gold/15" />
+      <InvitationRule className="bg-bone border-t border-terracotta/15" />
 
       <Marquee21st />
 
       <ElegantCarousel21st />
 
-      <InvitationRule className="bg-champagne border-t border-gold/15" />
+      <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 
       <TestimonialWall21st />
 
       <BookingCTA21st />
 
-      <FooterSection />
     </div>
   );
 }

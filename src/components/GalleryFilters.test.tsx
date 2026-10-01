@@ -42,6 +42,6 @@ describe('GalleryFilters', () => {
       <GalleryFilters activeCategory="bridal" onCategoryChange={vi.fn()} />
     );
     const bridalBtn = screen.getByText('Bridal');
-    expect(bridalBtn.closest('button')).toHaveClass('bg-gold');
+    expect(bridalBtn.closest('button')).toHaveClass('bg-terracotta');
   });
 });

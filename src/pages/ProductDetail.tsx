@@ -78,7 +78,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!product) return;
-    document.title = `${productName} | Atelier Riman`;
+    document.title = `${productName} | Riman Fashion`;
     analytics.productView({ id: product.id, name: productName, category: product.category });
 
     const setMeta = (attr: string, key: string, content: string) => {
@@ -92,7 +92,7 @@ export default function ProductDetail() {
     };
 
     setMeta('name', 'description', productDescription.slice(0, 155));
-    setMeta('property', 'og:title', `${productName} | Atelier Riman`);
+    setMeta('property', 'og:title', `${productName} | Riman Fashion`);
     setMeta('property', 'og:description', productDescription.slice(0, 155));
     setMeta('property', 'og:type', 'product');
     const heroImage = product.images[0];
@@ -341,7 +341,7 @@ export default function ProductDetail() {
             {/* Info — Sticky on Desktop */}
             <div className="flex flex-col lg:sticky lg:top-28 lg:self-start">
               <header className="mb-8">
-                <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-2 font-bold">{product.designer || 'Riman Atelier'}</span>
+                <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-2 font-bold">{product.designer || 'Riman Fashion'}</span>
                 <h1 className="font-heading text-3xl md:text-4xl text-stone-800 tracking-wider mb-3 leading-tight">{productName}</h1>
                 <div className="flex gap-3">
                   {product.isNew && (
@@ -521,7 +521,7 @@ export default function ProductDetail() {
                         </div>
                         <div className="flex justify-between py-3.5 px-5 bg-stone-50/50">
                           <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold">{t('product.designer')}</span>
-                          <span className="text-xs text-stone-800 font-medium tracking-wide">{product.designer || 'Riman Atelier'}</span>
+                          <span className="text-xs text-stone-800 font-medium tracking-wide">{product.designer || 'Riman Fashion'}</span>
                         </div>
                         <div className="py-3.5 px-5 bg-ivory">
                           <span className="text-micro text-terracotta-dark uppercase tracking-widest font-bold block mb-2">{t('product.style_elements')}</span>

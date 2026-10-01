@@ -59,7 +59,7 @@ export default function FaqPage() {
         <div className="space-y-16">
           {faqs.map((group, gIdx) => (
             <div key={gIdx} className="space-y-8">
-              <h2 className="font-heading text-xl text-gold uppercase tracking-[0.3em] border-b border-stone-100 pb-4">{t(group.categoryKey)}</h2>
+              <h2 className="font-heading text-xl text-terracotta-dark uppercase tracking-[0.3em] border-b border-stone-100 pb-4">{t(group.categoryKey)}</h2>
               <div className="space-y-4">
                 {group.questions.map((faq, qIdx) => {
                   const id = `${gIdx}-${qIdx}`;
@@ -74,7 +74,7 @@ export default function FaqPage() {
                         className="w-full p-6 flex justify-between items-center text-start"
                       >
                         <span className="font-heading text-sm md:text-lg text-stone-800 tracking-wide">{t(faq.qKey)}</span>
-                        <ChevronDown className={cn("w-5 h-5 text-gold transition-transform duration-500", isOpen && "rotate-180")} />
+                        <ChevronDown className={cn("w-5 h-5 text-terracotta-dark transition-transform duration-500", isOpen && "rotate-180")} />
                       </button>
                       <AnimatePresence>
                         {isOpen && (
@@ -102,7 +102,7 @@ export default function FaqPage() {
       {/* Direct Assist */}
       <section className="py-20 bg-ivory border-t border-stone-100">
         <div className="container mx-auto px-6 text-center">
-           <MessageCircle className="w-10 h-10 text-gold mx-auto mb-6" />
+           <MessageCircle className="w-10 h-10 text-terracotta-dark mx-auto mb-6" />
             <h3 className="font-heading text-2xl text-stone-800 mb-4 tracking-widest uppercase">{t('faq.still_unsure')}</h3>
             <p className="font-body text-stone-500 text-xs uppercase tracking-widest mb-10 leading-relaxed italic">
               {t('faq.still_unsure_desc')}

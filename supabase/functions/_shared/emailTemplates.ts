@@ -19,7 +19,7 @@ function shell(title: string, bodyHtml: string): string {
 <head><meta charset="utf-8"></head>
 <body style="font-family: Georgia, serif; color: #1a1a1a; padding: 40px;">
   <div style="max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; padding: 40px;">
-    <h1 style="font-size: 20px; letter-spacing: 4px; text-transform: uppercase; color: #b8860b; margin-bottom: 30px; text-align: center;">Atelier Riman</h1>
+    <h1 style="font-size: 20px; letter-spacing: 4px; text-transform: uppercase; color: #b8860b; margin-bottom: 30px; text-align: center;">Riman Fashion</h1>
     <h2 style="font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: #1a1a1a;">${escapeHtml(title)}</h2>
     ${bodyHtml}
     <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">

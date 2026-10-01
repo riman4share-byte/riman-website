@@ -1,5 +1,5 @@
 ---
-name: Atelier Riman
+name: Riman Fashion
 description: Sharjah's premier luxury bridal and evening couture design system
 colors:
   gold: "#A2492B"
@@ -67,13 +67,13 @@ components:
     textColor: "{colors.onyx}"
 ---
 
-# Design System: Atelier Riman
+# Design System: Riman Fashion
 
 ## 1. Overview
 
 **Creative North Star: "The Terracotta Atelier"**
 
-A warm, handcrafted sanctuary where heritage meets contemporary luxury. Atelier Riman's visual language is built on the interplay of deep warm dark, bone ivory, and a terracotta accent — like a private fitting room bathed in candlelight. Every surface feels deliberate, tactile, and intimate. The system rejects mass-produced, fast-fashion aesthetics in favor of architectural precision softened by editorial elegance.
+A warm, handcrafted sanctuary where heritage meets contemporary luxury. Riman Fashion's visual language is built on the interplay of deep warm dark, bone ivory, and a terracotta accent — like a private fitting room bathed in candlelight. Every surface feels deliberate, tactile, and intimate. The system rejects mass-produced, fast-fashion aesthetics in favor of architectural precision softened by editorial elegance.
 
 The experience is consultative rather than transactional: booking-first, with private viewings, rentals, and WhatsApp handoff at its core. Arabic is the default language; English is fully supported. Typography carries the brand's regal voice through serif display headings with italic editorial accents. Motion is restrained but purposeful.
 
@@ -142,12 +142,13 @@ Warm layered — depth is conveyed through tonal surface stacking rather than dr
 
 ### Buttons
 - **Shape:** Sharp-edged (no border-radius). The absence of rounding reinforces architectural precision.
-- **Primary (btn-luxury):** Onyx background (#161513), bone text, Archivo 12px uppercase with 0.25em tracking, padding 20px 40px. On hover: text turns terracotta.
+- **Primary (btn-luxury):** Unfilled — transparent background with a 1px stone border, stone text, Archivo 12px uppercase with 0.25em tracking, padding 20px 40px. On hover the border and text fill with ink. The editorial flat direction dropped the solid ink block and the champagne sheen: emphasis comes from type and a hairline edge, never a gradient fill or a drop shadow.
+- **Hero CTA (btn-couture-ghost):** Borderless and unfilled, underlined on hover. Used over imagery where any fill would read as a box.
 - **Secondary (btn-luxury-outline):** Transparent background, terracotta border at 40% opacity, terracotta text. On hover: terracotta background, onyx text.
-- **Focus:** Visible 2px outline ring in terracotta with 2px offset.
+- **Focus:** Visible 2px outline ring in terracotta with 2px offset. Terracotta is the only accent step that clears 3:1 against both bone and onyx, which is why focus can use it on every surface.
 
 ### Navigation (Header)
-- **Style:** Fixed top, full-width. Transparent at page top, transitions to bone with backdrop-blur and subtle bottom border on scroll.
+- **Style:** Fixed top, full-width. Transparent over the homepage hero at page top; on scroll it becomes a translucent ink band (`bg-onyx/95`) with a hairline bottom border. Backdrop blur was removed for scroll performance, so the band relies on opacity rather than blur.
 - **Links:** `text-micro` uppercase, wide tracking. On hover: terracotta accent. Count badges (Selection, Bag) are terracotta circles, `text-micro` bold, `min-w-4 h-4`.
 - **Mobile:** Bottom navigation bar (Home, Search, Selection, Bag, You) plus full-height sidebar overlay, spring-animated, with backdrop blur.
 

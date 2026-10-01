@@ -118,16 +118,16 @@ describe('routeToOutputFile', () => {
 
 describe('injectPrerenderPage', () => {
   const template = `<!doctype html><html lang="en"><head>
-<title>Atelier Riman | Sharjah's Premier Bridal &amp; Evening Couture</title>
+<title>Riman Fashion | Sharjah's Premier Bridal &amp; Evening Couture</title>
 <meta name="description" content="Discover the zenith of Sharjah couture.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://riman.ae/" />
-<meta property="og:title" content="Atelier Riman | Sharjah's Premier Bridal & Evening Couture">
+<meta property="og:title" content="Riman Fashion | Sharjah's Premier Bridal & Evening Couture">
 <meta property="og:description" content="shell desc">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://riman.ae/">
 <meta property="og:image" content="https://riman.ae/og-cover.png">
-<meta name="twitter:title" content="Atelier Riman | Sharjah's Premier Bridal & Evening Couture">
+<meta name="twitter:title" content="Riman Fashion | Sharjah's Premier Bridal & Evening Couture">
 <meta name="twitter:description" content="shell desc">
 <meta name="twitter:image" content="https://riman.ae/og-cover.png">
 <link rel="alternate" hreflang="en" href="https://riman.ae/" />
@@ -138,7 +138,7 @@ describe('injectPrerenderPage', () => {
   it('rewrites title, metas, canonical, JSON-LD and body for a route page', () => {
     const about = pages().find((p) => p.route === '/about')!;
     const out = injectPrerenderPage(template, about);
-    expect(out).toContain('<title>Our Story | Atelier Riman</title>');
+    expect(out).toContain('<title>Our Story | Riman Fashion</title>');
     expect(out).toContain('<link rel="canonical" href="https://riman.ae/about" />');
     expect(out).toMatch(/property="og:url" content="https:\/\/riman\.ae\/about"/);
     expect(out).toContain(about.bodyHtml);

@@ -30,7 +30,7 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
         </span>
       </div>
       <figcaption className={cn('flex flex-col gap-3 md:col-span-5', reverse && 'md:order-1')}>
-        <span className="font-label text-xs tracking-[0.3em] uppercase text-gold-ink">
+        <span className="font-label text-xs tracking-[0.3em] uppercase text-terracotta-dark">
           {t('silhouettes.look')} {lookNumber}
         </span>
         <h3 className="font-heading text-2xl md:text-3xl font-light text-stone-800">{productName}</h3>
@@ -46,7 +46,7 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
             </p>
           )}
           {product.rentalPrice !== undefined && product.rentalPrice > 0 && (
-            <p className="font-body text-sm text-gold-ink">
+            <p className="font-body text-sm text-terracotta-dark">
               <span className="font-label text-caption tracking-[0.25em] uppercase text-stone-500 me-2">{t('product.rent')}</span>
               <span className="font-label text-caption tracking-[0.25em] uppercase text-stone-500 me-1">{t('pricing.from')}</span>
               {formatPrice(product.rentalPrice)}
@@ -55,7 +55,7 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
         </div>
         <Link
           to={`/product/${product.id}`}
-          className="group/link inline-flex items-center gap-2 font-label text-xs tracking-[0.25em] uppercase text-stone-800 transition-colors duration-700 hover:text-gold-ink mt-2"
+          className="group/link inline-flex items-center gap-2 font-label text-xs tracking-[0.25em] uppercase text-stone-800 transition-colors duration-700 hover:text-terracotta-dark mt-2"
         >
           {t('silhouettes.view_reserve')}
           <ArrowRight className="w-4 h-4 transition-transform duration-700 group-hover/link:translate-x-1 rtl:rotate-180" />

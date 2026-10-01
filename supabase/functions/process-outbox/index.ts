@@ -21,7 +21,7 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
 const OUTBOX_WORKER_SECRET = Deno.env.get('OUTBOX_WORKER_SECRET') || '';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const FROM_EMAIL = 'Atelier Riman <orders@riman.ae>';
+const FROM_EMAIL = 'Riman Fashion <orders@riman.ae>';
 const MAX_ATTEMPTS = 6;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);

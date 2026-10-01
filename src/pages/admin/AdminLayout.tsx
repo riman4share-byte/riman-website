@@ -24,7 +24,7 @@ function SidebarContent({ onNav }: { onNav: () => void }) {
   return (
     <>
       <div className="p-6 border-b border-stone-800">
-        <Link to="/" onClick={onNav} className="font-heading text-xl tracking-[0.2em] uppercase text-gold block">
+        <Link to="/" onClick={onNav} className="font-heading text-xl tracking-[0.2em] uppercase text-terracotta-dark block">
           Riman Admin
         </Link>
         <p className="text-micro tracking-[0.3em] text-stone-500 uppercase mt-2">Boutique Management</p>
@@ -41,7 +41,7 @@ function SidebarContent({ onNav }: { onNav: () => void }) {
               onClick={onNav}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 text-xs tracking-widest uppercase transition-colors duration-200",
-                isActive ? "bg-gold text-onyx font-bold" : "text-stone-400 hover:text-ivory hover:bg-stone-800"
+                isActive ? "bg-terracotta text-onyx font-bold" : "text-stone-400 hover:text-ivory hover:bg-stone-800"
               )}
             >
               <Icon className="w-4 h-4" />
@@ -131,7 +131,7 @@ export default function AdminLayout() {
               <p className="text-micro font-bold text-stone-800 uppercase tracking-wider">{user?.name || 'Admin'}</p>
               <p className="text-micro text-stone-600 uppercase tracking-widest">{user?.role === 'admin' ? 'Administrator' : 'Manager'}</p>
             </div>
-            <div className="w-10 h-10 bg-ivory border border-stone-200 flex items-center justify-center text-gold font-heading font-bold text-sm">
+            <div className="w-10 h-10 bg-ivory border border-stone-200 flex items-center justify-center text-terracotta-dark font-heading font-bold text-sm">
               {(user?.name || 'R')[0].toUpperCase()}
             </div>
           </div>

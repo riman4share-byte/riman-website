@@ -75,18 +75,18 @@ export default function AdminCalendar() {
                 >
                   <span className={cn(
                     "text-micro font-bold px-2 py-1",
-                    isSelected ? "bg-gold text-white" : "text-stone-600 group-hover:text-stone-800"
+                    isSelected ? "bg-terracotta text-white" : "text-stone-600 group-hover:text-stone-800"
                   )}>
                     {format(day, 'd')}
                   </span>
                   
                   <div className="mt-2 space-y-1">
                     {reservations.map(res => (
-                      <div key={res.id} className="text-micro bg-gold/5 border border-gold/10 px-2 py-1 flex items-center justify-between">
+                      <div key={res.id} className="text-micro bg-terracotta/5 border border-terracotta/10 px-2 py-1 flex items-center justify-between">
                          <span className="font-bold text-stone-800 truncate">{res.customer}</span>
                          <span className={cn(
                            "px-1",
-                           res.service === 'Rental' ? 'text-blue-600' : 'text-gold'
+                           res.service === 'Rental' ? 'text-blue-600' : 'text-terracotta-dark'
                          )}>●</span>
                       </div>
                     ))}
@@ -105,9 +105,9 @@ export default function AdminCalendar() {
             
             <div className="space-y-6">
               {selectionsForDay.length > 0 ? selectionsForDay.map(res => (
-                <div key={res.id} className="p-4 bg-ivory border-l-2 border-gold space-y-3">
+                <div key={res.id} className="p-4 bg-ivory border-l-2 border-terracotta space-y-3">
                   <div className="flex items-center gap-2 text-micro font-bold text-stone-800 uppercase tracking-widest">
-                    <User className="w-3 h-3 text-gold" /> {res.customer}
+                    <User className="w-3 h-3 text-terracotta-dark" /> {res.customer}
                   </div>
                   <div className="flex items-center gap-2 text-micro text-stone-600 uppercase tracking-widest">
                     <Clock className="w-3 h-3" /> 10:30 AM - {res.service}
@@ -115,7 +115,7 @@ export default function AdminCalendar() {
                   <div className="flex items-center gap-2 text-micro text-stone-600 uppercase tracking-widest">
                     <Package className="w-3 h-3" /> {res.item}
                   </div>
-                  <button onClick={() => setSelectedDate(null)} className="w-full mt-2 py-2 text-micro tracking-[0.2em] font-bold uppercase border border-gold/20 text-gold hover:bg-gold hover:text-white transition-all">
+                  <button onClick={() => setSelectedDate(null)} className="w-full mt-2 py-2 text-micro tracking-[0.2em] font-bold uppercase border border-terracotta/20 text-terracotta-dark hover:bg-terracotta hover:text-white transition-all">
                     View Dossier
                   </button>
                 </div>
@@ -132,7 +132,7 @@ export default function AdminCalendar() {
           </div>
 
           <div className="bg-stone-900 p-8 text-white">
-            <h4 className="text-micro tracking-widest uppercase text-gold mb-4">Capacity Insight</h4>
+            <h4 className="text-micro tracking-widest uppercase text-terracotta-dark mb-4">Capacity Insight</h4>
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between text-micro uppercase tracking-widest mb-2 font-bold">
@@ -140,7 +140,7 @@ export default function AdminCalendar() {
                   <span>80%</span>
                 </div>
                 <div className="h-1 bg-stone-800 overflow-hidden">
-                  <div className="h-full bg-gold w-4/5" />
+                  <div className="h-full bg-terracotta w-4/5" />
                 </div>
               </div>
               <p className="text-micro text-stone-400 leading-relaxed italic">The Sharjah boutique is nearing capacity for bridal consultations in April.</p>

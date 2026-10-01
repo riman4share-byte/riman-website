@@ -150,7 +150,7 @@ export default function AdminGallery() {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-gold text-onyx text-xs tracking-widest uppercase font-bold hover:bg-gold/90 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-terracotta text-onyx text-xs tracking-widest uppercase font-bold hover:bg-terracotta/90 transition-colors disabled:opacity-50"
         >
           <Upload className="w-4 h-4" />
           {uploading ? 'Uploading...' : t('gallery.admin_upload')}
@@ -235,7 +235,7 @@ export default function AdminGallery() {
                   )}
                 </td>
                 <td className="p-4">
-                  <button onClick={() => handleToggleFeatured(item)} className="text-gold hover:text-gold/70 transition-colors">
+                  <button onClick={() => handleToggleFeatured(item)} className="text-terracotta-dark hover:text-terracotta-dark/70 transition-colors">
                     {item.is_featured ? <Star className="w-4 h-4 fill-current" /> : <StarOff className="w-4 h-4" />}
                   </button>
                 </td>
@@ -243,12 +243,12 @@ export default function AdminGallery() {
                   <div className="flex items-center gap-2">
                     {editingId === item.id ? (
                       <>
-                        <button onClick={handleSave} className="text-xs text-gold hover:text-gold/70 font-bold">Save</button>
+                        <button onClick={handleSave} className="text-xs text-terracotta-dark hover:text-terracotta-dark/70 font-bold">Save</button>
                         <button onClick={() => setEditingId(null)} className="text-xs text-stone-600 hover:text-stone-800">Cancel</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => handleEdit(item)} className="text-stone-400 hover:text-gold transition-colors">
+                        <button onClick={() => handleEdit(item)} className="text-stone-400 hover:text-terracotta-dark transition-colors">
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button onClick={() => setDeleteConfirm(item.id)} className="text-stone-400 hover:text-rose-500 transition-colors">
@@ -283,7 +283,7 @@ export default function AdminGallery() {
               <h3 className="font-heading text-lg tracking-widest uppercase mb-4">Delete Item?</h3>
               <p className="text-stone-600 text-sm mb-6">This action cannot be undone.</p>
               <div className="flex gap-4">
-                <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-4 py-2 border border-stone-200 text-xs tracking-widest uppercase hover:border-gold">
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-4 py-2 border border-stone-200 text-xs tracking-widest uppercase hover:border-terracotta">
                   Cancel
                 </button>
                 <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} className="flex-1 px-4 py-2 bg-rose-500 text-white text-xs tracking-widest uppercase hover:bg-rose-600">

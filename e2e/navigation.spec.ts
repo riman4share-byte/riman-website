@@ -74,9 +74,11 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
       await expect(header).toBeVisible();
       await page.evaluate(() => window.scrollTo(0, 100));
       await page.waitForTimeout(800); // wait for transition
-      // After scroll, header should have a background class
+      // After scroll, header should pick up a background. On the homepage it becomes
+      // a translucent ink band (bg-onyx/95); away from home it is bone. Both
+      // satisfy "no longer transparent".
       const hasBgClass = await header.evaluate(el =>
-        el.className.includes('bg-ivory') || el.className.includes('backdrop')
+        /bg-onyx\/9|bg-onyx|bg-ivory|backdrop/.test(el.className)
       );
       expect(hasBgClass).toBeTruthy();
     });
@@ -228,7 +230,7 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
   /** ─── ROUTE INTEGRITY ─── */
   test.describe('Route Integrity', () => {
     // All pages share the same site title — use a common pattern
-    const siteTitle = /Atelier Riman|Riman/i;
+    const siteTitle = /Riman Fashion|Riman/i;
     const publicRoutes = [
       { path: '/', title: siteTitle },
       { path: '/about', title: siteTitle },
@@ -273,7 +275,7 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
       const categories = ['bridal', 'evening', 'rental', 'jewelry', 'accessories'];
       for (const cat of categories) {
         await page.goto(`/collection/${cat}`);
-        await expect(page).toHaveTitle(/Atelier Riman|Riman/i);
+        await expect(page).toHaveTitle(/Riman Fashion|Riman/i);
         // Page should have heading or content
         await expect(page.locator('h1').first()).toBeVisible();
       }

@@ -63,7 +63,7 @@ export default function AdminAppointments() {
   };
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 text-gold animate-spin" /></div>;
+    return <div className="flex items-center justify-center h-64"><Loader2 className="w-8 h-8 text-terracotta-dark animate-spin" /></div>;
   }
 
   return (
@@ -95,7 +95,7 @@ export default function AdminAppointments() {
               key={appt.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-ivory border border-stone-100 p-5 hover:border-gold/30 transition-colors cursor-pointer"
+              className="bg-ivory border border-stone-100 p-5 hover:border-terracotta/30 transition-colors cursor-pointer"
               onClick={() => setSelectedAppt(appt)}
             >
               <div className="flex items-start justify-between">
@@ -104,7 +104,7 @@ export default function AdminAppointments() {
                     <span className={cn("text-micro tracking-widest uppercase font-bold px-3 py-1 border", STATUS_COLORS[appt.status || 'pending'])}>
                       {appt.status || 'pending'}
                     </span>
-                    <span className="text-micro tracking-widest uppercase text-gold font-bold">{SERVICE_LABELS[appt.service_type] || appt.service_type}</span>
+                    <span className="text-micro tracking-widest uppercase text-terracotta-dark font-bold">{SERVICE_LABELS[appt.service_type] || appt.service_type}</span>
                   </div>
                   <h3 className="font-heading text-stone-800 text-lg">{appt.name}</h3>
                   <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-stone-600">

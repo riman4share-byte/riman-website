@@ -36,7 +36,7 @@ export function buildOrderConfirmationEmail(order: {
   return {
     type: 'order_confirmed',
     to: order.customer_email || '',
-    subject: `Order Confirmed — ${order.id?.slice(0, 8)} | Atelier Riman`,
+    subject: `Order Confirmed — ${order.id?.slice(0, 8)} | Riman Fashion`,
     data: {
       order_id: order.id,
       customer_name: order.customer_name,
@@ -56,7 +56,7 @@ export function buildAppointmentEmail(appointment: {
   return {
     type: 'appointment_booked',
     to: appointment.email,
-    subject: `Appointment Confirmed — ${appointment.date} | Atelier Riman`,
+    subject: `Appointment Confirmed — ${appointment.date} | Riman Fashion`,
     data: {
       name: appointment.name,
       date: appointment.date,
