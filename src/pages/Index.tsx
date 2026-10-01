@@ -10,7 +10,6 @@ import HeroSection21st from '../components/ui-21st/HeroSection';
 import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
 import Marquee21st from '../components/ui-21st/Marquee21st';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
-import CallToAction21st from '../components/ui-21st/CallToAction21st';
 import FooterSection from '../components/ui-21st/FooterSection';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
 
@@ -28,7 +27,7 @@ export default function Index() {
   const plates = featured.length >= 2 ? featured : products.slice(0, 4);
 
   return (
-    <main className="film-grain">
+    <div className="film-grain">
       <HeroSection21st />
 
       <section id="atelier" className="bg-bone py-28 md:py-40 px-6 md:px-12 lg:px-20">
@@ -70,7 +69,7 @@ export default function Index() {
             text={t('atelier.quote')}
             className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]"
           />
-          <span className="font-label text-[10px] uppercase tracking-[0.45em] text-gold-light">
+          <span className="font-label text-caption uppercase tracking-[0.45em] text-gold-light">
             {t('chapter.atelier')}
           </span>
         </div>
@@ -152,11 +151,9 @@ export default function Index() {
 
       <TestimonialWall21st />
 
-      <CallToAction21st />
-
       <BookingCTA21st />
 
       <FooterSection />
-    </main>
+    </div>
   );
 }

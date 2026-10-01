@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, RefreshCw, ArrowLeft, Eye } from 'lucide-react';
+import { ChevronRight, RefreshCw, ArrowLeft, Eye, CheckCircle2, CalendarCheck } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -210,11 +210,40 @@ export default function StyleQuiz() {
                 </div>
 
                 {recommendations.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
-                    {recommendations.map((product) => (
-                      <ProductCard key={product.id} product={product} />
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+                      {recommendations.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
+                    </div>
+
+                    {/* R17 — the quiz was the best zero-friction entry point on the
+                        site and ended with nowhere to go. Close it into a booking. */}
+                    <div className="border border-gold/30 bg-gold/[0.04] p-7 md:p-9 text-center mb-10">
+                      <h3 className="font-heading text-xl md:text-2xl font-light text-stone-800 mb-3">
+                        {t('quiz.next_step_heading')}
+                      </h3>
+                      <p className="font-body text-sm text-stone-600 leading-relaxed mb-6 max-w-lg mx-auto">
+                        {t('quiz.next_step_body')}
+                      </p>
+                      <ul className="max-w-lg mx-auto grid sm:grid-cols-2 gap-3 text-start mb-7">
+                        {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
+                          <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-700">
+                            <CheckCircle2 className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                            <span>{promise}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Link
+                        to="/appointment"
+                        state={{ gowns: recommendations.map((p) => ({ id: p.id, name: p.name })) }}
+                        className="btn-luxury inline-flex items-center justify-center gap-2"
+                      >
+                        <CalendarCheck className="w-4 h-4" />
+                        {t('quiz.request_these')}
+                      </Link>
+                    </div>
+                  </>
                 ) : (
                   <div className="text-center py-10">
                     <p className="font-body text-stone-600 italic">{t('quiz.try_different')}</p>

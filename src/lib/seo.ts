@@ -86,10 +86,6 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     title: 'Book Appointment | Atelier Riman',
     description: 'Schedule a private consultation at our Sharjah atelier. Experience our bridal and evening collections with personalised styling guidance.',
   },
-  '/timeline': {
-    title: 'Bridal Timeline | Atelier Riman',
-    description: 'Plan your wedding journey with Atelier Riman\'s bridal concierge. From your first consultation to your final fitting — we guide every step.',
-  },
   '/wedding-checklist': {
     title: 'Wedding Checklist | Atelier Riman',
     description: 'Your complete wedding planning checklist from Atelier Riman. Stay organised from engagement to your grand entrance.',
@@ -223,24 +219,34 @@ export function localBusinessSchema() {
   };
 }
 
-export function productSchema(product: Product) {
+export interface ProductRatingInput {
+  ratingValue: number;
+  reviewCount: number;
+}
+
+export function productSchema(product: Product, rating?: ProductRatingInput) {
+  const productUrl = `${BASE_URL}/product/${product.id}`;
   const offers: Array<Record<string, string | number>> = [];
   if (product.productType === 'sale' || product.productType === 'both') {
     offers.push({
       '@type': 'Offer',
       name: 'Purchase',
+      url: productUrl,
       price: product.salePrice || 0,
       priceCurrency: 'AED',
       availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
     });
   }
   if (product.productType === 'rent' || product.productType === 'both') {
     offers.push({
       '@type': 'Offer',
       name: '7-Day Rental',
+      url: productUrl,
       price: product.rentalPrice || 0,
       priceCurrency: 'AED',
       availability: 'https://schema.org/InStock',
+      itemCondition: 'https://schema.org/NewCondition',
     });
   }
 
@@ -248,14 +254,24 @@ export function productSchema(product: Product) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': `${BASE_URL}/product/${product.id}`,
+    url: productUrl,
     name: product.name,
     description: product.description,
     image: (product.images || []).map(resolveMediaUrl).filter(Boolean),
+    sku: `RF-${product.id.padStart(4, '0')}`,
     category: product.category,
     brand: {
       '@type': 'Brand',
       name: 'Atelier Riman',
     },
+    // Only emit when we have real, approved reviews. Never fabricate a rating.
+    ...(rating && rating.reviewCount > 0 && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: Number(rating.ratingValue.toFixed(1)),
+        reviewCount: rating.reviewCount,
+      },
+    }),
     offers: offers.length === 1 ? offers[0] : offers,
   };
 }
@@ -268,7 +284,10 @@ export function breadcrumbSchema(items: { name: string; url: string }[]) {
       '@type': 'ListItem',
       position: i + 1,
       name: item.name,
-      item: `${BASE_URL}${item.url}`,
+      // Callers may pass either a root-relative path or an already absolute
+      // URL. Prefixing unconditionally produced doubled hosts such as
+      // "https://site.comhttps://site.com/collection/bridal".
+      item: /^https?:\/\//i.test(item.url) ? item.url : `${BASE_URL}${item.url}`,
     })),
   };
 }

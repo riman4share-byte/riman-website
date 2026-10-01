@@ -1,9 +1,11 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useData } from '../contexts/DataContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { Product } from '../types';
+import { fetchApprovedReviews, type Review } from '../services/reviews';
+import { categoryToSlug } from '../lib/utils';
 import {
   resolveRouteMeta,
   organizationSchema,
@@ -62,6 +64,48 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     }
     return undefined;
   }, [propProduct, isProductPage, params.id, products]);
+
+  const [reviews, setReviews] = useState<Review[]>([]);
+  useEffect(() => {
+    if (!product?.id) {
+      setReviews([]);
+      return;
+    }
+    let cancelled = false;
+    fetchApprovedReviews(product.id)
+      .then(r => {
+        if (!cancelled) setReviews(r);
+      })
+      .catch(() => {
+        if (!cancelled) setReviews([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [product?.id]);
+
+  // Real approved reviews only. Never invent a rating: an aggregateRating
+  // derived from seeded/placeholder data is a manual-action risk.
+  const reviewRating = useMemo(() => {
+    if (!product || !reviews.length) return undefined;
+    return {
+      ratingValue: reviews.reduce((s, r) => s + r.rating, 0) / reviews.length,
+      reviewCount: reviews.length,
+    };
+  }, [product, reviews]);
+
+  // Derive the breadcrumb from the product's real category route. This used to
+  // point at `/collection`, which is not a route.
+  const productBreadcrumbs = useMemo(() => {
+    if (!product) return undefined;
+    return [
+      { name: 'Home', url: absoluteUrl('/') },
+      { name: product.category, url: absoluteUrl(`/collection/${categoryToSlug(product.category)}`) },
+      { name: product.name, url: absoluteUrl(`/product/${product.id}`) },
+    ];
+  }, [product]);
+
+  const activeBreadcrumbs = breadcrumbs ?? productBreadcrumbs;
 
   const pageTitle = title
     ? `${title} | Atelier Riman`
@@ -195,7 +239,7 @@ export default function SEOHead({ title, description, image, noIndex, product: p
 
     // Product schema — on product detail pages
     if (product) {
-      injectJsonLd('ld-product', productSchema(product));
+      injectJsonLd('ld-product', productSchema(product, reviewRating));
     } else if (isProductPage) {
       // Remove stale product schema when navigating away
       const stale = document.getElementById('ld-product');
@@ -203,8 +247,8 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     }
 
     // Breadcrumb schema
-    if (breadcrumbs && breadcrumbs.length > 0) {
-      injectJsonLd('ld-breadcrumb', breadcrumbSchema(breadcrumbs));
+    if (activeBreadcrumbs && activeBreadcrumbs.length > 0) {
+      injectJsonLd('ld-breadcrumb', breadcrumbSchema(activeBreadcrumbs));
     } else {
       const stale = document.getElementById('ld-breadcrumb');
       if (stale) stale.remove();
@@ -217,12 +261,12 @@ export default function SEOHead({ title, description, image, noIndex, product: p
         const p = document.getElementById('ld-product');
         if (p) p.remove();
       }
-      if (!breadcrumbs) {
+      if (!activeBreadcrumbs) {
         const b = document.getElementById('ld-breadcrumb');
         if (b) b.remove();
       }
     };
-  }, [product, breadcrumbs, isProductPage]);
+  }, [product, activeBreadcrumbs, reviewRating, isProductPage]);
 
   // ――――――――――――――――――――――――――――――――――――――――――
   // Analytics injection (unchanged from original)

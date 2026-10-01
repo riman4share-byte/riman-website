@@ -76,7 +76,7 @@ export default function ProfilePage() {
           </aside>
 
           {/* Main Content */}
-          <main className="flex-1 space-y-12">
+          <div className="flex-1 space-y-12">
             <header>
                <h1 className="font-heading text-4xl text-stone-800 tracking-wider uppercase mb-3">{t('profile.dashboard')}</h1>
                <div className="w-12 h-px bg-gold mb-3" />
@@ -148,7 +148,7 @@ export default function ProfilePage() {
                  </Link>
                )}
             </section>
-          </main>
+          </div>
         </div>
       </div>
     </div>

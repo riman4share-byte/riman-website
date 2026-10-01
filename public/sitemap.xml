@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NOTE: this checked-in copy is a PLACEHOLDER for local preview only.
+  `npm run build` overwrites dist/sitemap.xml from the prerender route table
+  using SITE_URL (which also adds every /product/:id URL and <lastmod>).
+  The generated file is what search engines see. Keep the host below in sync
+  with SITE_URL in .env.production, or the two will disagree.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://riman.ae/</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collections</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/journal</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/all</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/bridal</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/evening</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/couture</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/rental</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/accessories</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/collection/jewelry</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/about</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/contact</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/faq</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/alterations</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/gallery</loc><changefreq>weekly</changefreq></url>
-  <url><loc>https://riman.ae/style-quiz</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/appointment</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/timeline</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/wedding-checklist</loc><changefreq>monthly</changefreq></url>
-  <url><loc>https://riman.ae/privacy</loc><changefreq>yearly</changefreq></url>
-  <url><loc>https://riman.ae/terms</loc><changefreq>yearly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collections</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/journal</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/all</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/bridal</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/evening</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/couture</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/rental</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/accessories</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/collection/jewelry</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/about</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/contact</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/faq</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/alterations</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/gallery</loc><changefreq>weekly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/style-quiz</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/appointment</loc><changefreq>monthly</changefreq></url>  <url><loc>https://riman-website.pages.dev/wedding-checklist</loc><changefreq>monthly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/privacy</loc><changefreq>yearly</changefreq></url>
+  <url><loc>https://riman-website.pages.dev/terms</loc><changefreq>yearly</changefreq></url>
 </urlset>

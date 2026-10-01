@@ -117,12 +117,15 @@ export default function Auth() {
             >
               {!isLogin && (
                 <div className="space-y-2">
-                  <label className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                    <User className="w-3 h-3 text-gold" /> {t('auth.full_name')}
+                  <label htmlFor="auth-name" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
+                    <User className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.full_name')}
                   </label>
                   <input
+                    id="auth-name"
+                    name="name"
                     type="text"
                     required
+                    aria-required="true"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="field-couture p-4 text-xs tracking-widest"
@@ -132,12 +135,16 @@ export default function Auth() {
               )}
 
               <div className="space-y-2">
-                <label className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                  <Mail className="w-3 h-3 text-gold" /> {t('auth.email')}
+                <label htmlFor="auth-email" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
+                  <Mail className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.email')}
                 </label>
                 <input
+                  id="auth-email"
+                  name="email"
                   type="email"
                   required
+                  aria-required="true"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="field-couture p-4 text-xs tracking-widest"
@@ -146,13 +153,17 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
-                  <Lock className="w-3 h-3 text-gold" /> {t('auth.password')}
+                <label htmlFor="auth-password" className="text-micro font-bold text-stone-600 uppercase tracking-widest flex items-center gap-2">
+                  <Lock className="w-3 h-3 text-gold" aria-hidden="true" /> {t('auth.password')}
                 </label>
                 <input
+                  id="auth-password"
+                  name="password"
                   type="password"
                   required
+                  aria-required="true"
                   minLength={6}
+                  autoComplete={isLogin ? 'current-password' : 'new-password'}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="field-couture p-4 text-xs tracking-widest"

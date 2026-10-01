@@ -34,9 +34,15 @@ export default function KineticHeading({
 }: KineticHeadingProps) {
   const { language } = useLanguage();
   const reduced = useReducedMotion();
-  const chars = useMemo(() => Array.from(text), [text]);
+  // Group into words so the browser can only break BETWEEN words. Per-character
+  // inline-block spans otherwise allow breaks mid-word ("Made t / o Measure").
+  const words = useMemo(
+    () => text.split(/(\s+)/).filter(part => part.length > 0),
+    [text]
+  );
+  const charCount = useMemo(() => Array.from(text).length, [text]);
 
-  if (reduced || language === 'ar' || chars.length > 90) {
+  if (reduced || language === 'ar' || charCount > 90) {
     const Tag = HTML_TAGS[as];
     return (
       <Tag
@@ -59,28 +65,32 @@ export default function KineticHeading({
       viewport={{ once: true, amount: 0.35 }}
       data-heading
     >
-      {chars.map((char, i) => (
-        <motion.span
-          key={`${char}-${i}`}
-          variants={letter}
-          whileHover={
-            char.trim() !== ''
-              ? {
-                  y: -3,
-                  scale: 1.06,
-                  color: '#D4AF37',
-                  transition: { type: 'spring', stiffness: 500, damping: 20 },
-                }
-              : undefined
-          }
-          className={
-            emphasisChars.includes(char)
-              ? `${emphasisClassName} inline-block whitespace-pre select-none transition-colors duration-300`
-              : 'kin-letter inline-block whitespace-pre select-none transition-colors duration-300'
-          }
-        >
-          {char}
-        </motion.span>
+      {words.map((word, wi) => (
+        <span key={`w-${wi}`} className="inline-block whitespace-nowrap">
+          {Array.from(word).map((char, ci) => (
+            <motion.span
+              key={`${char}-${ci}`}
+              variants={letter}
+              whileHover={
+                char.trim() !== ''
+                  ? {
+                      y: -3,
+                      scale: 1.06,
+                      color: '#D4AF37',
+                      transition: { type: 'spring', stiffness: 500, damping: 20 },
+                    }
+                  : undefined
+              }
+              className={
+                emphasisChars.includes(char)
+                  ? `${emphasisClassName} inline-block whitespace-pre select-none transition-colors duration-300`
+                  : 'kin-letter inline-block whitespace-pre select-none transition-colors duration-300'
+              }
+            >
+              {char}
+            </motion.span>
+          ))}
+        </span>
       ))}
     </MotionTag>
   );

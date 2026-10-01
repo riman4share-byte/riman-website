@@ -31,13 +31,13 @@ export default function GalleryPage() {
     <div className="pt-32 pb-20 bg-ivory min-h-screen">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <motion.h2
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="heading-editorial text-gold text-micro mb-4 uppercase tracking-[0.4em]"
+            className="heading-editorial text-gold-ink text-micro mb-4 uppercase tracking-[0.4em]"
           >
             {t('gallery.title')}
-          </motion.h2>
+          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -90,10 +90,33 @@ export default function GalleryPage() {
           </>
         )}
 
-        <div className="text-center mt-16">
-          <Link to="/" className="inline-flex items-center gap-2 text-gold text-xs tracking-widest uppercase hover:gap-4 transition-all pb-1 border-b border-gold/30 font-medium">
-            {t('gallery.back')} <ArrowRight className="w-3 h-3" />
-          </Link>
+        <div className="mt-16">
+          {/* R16 — turn a passive gallery into a lead-capture step */}
+          <div className="max-w-3xl mx-auto text-center border border-gold/30 bg-gold/[0.04] p-8 md:p-10">
+            <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
+              {t('gallery.cta_heading')}
+            </h2>
+            <p className="font-body text-sm text-stone-600 leading-relaxed mb-7 max-w-xl mx-auto">
+              {t('gallery.cta_body')}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                to="/appointment"
+                className="btn-luxury w-full sm:w-auto inline-flex items-center justify-center gap-2"
+              >
+                {t('gallery.cta_primary')}
+              </Link>
+              <Link to="/wishlist" className="btn-luxury-outline w-full sm:w-auto inline-flex items-center justify-center gap-2">
+                {t('gallery.cta_secondary')}
+              </Link>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <Link to="/" className="inline-flex items-center gap-2 text-gold-ink text-xs tracking-widest uppercase hover:gap-4 transition-all pb-1 border-b border-gold/30 font-medium">
+              {t('gallery.back_home')} <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -37,7 +37,6 @@ const AppointmentPage = lazyWithRetry(() => import('./pages/AppointmentPage'));
 const WeddingTimeline = lazyWithRetry(() => import('./pages/WeddingTimeline'));
 const WeddingChecklist = lazyWithRetry(() => import('./pages/WeddingChecklist'));
 const GalleryPage = lazyWithRetry(() => import('./pages/GalleryPage'));
-const Demo21st = lazyWithRetry(() => import('./pages/Demo21st'));
 const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
 
 // Contexts
@@ -229,7 +228,6 @@ function AnimatedRoutes() {
           <Route path="timeline" element={<PageWrapper><WeddingTimeline /></PageWrapper>} />
           <Route path="wedding-checklist" element={<PageWrapper><WeddingChecklist /></PageWrapper>} />
           <Route path="gallery" element={<PageWrapper><GalleryPage /></PageWrapper>} />
-          <Route path="demo-21st" element={<PageWrapper><Demo21st /></PageWrapper>} />
           <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
         </Route>
 

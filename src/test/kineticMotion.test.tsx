@@ -14,8 +14,40 @@ describe('KineticHeading', () => {
     const h2 = container.querySelector('h2')!;
     expect(h2.querySelectorAll('.kin-letter').length).toBe(14);
     expect(h2.textContent).toBe('Atelier & Grace');
-    const em = [...h2.querySelectorAll('span')].find((s) => s.textContent === '&');
+    // Scoped to the letter spans: the emphasised letter uses emphasisClassName
+    // instead of `kin-letter`, and now sits inside a per-word wrapper.
+    const em = [...h2.querySelectorAll('span')].find(
+      (s) => s.textContent === '&' && s.className.includes('inline-block') && !s.className.includes('whitespace-nowrap')
+    );
     expect(em?.className).toContain('font-editorial');
+  });
+
+  it('wraps each word so the browser cannot break mid-word', () => {
+    const { container } = render(
+      wrap(<KineticHeading as="h1" text="Bridal Gowns Made to Measure" />)
+    );
+    const h1 = container.querySelector('h1')!;
+    const wordSpans = [...h1.children].filter(
+      (s) => s.tagName === 'SPAN' && s.className.includes('whitespace-nowrap')
+    );
+    // Word tokens plus the whitespace separators between them.
+    expect(wordSpans.map((s) => s.textContent)).toEqual([
+      'Bridal',
+      ' ',
+      'Gowns',
+      ' ',
+      'Made',
+      ' ',
+      'to',
+      ' ',
+      'Measure',
+    ]);
+    // Every letter span must live inside a nowrap word wrapper.
+    const letters = [...h1.querySelectorAll('.kin-letter')];
+    expect(letters.length).toBe('Bridal Gowns Made to Measure'.length);
+    letters.forEach((l) => {
+      expect(l.parentElement?.className).toContain('whitespace-nowrap');
+    });
   });
 
   it('AR: renders zero letter spans, plain text', () => {

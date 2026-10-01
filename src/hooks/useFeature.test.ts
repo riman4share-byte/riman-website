@@ -20,7 +20,15 @@ describe('useFeature', () => {
       { wrapper },
     );
 
-    expect(result.current.value).toBe(false);
+    // Newsletter is enabled by default: the footer renders the capture form
+    // unconditionally and the database seed has newsletter: true, so a false
+    // default here would have contradicted the rest of the app.
+    expect(result.current.value).toBe(true);
+
+    act(() => {
+      result.current.updateSetting('features', 'newsletter', false);
+    });
+    await waitFor(() => expect(result.current.value).toBe(false));
 
     act(() => {
       result.current.updateSetting('features', 'newsletter', true);

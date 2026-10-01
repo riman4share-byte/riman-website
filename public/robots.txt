@@ -1,3 +1,7 @@
+# NOTE: this checked-in copy is a PLACEHOLDER for local preview only.
+# `npm run build` overwrites dist/robots.txt and dist/sitemap.xml using SITE_URL
+# from .env.production — that generated file is what search engines see.
+# Keep the host below in sync with SITE_URL, or the two will disagree.
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -8,4 +12,4 @@ Disallow: /payment/success
 Disallow: /payment/cancel
 Disallow: /demo-21st
 
-Sitemap: https://riman.ae/sitemap.xml
+Sitemap: https://riman-website.pages.dev/sitemap.xml

@@ -76,7 +76,6 @@ const PUBLIC_STATIC_ROUTES: { route: string; title: string; description: string 
   { route: '/gallery', title: 'Gallery | Atelier Riman', description: 'Browse our gallery of Atelier Riman creations — bridal gowns, evening wear, and editorial features from our Sharjah atelier.' },
   { route: '/style-quiz', title: 'Style Quiz | Atelier Riman', description: 'Discover your perfect bridal or evening silhouette with Atelier Riman\'s style consultation quiz. Find the gown that matches your vision.' },
   { route: '/appointment', title: 'Book Appointment | Atelier Riman', description: 'Schedule a private consultation at our Sharjah atelier. Experience our bridal and evening collections with personalised styling guidance.' },
-  { route: '/timeline', title: 'Bridal Timeline | Atelier Riman', description: 'Plan your wedding journey with Atelier Riman\'s bridal concierge. From your first consultation to your final fitting — we guide every step.' },
   { route: '/wedding-checklist', title: 'Wedding Checklist | Atelier Riman', description: 'Your complete wedding planning checklist from Atelier Riman. Stay organised from engagement to your grand entrance.' },
   { route: '/privacy', title: 'Privacy Policy | Atelier Riman', description: 'Atelier Riman privacy policy — how we protect and handle your personal information.' },
   { route: '/terms', title: 'Terms & Conditions | Atelier Riman', description: 'Atelier Riman terms and conditions for purchases, rentals, and appointments.' },
@@ -269,6 +268,16 @@ export function injectPrerenderPage(html: string, page: PrerenderPage): string {
     /<!--prerender-jsonld-->[\s\S]*?<!--\/prerender-jsonld-->/,
     () => page.jsonLd.map(safeJsonLdScript).join('\n'),
   );
+
+  // The homepage hero image is preloaded in index.html for the LCP element.
+  // Every prerendered page reuses that <head>, so on any other route the
+  // preload would pull ~218 KB of an image that page never renders.
+  if (page.route !== '/') {
+    out = out.replace(
+      /<link rel="preload"[^>]*as="image"[^>]*rimanfashion_3542687554351211237[^>]*>\s*/gi,
+      '',
+    );
+  }
 
   out = out.replace(
     /<div id="root"><!--prerender-body-->[\s\S]*?<!--\/prerender-body--><\/div>/,

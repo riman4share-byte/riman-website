@@ -14,7 +14,7 @@ export default function InvitationRule({ className }: InvitationRuleProps) {
       <p className="font-editorial italic text-lg text-stone-600">{t('invitation.line')}</p>
       <Link
         to="/appointment"
-        className="group inline-flex items-center gap-2 font-label text-xs tracking-[0.25em] uppercase text-stone-800 transition-colors duration-700 hover:text-gold"
+        className="group inline-flex items-center gap-2 font-label text-xs tracking-[0.25em] uppercase text-stone-800 transition-colors duration-700 hover:text-gold-ink"
       >
         {t('invitation.cta')}
         <ArrowRight className="w-4 h-4 transition-transform duration-700 group-hover:translate-x-1 rtl:rotate-180" />

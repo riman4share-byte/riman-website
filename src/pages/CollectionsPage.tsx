@@ -81,7 +81,7 @@ export default function CollectionsPage() {
       <header className="section-padding !py-12 bg-ivory border-b border-stone-100">
         <div className="container mx-auto">
           <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-4">
-            <Link to="/" className="hover:text-gold transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-gold-ink transition-colors">{t('nav.home')}</Link>
             <span>/</span>
             <span className="text-stone-800 font-medium">{t('nav.collections')}</span>
           </nav>
@@ -94,7 +94,7 @@ export default function CollectionsPage() {
         </div>
       </header>
 
-      <main className="section-padding !pt-12 !pb-24">
+      <div className="section-padding !pt-12 !pb-24">
         <div className="container mx-auto">
           {isLoading ? (
             <ProductGridSkeleton count={6} />
@@ -127,7 +127,7 @@ export default function CollectionsPage() {
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/10 to-transparent" />
                       <div className="absolute bottom-0 start-0 w-full p-6">
-                        <p className="text-micro tracking-[0.25em] uppercase text-gold mb-2">
+                        <p className="text-micro tracking-[0.25em] uppercase text-gold-ink mb-2">
                           {matching.length} {t('collections.count')}
                         </p>
                         <h2 className="font-heading text-2xl text-white tracking-wider uppercase mb-2">
@@ -136,7 +136,7 @@ export default function CollectionsPage() {
                         <p className="text-white/75 font-body text-sm leading-relaxed mb-4 max-w-sm">
                           {language === 'ar' ? def.blurb.ar : def.blurb.en}
                         </p>
-                        <span className="inline-flex items-center gap-2 text-white font-label text-xs tracking-[0.2em] uppercase border-b border-white/30 group-hover:border-gold group-hover:text-gold transition-colors pb-1">
+                        <span className="inline-flex items-center gap-2 text-white font-label text-xs tracking-[0.2em] uppercase border-b border-white/30 group-hover:border-gold group-hover:text-gold-ink transition-colors pb-1">
                           {t('collections.browse')}
                           <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
                         </span>
@@ -148,7 +148,7 @@ export default function CollectionsPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

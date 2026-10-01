@@ -65,10 +65,13 @@ export default defineConfig(({ command, mode }) => {
     build: {
       rollupOptions: {
         output: {
+          // NOTE: do not add `recharts` here. Naming it forced a shared util
+          // that the entry chunk imports into the recharts chunk, making 384 KB
+          // (106 KB gzip) of admin-only charting a static dependency of every
+          // page. AdminDashboard is already lazy — let recharts stay with it.
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             ui: ['lucide-react', 'motion', 'date-fns'],
-            recharts: ['recharts'],
             'model-viewer': ['@google/model-viewer'],
           },
         },

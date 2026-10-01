@@ -59,7 +59,7 @@ export default function SearchPage() {
              </div>
 
              {/* Categories */}
-<div className="flex flex-wrap justify-center gap-4 mt-8">
+<div className="text-center"><div className="inline-flex flex-wrap justify-center gap-4 mt-8" id="search-categories">
                 {categories.map((cat) => (
                   <button
                     key={cat}
@@ -72,7 +72,7 @@ export default function SearchPage() {
                     {categoryLabel(cat)}
                   </button>
                 ))}
-              </div>
+              </div></div>
           </div>
         </div>
       </section>

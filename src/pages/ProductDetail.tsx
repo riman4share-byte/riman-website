@@ -674,7 +674,7 @@ export default function ProductDetail() {
                                       <Star key={star} className={cn("w-3 h-3", star <= review.rating ? "text-terracotta-dark fill-terracotta" : "text-stone-200")} />
                                     ))}
                                   </div>
-                                  <span className="text-[10px] text-stone-500 uppercase tracking-widest flex items-center gap-1">
+                                  <span className="text-caption text-stone-500 uppercase tracking-widest flex items-center gap-1">
                                     <CheckCircle2 className="w-2.5 h-2.5 text-terracotta-dark" /> {t('product.verified_review')}
                                   </span>
                                 </div>

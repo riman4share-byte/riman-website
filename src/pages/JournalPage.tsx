@@ -121,7 +121,7 @@ export default function JournalPage() {
       <header className="section-padding !py-12 bg-ivory border-b border-stone-100">
         <div className="container mx-auto">
           <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-4">
-            <Link to="/" className="hover:text-gold transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-gold-ink transition-colors">{t('nav.home')}</Link>
             <span>/</span>
             <span className="text-stone-800 font-medium">{t('nav.journal')}</span>
           </nav>
@@ -134,7 +134,7 @@ export default function JournalPage() {
         </div>
       </header>
 
-      <main className="section-padding !py-16">
+      <div className="section-padding !py-16">
         <div className="container mx-auto max-w-5xl">
           <motion.article
             initial={{ opacity: 0, y: 24 }}
@@ -142,7 +142,7 @@ export default function JournalPage() {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="mb-16"
           >
-            <p className="text-micro tracking-[0.25em] uppercase text-gold font-bold mb-4">
+            <p className="text-micro tracking-[0.25em] uppercase text-gold-ink font-bold mb-4">
               {t('journal.featured')} · {featured.category[lang]} · {formatDate(featured.date)}
             </p>
             <h2 className="font-heading text-3xl md:text-4xl text-stone-800 tracking-wide uppercase mb-8 leading-snug">
@@ -171,7 +171,7 @@ export default function JournalPage() {
 
           <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-14" />
 
-          <p className="text-micro tracking-[0.2em] uppercase text-gold font-bold mb-8">{t('journal.latest')}</p>
+          <p className="text-micro tracking-[0.2em] uppercase text-gold-ink font-bold mb-8">{t('journal.latest')}</p>
           <div className="flex flex-col gap-14">
             {rest.map((article, idx) => (
               <motion.article
@@ -192,7 +192,7 @@ export default function JournalPage() {
                   />
                 </div>
                 <div>
-                  <p className="text-micro tracking-[0.25em] uppercase text-gold font-bold mb-3">
+                  <p className="text-micro tracking-[0.25em] uppercase text-gold-ink font-bold mb-3">
                     {article.category[lang]} · {formatDate(article.date)}
                   </p>
                   <h2 className="font-heading text-2xl md:text-3xl text-stone-800 tracking-wide uppercase mb-5 leading-snug">
@@ -206,8 +206,26 @@ export default function JournalPage() {
               </motion.article>
             ))}
           </div>
+
+          {/* R16 — the journal had zero CTAs anywhere. Close the loop. */}
+          <div className="mt-20 border border-gold/30 bg-gold/[0.04] p-8 md:p-10 text-center">
+            <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
+              {t('journal.cta_heading')}
+            </h2>
+            <p className="font-body text-sm text-stone-600 leading-relaxed mb-8 max-w-xl mx-auto">
+              {t('journal.cta_body')}
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link to="/appointment" className="btn-luxury w-full sm:w-auto inline-flex items-center justify-center gap-2">
+                {t('journal.cta_primary')}
+              </Link>
+              <Link to="/style-quiz" className="btn-luxury-outline w-full sm:w-auto inline-flex items-center justify-center gap-2">
+                {t('journal.cta_secondary')}
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

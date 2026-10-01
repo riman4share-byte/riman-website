@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import CalligraphicAccent from '../salon/CalligraphicAccent';
@@ -7,22 +7,71 @@ import KineticHeading from '../motion/KineticHeading';
 const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
 const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
 
+function prefersReducedData() {
+  if (typeof navigator === 'undefined') return true;
+  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+  if (!conn) return false;
+  if (conn.saveData) return true;
+  return conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g';
+}
+
 export default function HeroSection21st() {
   const { t, language } = useLanguage();
   const [videoError, setVideoError] = useState(false);
+  // Poster paints immediately; the 16.9 MB clip is only requested once the
+  // page has settled, and never on a data-saver or 2G connection.
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    if (videoError || prefersReducedData()) return;
+
+    let cancelled = false;
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const start = () => {
+      if (!cancelled) setShowVideo(true);
+    };
+
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    if (w.requestIdleCallback) {
+      idleId = w.requestIdleCallback(start, { timeout: 4000 });
+    } else {
+      timeoutId = setTimeout(start, 2500);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId !== undefined) w.cancelIdleCallback?.(idleId);
+      if (timeoutId !== undefined) clearTimeout(timeoutId);
+    };
+  }, [videoError]);
 
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center bg-onyx overflow-hidden pt-[clamp(7rem,22vh,14rem)]">
-      {!videoError ? (
+      {/* Poster is always present as the base layer — the video crossfades over it */}
+      <img
+        className="absolute inset-0 w-full h-full object-cover"
+        src={HERO_POSTER}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
+      />
+      {showVideo && !videoError && (
         <video
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover animate-fade-in"
           src={HERO_VIDEO}
-          poster={HERO_POSTER}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           disablePictureInPicture
           aria-hidden="true"
           tabIndex={-1}
@@ -36,14 +85,6 @@ export default function HeroSection21st() {
             el.playbackRate = 0.8;
             if (el.paused) el.play().catch(() => {});
           }}
-        />
-      ) : (
-        <img
-          className="absolute inset-0 w-full h-full object-cover"
-          src={HERO_POSTER}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
         />
       )}
       <div className="absolute inset-0 bg-onyx/60" aria-hidden="true" />
@@ -59,11 +100,14 @@ export default function HeroSection21st() {
         <p className="font-label text-xs tracking-[0.25em] uppercase text-bone/90 mb-6 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {t('cat.bridal')} · {t('cat.evening')} · {t('cat.rentals')}
         </p>
+        <p className="font-label text-xs tracking-[0.3em] uppercase text-gold-light mb-5 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
+          {t('hero.title')}
+        </p>
         <KineticHeading
           as="h1"
-          text={t('hero.title')}
+          text={t('hero.headline')}
           emphasisChars={['&']}
-          className="font-heading text-white font-light leading-[1.02] text-[clamp(2.5rem,8vw,7rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]"
+          className="font-heading text-white font-light leading-[1.02] text-[clamp(2rem,5.6vw,5rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]"
         />
         <p className="font-body text-base md:text-lg text-white leading-relaxed mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
           {language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب — تجربة خاصة في الشارقة' : 'Buy · Rent · Bespoke — private fittings in Sharjah'}
@@ -80,7 +124,7 @@ export default function HeroSection21st() {
             {t('cta.viewing')}
           </Link>
           <Link
-            to="/search"
+            to="/collection/bridal"
             className="btn-couture-ghost"
             aria-label={t('cta.explore')}
           >

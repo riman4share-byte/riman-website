@@ -86,16 +86,23 @@ export default function Footer() {
               {t('footer.newsletter_text')}
             </p>
             <form onSubmit={handleSubmit(onNewsletterSubmit)} className="relative group">
-              <input 
+              <label htmlFor="newsletter-email" className="sr-only">
+                {t('footer.newsletter_placeholder')}
+              </label>
+              <input
+                id="newsletter-email"
                 {...register('email')}
-                type="email" 
+                type="email"
+                autoComplete="email"
+                aria-required="true"
+                aria-invalid={errors.email ? true : undefined}
                 placeholder={t('footer.newsletter_placeholder')}
-                className="w-full bg-transparent border-b border-stone-800 focus:border-gold py-3 md:py-4 pr-12 text-sm font-body tracking-[0.15em] outline-none transition-all placeholder:text-stone-700"
+                className="w-full bg-transparent border-b border-stone-800 focus:border-gold py-3 md:py-4 pr-12 text-sm font-body tracking-[0.15em] outline-none transition-all placeholder:text-stone-400"
               />
               <button type="submit" aria-label={t('footer.newsletter_submit')} className="absolute right-0 bottom-3 md:bottom-4 text-gold hover:translate-x-1 transition-transform">
-                {isSubmitSuccessful ? <span className="text-micro tracking-widest">{t('footer.submitted')}</span> : <ArrowRight className="w-5 h-5" />}
+                {isSubmitSuccessful ? <span className="text-micro tracking-widest">{t('footer.submitted')}</span> : <ArrowRight className="w-5 h-5" aria-hidden="true" />}
               </button>
-              {errors.email && <p className="absolute top-full mt-2 text-red-500 text-micro uppercase tracking-widest">{errors.email.message}</p>}
+              {errors.email && <p role="alert" className="absolute top-full mt-2 text-red-600 text-micro uppercase tracking-widest">{errors.email.message}</p>}
             </form>
           </div>
         </div>
@@ -135,7 +142,7 @@ export default function Footer() {
               <ul className="space-y-3 pb-6 md:pb-0 md:mt-6 flex flex-col items-center md:items-start">
                 <FooterLink to="/alterations">{t('footer.bespoke_fitting')}</FooterLink>
                 <FooterLink to="/style-quiz">{t('footer.aura_consultation')}</FooterLink>
-                <FooterLink to="/timeline">{t('footer.bridal_concierge')}</FooterLink>
+                <FooterLink to="/wedding-checklist">{t('footer.bridal_concierge')}</FooterLink>
                 <FooterLink to="/faq">{t('footer.assistance')}</FooterLink>
               </ul>
             </CollapsibleSection>

@@ -97,7 +97,7 @@ export default function Header() {
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "group relative font-label text-[10px] xl:text-[11px] uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
+                  "group relative font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
                   onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
                 )}
               >
@@ -136,7 +136,7 @@ export default function Header() {
               />
               <span
                 className={cn(
-                  "mt-1.5 -me-[0.4em] font-heading text-[9px] uppercase tracking-[0.4em] whitespace-nowrap transition-colors duration-700",
+                  "mt-1.5 -me-[0.4em] font-heading text-micro uppercase tracking-[0.4em] whitespace-nowrap transition-colors duration-700",
                   onDark ? "text-white/60" : "text-stone-500"
                 )}
               >
@@ -154,7 +154,7 @@ export default function Header() {
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "group relative font-label text-[10px] xl:text-[11px] uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
+                  "group relative font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
                   onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
                 )}
               >
@@ -197,7 +197,7 @@ export default function Header() {
           >
             <Heart className="w-5 h-5 transition-transform duration-300 group-hover/wishlist:scale-110" strokeWidth={1.5} />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-[9px] font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
                 {wishlistCount}
               </span>
             )}
@@ -218,7 +218,7 @@ export default function Header() {
           >
             <ShoppingBag className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" strokeWidth={1.5} />
             {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-[9px] font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
+              <span className="absolute -top-1.5 -right-1.5 bg-gold-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
                 {totalItems}
               </span>
             )}

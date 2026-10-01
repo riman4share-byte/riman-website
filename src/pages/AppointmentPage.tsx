@@ -8,12 +8,13 @@ import { sendAppointmentConfirmationEmail, sendAppointmentAdminAlert } from '../
 import { buildWhatsAppUrl } from '../lib/whatsapp';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { cn } from '../lib/utils';
 
 const SERVICE_TYPES = [
-  { value: 'bridal', label: 'Bridal Consultation', icon: '👰' },
-  { value: 'evening', label: 'Evening Wear Styling', icon: '👗' },
-  { value: 'rental', label: 'Rental Fitting', icon: '✨' },
-  { value: 'alterations', label: 'Bespoke Alterations', icon: '🪡' },
+  { value: 'bridal', labelKey: 'appointment.service_bridal', icon: '👰' },
+  { value: 'evening', labelKey: 'appointment.service_evening', icon: '👗' },
+  { value: 'rental', labelKey: 'appointment.service_rental', icon: '✨' },
+  { value: 'alterations', labelKey: 'appointment.service_alterations', icon: '🪡' },
 ];
 
 const TIME_SLOTS = [
@@ -37,6 +38,27 @@ const SLOT_PERIOD: Record<string, 'AM' | 'PM'> = {
 };
 
 const formatSlot = (slot: string) => `${slot} ${SLOT_PERIOD[slot]}`;
+
+// One styling chair per 30-minute slot, and Friday after prayer is a short day.
+// These are the real capacity constraints, surfaced as scarcity the visitor can
+// act on — not invented "booked" markers.
+const PEAK_HOURS = ['6:00', '6:30', '7:00', '7:30'];
+const isPeakSlot = (slot: string) => PEAK_HOURS.includes(slot);
+
+const isFriday = (dateStr: string) => {
+  if (!dateStr) return false;
+  const d = new Date(`${dateStr}T00:00:00`);
+  return !Number.isNaN(d.getTime()) && d.getDay() === 5;
+};
+
+const isHighDemandDate = (dateStr: string) => {
+  if (!dateStr) return false;
+  const d = new Date(`${dateStr}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return false;
+  const day = d.getDay();
+  // Thu–Sat are wedding-season peak days in the Gulf.
+  return day === 4 || day === 5 || day === 6;
+};
 
 export default function AppointmentPage() {
   const [step, setStep] = useState(1);
@@ -203,38 +225,41 @@ export default function AppointmentPage() {
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.full_name')}</label>
+                    <label htmlFor="appt-name" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.full_name')}</label>
                     <div className="relative">
-                      <User className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input id="appt-name" type="text" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Your full name" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <User className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
+                      <input id="appt-name" name="name" type="text" required aria-required="true" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Your full name" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.email')}</label>
+                    <label htmlFor="appt-email" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.email')}</label>
                     <div className="relative">
-                      <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input id="appt-email" type="email" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder="your@email.com" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
+                      <input id="appt-email" name="email" type="email" required aria-required="true" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder="your@email.com" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.phone')}</label>
+                    <label htmlFor="appt-phone" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.phone')}</label>
                     <div className="relative">
-                      <Phone className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                      <input id="appt-phone" type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder="+971 50 000 0000" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <Phone className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
+                      <input id="appt-phone" name="phone" type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder="+971 50 000 0000" aria-describedby="appt-phone-hint" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-500" />
                     </div>
+                    <p id="appt-phone-hint" className="text-micro text-stone-500 italic mt-1.5">{t('appointment.phone_optional_hint')}</p>
                   </div>
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.service_type')}</label>
-                    <select value={form.service_type} onChange={e => updateForm('service_type', e.target.value)} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600">
+                    <label htmlFor="appt-service" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.service_type')}</label>
+                    <select id="appt-service" name="service_type" required aria-required="true" value={form.service_type} onChange={e => updateForm('service_type', e.target.value)} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600">
                       <option value="">{t('appointment.select_service')}</option>
                       {SERVICE_TYPES.map(s => (
-                        <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
+                        <option key={s.value} value={s.value}>{s.icon} {t(s.labelKey)}</option>
                       ))}
                     </select>
                   </div>
                 </div>
-                {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
-                <button onClick={() => { if (form.name && form.email && form.phone && form.service_type) { setError(''); setStep(2); } else setError(t('appointment.fill_all')); }} className="btn-luxury mt-8 w-full md:w-auto">{t('appointment.continue_scheduling')}</button>
+                {error && <p role="alert" className="text-red-600 text-sm mt-4 font-medium">{error}</p>}
+                <p className="text-micro text-stone-500 italic mt-4 leading-relaxed">{t('contact.response_promise')}</p>
+                <button onClick={() => { if (form.name && form.email && form.service_type) { setError(''); setStep(2); } else setError(t('appointment.fill_all')); }} className="btn-luxury mt-8 w-full md:w-auto">{t('appointment.continue_scheduling')}</button>
+                <p className="text-micro text-stone-500 italic mt-4 text-center md:text-start">{t('appointment.or_whatsapp')}</p>
               </motion.div>
             )}
 
@@ -246,40 +271,65 @@ export default function AppointmentPage() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-4">
-                      <Calendar className="w-4 h-4 inline mr-2" />
+                    <label htmlFor="appt-date" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-4">
+                      <Calendar className="w-4 h-4 inline mr-2" aria-hidden="true" />
                       {t('appointment.select_date')}
                     </label>
-                    <input type="date" value={form.date} onChange={e => updateForm('date', e.target.value)} min={today} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                    <input id="appt-date" name="date" type="date" required aria-required="true" value={form.date} onChange={e => updateForm('date', e.target.value)} min={today} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                   </div>
                   <div>
-                    <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-4">
-                      <Clock className="w-4 h-4 inline mr-2" />
+                    <span id="appt-time-label" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-4">
+                      <Clock className="w-4 h-4 inline mr-2" aria-hidden="true" />
                       {t('appointment.select_time')}
-                    </label>
-                    <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                    </span>
+                    {!form.date ? (
+                      <p className="text-micro text-stone-500 italic mb-3">{t('appointment.pick_date_first')}</p>
+                    ) : isHighDemandDate(form.date) ? (
+                      <p className="text-micro text-gold font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <Sparkles className="w-3 h-3" /> {isFriday(form.date) ? t('appointment.friday_note') : t('appointment.peak_day_note')}
+                      </p>
+                    ) : null}
+                    <div
+                      id="appt-time"
+                      role="radiogroup"
+                      aria-labelledby="appt-time-label"
+                      aria-required="true"
+                      className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto"
+                    >
                       {TIME_SLOTS.map(slot => (
                         <button
                           key={slot}
+                          type="button"
+                          role="radio"
+                          aria-checked={form.time === formatSlot(slot)}
                           onClick={() => updateForm('time', formatSlot(slot))}
-                          className={form.time === formatSlot(slot)
-                            ? "py-3 text-xs tracking-widest font-bold bg-gold text-white border border-gold transition-all"
-                            : "py-3 text-xs tracking-widest border border-stone-200 text-stone-600 hover:border-gold hover:text-gold transition-all"}
+                          className={cn(
+                            "py-3 text-xs tracking-widest border transition-all relative",
+                            form.time === formatSlot(slot)
+                              ? "font-bold bg-gold text-white border-gold"
+                              : isPeakSlot(slot)
+                                ? "border-gold/50 text-stone-700 hover:border-gold hover:text-gold"
+                                : "border-stone-200 text-stone-600 hover:border-gold hover:text-gold"
+                          )}
                         >
                           {formatSlot(slot)}
+                          {isPeakSlot(slot) && form.time !== formatSlot(slot) && (
+                            <span className="absolute top-0 end-0 w-1.5 h-1.5 bg-gold" aria-hidden="true" />
+                          )}
                         </button>
                       ))}
                     </div>
+                    <p className="text-micro text-stone-500 italic mt-3 leading-relaxed">{t('appointment.slot_capacity_note')}</p>
                   </div>
                 </div>
                 <div className="mt-6">
-                  <label className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">
-                    <MessageSquare className="w-4 h-4 inline mr-2" />
+                  <label htmlFor="appt-notes" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">
+                    <MessageSquare className="w-4 h-4 inline mr-2" aria-hidden="true" />
                     {t('appointment.special_requests')}
                   </label>
-                  <textarea value={form.notes} onChange={e => updateForm('notes', e.target.value)} rows={3} placeholder={t('appointment.notes_placeholder')} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                  <textarea id="appt-notes" name="notes" value={form.notes} onChange={e => updateForm('notes', e.target.value)} rows={3} placeholder={t('appointment.notes_placeholder')} className="w-full bg-transparent border-0 border-b border-stone-300 focus:border-gold focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                 </div>
-                {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+                {error && <p role="alert" className="text-red-600 text-sm mt-4 font-medium">{error}</p>}
                 <div className="flex gap-4 mt-8">
                   <button onClick={() => setStep(1)} className="btn-luxury-outline">{t('appointment.back')}</button>
                   <button onClick={() => { if (form.date && form.time) { setError(''); setStep(3); } else setError(t('appointment.select_date_time')); }} className="btn-luxury">{t('appointment.review_booking')}</button>
@@ -309,7 +359,7 @@ export default function AppointmentPage() {
                     </div>
                     <div>
                       <p className="text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-1">{t('appointment.service_label')}</p>
-                      <p className="font-heading text-stone-800">{SERVICE_TYPES.find(s => s.value === form.service_type)?.label}</p>
+                      <p className="font-heading text-stone-800">{t(SERVICE_TYPES.find(s => s.value === form.service_type)?.labelKey ?? 'appointment.service_type')}</p>
                     </div>
                     <div>
                       <p className="text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-1">{t('appointment.date_label')}</p>
@@ -327,7 +377,25 @@ export default function AppointmentPage() {
                     </div>
                   )}
                 </div>
-                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                {error && <p role="alert" className="text-red-600 text-sm mb-4 font-medium">{error}</p>}
+                {/* Before You Book — inline the four answers that stop bookings */}
+                <div className="mb-6 p-5 border border-gold/30 bg-gold/[0.04]">
+                  <p className="text-micro tracking-[0.3em] uppercase text-stone-800 font-bold mb-3">{t('contact.promise_block_title')}</p>
+                  <ul className="space-y-2">
+                    {[
+                      t('contact.promise_deposit'),
+                      t('contact.promise_consultation'),
+                      t('contact.promise_reschedule'),
+                      t('contact.promise_fit_included'),
+                    ].map((promise) => (
+                      <li key={promise} className="flex items-start gap-2 text-sm text-stone-700">
+                        <CheckCircle2 className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                        <span>{promise}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-micro text-stone-600 italic mt-4 pt-3 border-t border-gold/20 leading-relaxed">{t('appointment.leadtime_note')}</p>
+                </div>
                 <div className="flex gap-4">
                   <button onClick={() => setStep(2)} className="btn-luxury-outline">{t('appointment.back')}</button>
                   <button onClick={handleSubmit} disabled={isSubmitting} className="btn-luxury flex items-center justify-center gap-2 flex-1">

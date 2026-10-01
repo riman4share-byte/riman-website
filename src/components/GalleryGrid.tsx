@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Play, Image as ImageIcon } from 'lucide-react';
 import type { GalleryItem } from '../hooks/useGallery';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface GalleryGridProps {
   items: GalleryItem[];
@@ -25,6 +26,7 @@ function usePrefersReducedMotion(): boolean {
 }
 
 function GalleryVideoItem({ item, onClick, index }: { item: GalleryItem; onClick: () => void; index: number; key?: string }) {
+  const { t } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -54,8 +56,17 @@ function GalleryVideoItem({ item, onClick, index }: { item: GalleryItem; onClick
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
-      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden"
+      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden w-full text-start"
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${t('gallery.open_item')}: ${item.title || t('gallery.untitled')}`}
     >
       <video
         ref={videoRef}
@@ -65,37 +76,50 @@ function GalleryVideoItem({ item, onClick, index }: { item: GalleryItem; onClick
         loop
         playsInline
         preload="metadata"
+        aria-hidden="true"
         className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" />
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Play className="w-4 h-4 text-white fill-white" />
-        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title}</span>
+      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" aria-hidden="true" />
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100 transition-opacity">
+        <Play className="w-4 h-4 text-white fill-white" aria-hidden="true" />
+        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
       </div>
     </motion.div>
   );
 }
 
 function GalleryPhotoItem({ item, onClick, index }: { item: GalleryItem; onClick: () => void; index: number; key?: string }) {
+  const { t } = useLanguage();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
-      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden"
+      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden w-full text-start"
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`${t('gallery.open_item')}: ${item.title || t('gallery.untitled')}`}
     >
       <img
         src={item.media_url}
-        alt={item.title}
+        alt=""
+        aria-hidden="true"
         loading="lazy"
+        decoding="async"
         className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" />
-      <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ImageIcon className="w-4 h-4 text-white" />
-        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title}</span>
+      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" aria-hidden="true" />
+      <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100 transition-opacity">
+        <ImageIcon className="w-4 h-4 text-white" aria-hidden="true" />
+        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
       </div>
     </motion.div>
   );

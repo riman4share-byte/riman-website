@@ -9,6 +9,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { submitContactForm } from '../services/contact';
 import { isSupabaseConfigured } from '../services/supabase';
+import { buildWhatsAppUrl } from '../lib/whatsapp';
 import { useToast } from '../contexts/ToastContext';
 
 export default function ContactPage() {
@@ -39,16 +40,31 @@ export default function ContactPage() {
           inquiry_type: data.type,
           message: data.message,
         });
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        addToast({ type: 'info', title: t('contact.toast_demo_title'), message: t('contact.toast_demo_msg') });
+        addToast({ type: 'success', title: t('contact.toast_sent_title'), message: t('contact.toast_sent_msg') });
+        setIsSubmitted(true);
+        return;
       }
+
+      // No backend configured: hand the enquiry to WhatsApp rather than
+      // discarding it. The visitor always leaves with their message delivered.
+      const url = buildWhatsAppUrl(
+        [
+          `${t('contact.wa_message_header')}`,
+          '',
+          `${t('form.name')}: ${data.name}`,
+          `${t('form.email')}: ${data.email}`,
+          `${t('contact.phone_label')}: ${data.phone}`,
+          `${t('contact.inquiry_type')}: ${data.type}`,
+          '',
+          `${t('contact.vision_prefs')}:`,
+          data.message,
+        ].join('\n')
+      );
+      addToast({ type: 'success', title: t('contact.toast_whatsapp_title'), message: t('contact.toast_whatsapp_msg') });
+      window.open(url, '_blank', 'noopener,noreferrer');
     } catch {
-      addToast({ type: 'error', title: t('contact.toast_demo_title'), message: t('contact.toast_demo_msg') });
-      return;
+      addToast({ type: 'error', title: t('contact.toast_error_title'), message: t('contact.toast_error_msg') });
     }
-    addToast({ type: 'success', title: t('contact.toast_sent_title'), message: t('contact.toast_sent_msg') });
-    setIsSubmitted(true);
   };
 
   const handleReset = () => {
@@ -146,7 +162,7 @@ export default function ContactPage() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label htmlFor="contact-phone" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('nav.contact')}</label>
+                      <label htmlFor="contact-phone" className="text-micro font-bold text-stone-600 uppercase tracking-widest">{t('contact.phone_label')}</label>
                       <input
                         id="contact-phone"
                         {...register('phone')}
@@ -201,23 +217,36 @@ export default function ContactPage() {
                     <div className="pt-4">
                       <AnimatePresence mode="wait">
                         {!isSubmitted ? (
-                          <motion.button 
-                            key="submit-btn"
-                            type="submit" 
-                            disabled={isSubmitting}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="w-full btn-luxury !py-5 flex items-center justify-center gap-3 disabled:opacity-50"
-                          >
-                            {isSubmitting ? (
-                              <motion.div 
-                                animate={{ rotate: 360 }} 
-                                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-                                className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                              />
-                            ) : t('form.submit')}
-                          </motion.button>
+                          <div className="space-y-4">
+                            <motion.button 
+                              key="submit-btn"
+                              type="submit" 
+                              disabled={isSubmitting}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="w-full btn-luxury !py-5 flex items-center justify-center gap-3 disabled:opacity-50"
+                            >
+                              {isSubmitting ? (
+                                <motion.div 
+                                  animate={{ rotate: 360 }} 
+                                  transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                                  className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                                />
+                              ) : t('form.submit')}
+                            </motion.button>
+                            <a
+                              href={buildWhatsAppUrl(t('contact.wa_default_message'))}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full btn-luxury-outline !py-4 flex items-center justify-center gap-3 text-xs"
+                            >
+                              {t('contact.cta_whatsapp')}
+                            </a>
+                            <p className="text-center text-micro text-stone-500 italic leading-relaxed">
+                              {t('contact.response_promise')}
+                            </p>
+                          </div>
                         ) : (
                           <motion.div 
                             key="success-message"
@@ -261,7 +290,7 @@ export default function ContactPage() {
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
           className="grayscale hover:grayscale-0 transition-all duration-1000 contrast-[1.1] brightness-[0.95]"
-          title="Riman Fashion Boutique Location"
+          title="Atelier Riman — Sharjah"
         />
         <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.15)] border-y border-stone-200/50" />
       </section>
