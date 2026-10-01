@@ -10,11 +10,15 @@ import { useScrollLock } from '../hooks/useScrollLock';
 import Logo from './Logo';
 
 const leftNavLinks = [
-  { label: "About", path: "/about", key: 'nav.about' },
+  // The three shop destinations are the primary nav and always fit. About and
+  // Journal are secondary: the full five-item set is wider than the 1fr track
+  // below 1536px, and as a fit-content item it overlapped the centred logo
+  // rather than shrinking. Both remain in the mobile drawer and the footer.
+  { label: "About", path: "/about", key: 'nav.about', hideBelow: 'xl' },
   { label: "Bridal", path: "/collection/bridal", key: 'nav.bridal' },
   { label: "Couture", path: "/collection/couture", key: 'nav.couture' },
   { label: "Collections", path: "/collections", key: 'nav.collections' },
-  { label: "Journal", path: "/journal", key: 'nav.journal' },
+  { label: "Journal", path: "/journal", key: 'nav.journal', hideBelow: '2xl' },
 ];
 
 const rightNavLinks = [
@@ -78,8 +82,11 @@ export default function Header() {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       )}
       <div className="w-full px-5 sm:px-8 lg:px-10 2xl:px-16 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-        {/* Left: mobile menu trigger + primary navigation */}
-        <div className="flex min-w-0 items-center justify-self-start">
+        {/* Left: mobile menu trigger + primary navigation.
+            justify-self-stretch (not start) so the group is clamped to its 1fr
+            track: as a fit-content item it grew to 597px and spilled over the
+            centred logo between 1024px and 1440px. */}
+        <div className="flex min-w-0 items-center justify-self-stretch">
           <button
             onClick={() => setIsMenuOpen(true)}
             className={cn(
@@ -91,13 +98,15 @@ export default function Header() {
             <Menu className="w-6 h-6" strokeWidth={1.5} />
           </button>
 
-          <nav className="hidden lg:flex items-center gap-5 xl:gap-8 2xl:gap-10" aria-label="Primary">
+          <nav className="hidden lg:flex min-w-0 items-center gap-5 xl:gap-8 2xl:gap-8" aria-label="Primary">
             {leftNavLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
                 className={cn(
-                  "group relative font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
+                  "group relative whitespace-nowrap font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] transition-colors duration-300",
+                  link.hideBelow === '2xl' && "hidden 2xl:block",
+                  link.hideBelow === 'xl' && "hidden xl:block",
                   onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
                 )}
               >
@@ -146,7 +155,8 @@ export default function Header() {
           </motion.div>
         </div>
 
-        {/* Right: contact + language + minimal line icons */}
+        {/* Right: contact + language + minimal line icons. Clamped to its track for the
+            same reason as the left group. */}
         <div className="flex min-w-0 items-center justify-self-end gap-5 xl:gap-6">
           <nav className="hidden xl:flex items-center" aria-label="Atelier">
             {rightNavLinks.map((link) => (
