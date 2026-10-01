@@ -58,4 +58,5 @@ coverage/
 # Ad-hoc root-level screenshots/report dumps (keep public/ tracked assets)
 /*.png
 /*.jpg
+/*.jpeg
 
