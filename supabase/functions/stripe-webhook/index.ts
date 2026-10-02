@@ -67,7 +67,9 @@ serve(async (req) => {
       return json({ received: true }, 200);
     }
     if (!extracted.ok) {
-      console.error('stripe-webhook: malformed payment event', extracted.error);
+      // The result is a union, and the `ignore` variant carries no `error`.
+      const reason = 'error' in extracted ? extracted.error : extracted;
+      console.error('stripe-webhook: malformed payment event', reason);
       return json({ error: 'Invalid event' }, 400);
     }
 
@@ -139,7 +141,12 @@ async function fulfillOrder(ev: WebhookEvent) {
     })
     .eq('id', ev.orderId)
     .eq('payment_status', 'processing')
-    .select('id, customer_name, subtotal, amount_total_cents, currency, customers(email)');
+    // customer_name was selected from `orders`, but that column only ever
+    // existed on rental_bookings. PostgREST rejects an unknown select column
+    // with a 400 for the WHOLE request, so this update threw, the order never
+    // flipped to paid, and Stripe retried for days: every card payment was
+    // charged and never fulfilled. The customer's name lives on `customers`.
+    .select('id, subtotal, amount_total_cents, currency, customers(email, name)');
 
   if (error) {
     console.error('order update failed:', error);
@@ -150,10 +157,14 @@ async function fulfillOrder(ev: WebhookEvent) {
     return;
   }
   const order = data[0] as {
-    id: string; customer_name?: string | null; subtotal?: number | null;
+    id: string; subtotal?: number | null;
     amount_total_cents?: number | null; currency?: string | null;
-    customers?: { email?: string } | null;
+    customers?: { email?: string; name?: string | null } | { email?: string; name?: string | null }[] | null;
   };
+  // PostgREST returns an embed as an object or a one-element array depending on
+  // how it infers the relationship; normalise before use.
+  const customer = Array.isArray(order.customers) ? order.customers[0] : order.customers;
+  const customerName = customer?.name ?? null;
 
   // --- Cross-check charged amount against the server snapshot ---
   // Mismatch is a FINANCIAL REVIEW EVENT, not a log line. Deterministic —
@@ -188,10 +199,10 @@ async function fulfillOrder(ev: WebhookEvent) {
   }
 
   // --- Confirmation email (durable queue) ---
-  const customerEmail = order.customers?.email;
+  const customerEmail = customer?.email;
   if (customerEmail) {
     await enqueue('order_confirmed', customerEmail, `Payment Confirmed — ${ev.orderId.slice(0, 8)} | Riman Fashion`,
-      confirmationEmailHtml(order, ev.orderId));
+      confirmationEmailHtml({ customer_name: customerName, subtotal: order.subtotal }, ev.orderId));
   }
 }
 

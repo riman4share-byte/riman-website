@@ -120,6 +120,29 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  edge-functions:
+    name: Edge Functions Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # The edge functions were never typechecked: tsconfig excludes supabase/,
+      # and Deno strips types at runtime, so type errors shipped silently. This
+      # is how `orders.customer_name` — a column that does not exist — survived
+      # in two payment paths and broke order fulfilment.
+      - name: Typecheck edge functions
+        run: |
+          deno check \
+            supabase/functions/create-checkout/index.ts \
+            supabase/functions/stripe-webhook/index.ts \
+            supabase/functions/create-order/index.ts \
+            supabase/functions/process-outbox/index.ts \
+            supabase/functions/send-notification/index.ts
+
   build:
     name: Build
     needs: [quality, e2e]

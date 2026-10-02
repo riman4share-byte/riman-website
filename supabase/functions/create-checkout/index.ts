@@ -348,17 +348,30 @@ async function handleVerify(sessionId: string) {
   const orderId = session.metadata?.order_id;
 
   let customerEmail = session.customer_details?.email || '';
+  let belongsToOrder = false;
 
   if (orderId) {
+    // customer_name does not exist on `orders` (it only ever existed on
+    // rental_bookings). PostgREST 400s the entire select on an unknown column,
+    // and the error was discarded here — so orderData was always null, the
+    // paid flip never ran, and the function still answered { paid: true }.
+    // The name lives on `customers`.
     const { data: orderData } = await supabase
       .from('orders')
-      .select('id, payment_status, customer_name, subtotal, customers!inner(email)')
+      .select('id, payment_status, subtotal, customers!inner(email, name)')
       .eq('id', orderId)
       .single();
 
+    const embedded = (orderData as {
+      customers?: { email?: string; name?: string | null } | { email?: string; name?: string | null }[] | null;
+    } | null)?.customers;
+    const customer = Array.isArray(embedded) ? embedded[0] : embedded;
+
     const sessionEmail = (session.customer_details?.email || '').toLowerCase();
-    const orderEmail = ((orderData as { customers?: { email?: string } } | null)?.customers?.email || '').toLowerCase();
-    const belongsToOrder = orderData && (!sessionEmail || !orderEmail || sessionEmail === orderEmail);
+    const orderEmail = (customer?.email || '').toLowerCase();
+    // Fail closed: previously a missing email on either side made the check pass
+    // automatically, so any session id could flip somebody else's order.
+    belongsToOrder = Boolean(orderData) && Boolean(sessionEmail) && sessionEmail === orderEmail;
 
     customerEmail = orderEmail || sessionEmail;
 
@@ -383,7 +396,7 @@ async function handleVerify(sessionId: string) {
           .in('order_item_id', await rentalItemIds(orderId))
           .eq('status', 'pending_payment');
 
-        const o = orderData as { customer_name?: string | null; subtotal?: number | null };
+        const o = { customer_name: customer?.name ?? null, subtotal: (orderData as { subtotal?: number | null } | null)?.subtotal ?? null };
         if (orderEmail) {
           await enqueue(
             'order_confirmed',
@@ -398,7 +411,16 @@ async function handleVerify(sessionId: string) {
     }
   }
 
-  return jsonStatic({ paid, orderId: orderId || undefined, customerEmail }, 200);
+  // Only report paid when we actually know it: previously this returned
+    // { paid: true } even when the order lookup failed or the session belonged
+    // to a different customer, so the confirmation page told a client their
+    // order was received while the database had done nothing. The order id and
+    // the customer's email are only echoed back on a verified match.
+  const verified = Boolean(paid && orderId && belongsToOrder);
+  return jsonStatic(
+    { paid: verified, orderId: verified ? orderId : undefined, customerEmail: verified ? customerEmail : undefined },
+    200,
+  );
 }
 
 async function rentalItemIds(orderId: string): Promise<string[]> {

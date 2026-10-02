@@ -196,11 +196,21 @@ export function isAllowedOrigin(origin: string | undefined | null, allowlist: st
   return allowlist.map(a => a.replace(/\/+$/, '')).includes(normalized);
 }
 
-export function parseAllowedOrigins(env: Record<string, string | undefined>): string[] {
+// Accepts Deno.env (a `get`-style object) as well as a plain record, so the
+// function is callable from the edge runtime AND from unit tests. Typing this as
+// Record<string, string | undefined> rejected every call site, which is why
+// `deno check` had never passed on these files.
+export function parseAllowedOrigins(
+  env: { get(name: string): string | undefined } | Record<string, string | undefined>,
+): string[] {
+  const read = (key: string): string | undefined =>
+    typeof (env as { get?: unknown }).get === 'function'
+      ? (env as { get(name: string): string | undefined }).get(key)
+      : (env as Record<string, string | undefined>)[key];
   const sites = [
-    env.SITE_URL,
-    ...(env.ALLOWED_SITE_ORIGINS || '').split(','),
-    env.APP_URL,
+    read('SITE_URL'),
+    ...(read('ALLOWED_SITE_ORIGINS') || '').split(','),
+    read('APP_URL'),
   ];
   return [...new Set(sites.map(s => (s || '').trim().replace(/\/+$/, '')).filter(Boolean))];
 }
