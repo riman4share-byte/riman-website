@@ -92,6 +92,68 @@ describe('parseCheckoutRequest — strict schema', () => {
     expect(bad.ok).toBe(false);
   });
 
+  describe('rental window rules', () => {
+    const iso = (daysFromNow: number) => {
+      const d = new Date();
+      d.setUTCDate(d.getUTCDate() + daysFromNow);
+      return d.toISOString().slice(0, 10);
+    };
+
+    it('accepts a future 7-day hire', () => {
+      const ok = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent',
+        rental_start_date: iso(30),
+        rental_end_date: iso(37),
+      })]));
+      expect(ok.ok).toBe(true);
+    });
+
+    it('rejects a rental with no dates — it would be charged with nothing on the calendar', () => {
+      expect(parseCheckoutRequest(baseRequest([line({ intent: 'rent' })])).ok).toBe(false);
+      const half = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent', rental_start_date: iso(30),
+      })]));
+      expect(half.ok).toBe(false);
+    });
+
+    it('rejects rental dates on a purchase line', () => {
+      const bad = parseCheckoutRequest(baseRequest([line({
+        intent: 'sale',
+        rental_start_date: iso(30),
+        rental_end_date: iso(37),
+      })]));
+      expect(bad.ok).toBe(false);
+    });
+
+    it('rejects a window that is not the advertised hire period', () => {
+      const threeDays = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent', rental_start_date: iso(30), rental_end_date: iso(33),
+      })]));
+      expect(threeDays.ok).toBe(false);
+    });
+
+    it('rejects an unbounded window that would block the whole catalogue', () => {
+      const absurd = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent', rental_start_date: '1970-01-01', rental_end_date: '2099-01-01',
+      })]));
+      expect(absurd.ok).toBe(false);
+    });
+
+    it('rejects a backdated start', () => {
+      const past = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent', rental_start_date: iso(-30), rental_end_date: iso(-23),
+      })]));
+      expect(past.ok).toBe(false);
+    });
+
+    it('rejects a start beyond the booking horizon', () => {
+      const far = parseCheckoutRequest(baseRequest([line({
+        intent: 'rent', rental_start_date: iso(3650), rental_end_date: iso(3657),
+      })]));
+      expect(far.ok).toBe(false);
+    });
+  });
+
   it('accepts an optional captchaToken string, rejects wrong types/size', () => {
     expect(parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 'tok123' }).ok).toBe(true);
     expect(parseCheckoutRequest({ ...baseRequest([line()]), captchaToken: 42 }).ok).toBe(false);

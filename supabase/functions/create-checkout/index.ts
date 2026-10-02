@@ -178,19 +178,54 @@ serve(async (req) => {
 
     let customerId = customer?.id;
     if (!customerId) {
-      const { data: newCustomer } = await supabase
+      // Upsert rather than insert: customers.email is UNIQUE, so a concurrent
+      // checkout with the same new address used to fail here. The error was
+      // discarded, leaving customer_id null — a charged order with no customer
+      // row, no confirmation email and nothing in the admin customer list.
+      const { data: upserted, error: customerError } = await supabase
         .from('customers')
-        .insert({
-          name: payload.customerName,
-          email: payload.customerEmail,
-          phone: payload.customerPhone,
-          address: payload.customerAddress,
-          city: payload.customerCity,
-          country: payload.customerCountry || 'United Arab Emirates',
-        })
-        .select()
+        .upsert(
+          {
+            name: payload.customerName,
+            email: payload.customerEmail,
+            phone: payload.customerPhone,
+            address: payload.customerAddress,
+            city: payload.customerCity,
+            country: payload.customerCountry || 'United Arab Emirates',
+          },
+          { onConflict: 'email' },
+        )
+        .select('id')
         .single();
-      customerId = newCustomer?.id;
+      if (customerError || !upserted?.id) {
+        console.error('customer upsert failed:', customerError);
+        return json({ error: 'Checkout is currently unavailable' }, 500, req);
+      }
+      customerId = upserted.id;
+    }
+
+    const checkoutToken = typeof payload.checkout_token === 'string' && payload.checkout_token.trim()
+      ? payload.checkout_token.trim()
+      : null;
+    if (checkoutToken && (checkoutToken.length > 64 || !/^[A-Za-z0-9._:-]+$/.test(checkoutToken))) {
+      return json({ error: 'Invalid checkout token' }, 400, req);
+    }
+
+    // Idempotent replay: this token already created an order, so return that
+    // order rather than creating a second chargeable one.
+    if (checkoutToken) {
+      const { data: existing } = await supabase
+        .from('orders')
+        .select('id, stripe_session_id')
+        .eq('checkout_token', checkoutToken)
+        .maybeSingle();
+      if (existing?.stripe_session_id) {
+        const liveSession = await fetchSessionUrl(existing.stripe_session_id);
+        if (liveSession?.url) {
+          return json({ url: liveSession.url, orderId: existing.id }, 200, req);
+        }
+        return json({ error: 'Checkout is currently unavailable' }, 500, req);
+      }
     }
 
     const { data: order, error: orderError } = await supabase
@@ -205,10 +240,25 @@ serve(async (req) => {
         notes: payload.notes,
         payment_method: 'card',
         payment_status: 'processing',
+        ...(checkoutToken ? { checkout_token: checkoutToken } : {}),
       })
       .select()
       .single();
+
     if (orderError) {
+      // A concurrent replay won the unique index: return its order instead of
+      // failing, so the customer is not shown an error for a duplicate click.
+      if (checkoutToken && orderError.code === '23505') {
+        const { data: raced } = await supabase
+          .from('orders')
+          .select('id, stripe_session_id')
+          .eq('checkout_token', checkoutToken)
+          .maybeSingle();
+        if (raced?.stripe_session_id) {
+          const racedSession = await fetchSessionUrl(raced.stripe_session_id);
+          if (racedSession?.url) return json({ url: racedSession.url, orderId: raced.id }, 200, req);
+        }
+      }
       console.error('order insert failed:', orderError);
       return json({ error: 'Checkout is currently unavailable' }, 500, req);
     }
@@ -264,6 +314,9 @@ serve(async (req) => {
       headers: {
         'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
         'Content-Type': 'application/x-www-form-urlencoded',
+        // Stripe collapses a retried create with the same key instead of
+        // producing a second live session for the same cart.
+        ...(checkoutToken ? { 'Idempotency-Key': checkoutToken } : {}),
       },
       body: form,
     });
@@ -321,6 +374,18 @@ async function holdRentWindows(
     }
   }
   return false;
+}
+
+/** Look up a Stripe session's hosted URL. Used when an idempotent replay lands
+ *  on an order that already has a session. */
+async function fetchSessionUrl(sessionId: string): Promise<{ url: string } | null> {
+  if (!/^cs_[A-Za-z0-9_-]{10,255}$/.test(sessionId) || !STRIPE_SECRET_KEY) return null;
+  const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
+    headers: { Authorization: `Bearer ${STRIPE_SECRET_KEY}` },
+  });
+  if (!res.ok) return null;
+  const session = await res.json();
+  return typeof session?.url === 'string' ? { url: session.url } : null;
 }
 
 async function rollbackOrder(orderId: string) {

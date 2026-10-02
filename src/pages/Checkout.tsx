@@ -1,4 +1,4 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback, useRef, type ReactNode } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -35,6 +35,10 @@ export default function Checkout() {
   const { t, isRtl, language } = useLanguage();
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  // One idempotency key per checkout ATTEMPT: minted on the first submit and
+  // reused for every retry, so a double-click or a flaky connection can never
+  // produce two chargeable orders. Reset once an order is placed.
+  const checkoutTokenRef = useRef<string | null>(null);
   const [orderComplete, setOrderComplete] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -151,9 +155,16 @@ export default function Checkout() {
 
       // Stripe card payment (Visa / Mastercard) — redirect to hosted checkout.
       if (paymentMethod === 'card' && isStripeConfigured()) {
+        if (!checkoutTokenRef.current) {
+          checkoutTokenRef.current =
+            typeof crypto !== 'undefined' && 'randomUUID' in crypto
+              ? crypto.randomUUID()
+              : `tok-${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+        }
         const checkout = await createCheckoutSession({
           lines: checkoutLines,
           returnOrigin: window.location.origin,
+          checkoutToken: checkoutTokenRef.current ?? undefined,
           customerName: `${formData.firstName} ${formData.lastName}`,
           customerEmail: formData.email,
           customerPhone: formData.phone,

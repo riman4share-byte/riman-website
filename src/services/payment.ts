@@ -22,6 +22,12 @@ export interface CheckoutInput {
   lines: CheckoutLine[];
   /** window.location.origin; the server validates it against ALLOWED_SITE_ORIGINS. */
   returnOrigin?: string;
+  /**
+   * Idempotency key for ONE checkout attempt. Generate it once when the customer
+   * reaches the review step and send the same value on every retry, so a
+   * double-click or a dropped response cannot create a second chargeable order.
+   */
+  checkoutToken?: string;
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
@@ -78,6 +84,7 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Check
     ...(input.customerCity ? { customerCity: input.customerCity } : {}),
     ...(input.customerCountry ? { customerCountry: input.customerCountry } : {}),
     ...(input.notes ? { notes: input.notes } : {}),
+    ...(input.checkoutToken ? { checkout_token: input.checkoutToken } : {}),
   };
 
   try {

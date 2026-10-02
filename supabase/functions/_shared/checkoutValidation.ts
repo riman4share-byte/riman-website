@@ -14,6 +14,16 @@
 
 export const MAX_CART_LINES = 20;
 export const MAX_QUANTITY = 10;
+/** The advertised hire period. A rental must be exactly this long. */
+export const RENTAL_PERIOD_DAYS = 7;
+/** Hard ceiling regardless of the exact-period rule, kept as a second gate. */
+export const MAX_RENTAL_DAYS = 14;
+/** Furthest ahead a hire may start. */
+const MAX_BOOKING_HORIZON = (() => {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() + 730);
+  return d.toISOString().slice(0, 10);
+})();
 export const CURRENCY = 'aed';
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -41,6 +51,8 @@ export interface CheckoutRequest {
   customerCountry?: string;
   notes?: string;
   captchaToken?: string;
+  /** Idempotency key for one checkout attempt; see the orders.checkout_token index. */
+  checkout_token?: string;
 }
 
 export interface ProductRow {
@@ -89,6 +101,7 @@ const LINE_KEYS = ['product_id', 'quantity', 'intent', 'rental_start_date', 'ren
 const REQUEST_KEYS = [
   'lines', 'returnOrigin', 'customerName', 'customerEmail', 'customerPhone',
   'customerAddress', 'customerCity', 'customerCountry', 'notes', 'captchaToken',
+  'checkout_token',
 ];
 
 function isValidDateOnly(value: string): boolean {
@@ -138,6 +151,30 @@ export function parseCheckoutRequest(raw: unknown): Validated<CheckoutRequest> {
     if (rental_start_date !== undefined && (typeof rental_start_date !== 'string' || !isValidDateOnly(rental_start_date))) return fail('Invalid rental start date');
     if (rental_end_date !== undefined && (typeof rental_end_date !== 'string' || !isValidDateOnly(rental_end_date))) return fail('Invalid rental end date');
     if (rental_start_date && rental_end_date && rental_start_date >= rental_end_date) return fail('Rental end date must be after start date');
+
+    // A rental is only meaningful with a window, and a sale has none. Without
+    // this, a `rent` line could be charged at the hire rate with no booking row
+    // and nothing holding the calendar.
+    if (intent === 'rent' && (!rental_start_date || !rental_end_date)) return fail('Rental lines require both dates');
+    if (intent === 'sale' && (rental_start_date || rental_end_date)) return fail('Purchase lines must not carry rental dates');
+
+    if (rental_start_date && rental_end_date) {
+      // Bound the window. An unbounded range (1970-01-01 → 2099-01-01) would
+      // place a hold that blocks the whole catalogue until the Stripe session
+      // expires, for the price of one request.
+      const startMs = Date.parse(`${rental_start_date}T00:00:00Z`);
+      const endMs = Date.parse(`${rental_end_date}T00:00:00Z`);
+      const days = Math.round((endMs - startMs) / 86400000);
+      if (!Number.isFinite(days) || days <= 0) return fail('Invalid rental window');
+      if (days > MAX_RENTAL_DAYS) return fail(`Rental window too long (max ${MAX_RENTAL_DAYS} days)`);
+      // A hire period is a fixed number of days; 7-day hire is what the site
+      // advertises and what the policy copy promises.
+      if (days !== RENTAL_PERIOD_DAYS) return fail(`Rental period must be exactly ${RENTAL_PERIOD_DAYS} days`);
+      // No backdating, and not beyond the booking horizon.
+      const today = new Date().toISOString().slice(0, 10);
+      if (rental_start_date < today) return fail('Rental start date cannot be in the past');
+      if (rental_start_date > MAX_BOOKING_HORIZON) return fail('Rental start date is too far in the future');
+    }
 
     const key = `${product_id}|${intent}`;
     const existing = parsedLines.find(l => `${l.product_id}|${l.intent}` === key);
