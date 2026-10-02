@@ -11,6 +11,8 @@ import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
 import Marquee21st from '../components/ui-21st/Marquee21st';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
+import GoldThread from '../components/motion/GoldThread';
+import FrameSequence from '../components/motion/FrameSequence';
 
 const DISCIPLINES = [
   { titleKey: 'cat.bridal', descKey: 'disciplines.bridal', media: '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg', alt: 'Bridal', to: '/collection/bridal', isVideo: false },
@@ -20,15 +22,16 @@ const DISCIPLINES = [
 
 export default function Index() {
   const { products, content } = useData();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  const featured = products.filter((p) => p.isFeatured).slice(0, 4);
-  const plates = featured.length >= 2 ? featured : products.slice(0, 4);
+  const featured = products.filter((p) => p.isFeatured).slice(0, 6);
+  const plates = featured.length >= 2 ? featured : products.slice(0, 6);
 
   return (
     <div className="film-grain">
       <HeroSection21st />
 
+      <GoldThread className="bg-bone" />
       <section id="atelier" className="bg-bone py-28 md:py-40 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 md:gap-16">
           <div className="md:col-span-4">
@@ -93,6 +96,23 @@ export default function Index() {
 
       <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 
+      {/* Pinned canvas frame sequence — 131 frames @8fps, DPR-aware; poster fallback on mobile/reduced-motion/save-data */}
+      <FrameSequence
+        captions={
+          language === 'ar'
+            ? [
+                { text: 'نحن ننسج الأحلام في الحرير', at: 0.15 },
+                { text: 'كل خيط حكاية', at: 0.5 },
+                { text: 'من الشارقة — منذ ٢٠١١', at: 0.82 },
+              ]
+            : [
+                { text: 'We weave dreams into silk', at: 0.15 },
+                { text: 'Every thread, a story', at: 0.5 },
+                { text: 'Sharjah — since 2011', at: 0.82 },
+              ]
+        }
+      />
+
       <section className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
           <ChapterLabel numeral="III" titleKey="chapter.savoir_faire" />
@@ -149,6 +169,18 @@ export default function Index() {
       <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 
       <TestimonialWall21st />
+
+      {/* Single contextual sticky CTA replaces 4 repeated strips */}
+      <section className="sticky bottom-0 z-30 bg-onyx/95 border-t border-terracotta/20 backdrop-blur-sm">
+        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
+          <p className="font-label text-[11px] tracking-[0.2em] uppercase text-bone/80 text-center sm:text-start">
+            {language === 'ar' ? 'معاينة خاصة في الأتيليه — الشارقة' : 'Private viewing at the atelier — Sharjah'}
+          </p>
+          <Link to="/appointment" className="btn-couture-ghost !text-bone whitespace-nowrap min-h-[44px]">
+            {t('cta.viewing')}
+          </Link>
+        </div>
+      </section>
 
       <BookingCTA21st />
 

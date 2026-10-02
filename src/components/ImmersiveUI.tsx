@@ -164,7 +164,9 @@ export default function ImmersiveUI() {
               animate={{
                 x: mousePos.x - 24,
                 y: mousePos.y - 24,
-                scale: cursorMode === 'action' ? 1.4 : cursorMode === 'heading' ? 1.2 : 1,
+                // Was 1.4 over links, which made a 67px ring on top of CTA
+                // labels. Kept subtle now that the mark itself no longer grows.
+                scale: cursorMode === 'action' ? 1.1 : cursorMode === 'heading' ? 1.2 : 1,
                 opacity: cursorMode === 'heading' ? 0.8 : 0.4,
               }}
               transition={{ type: 'spring', damping: 25, stiffness: 120, mass: 0.8 }}
@@ -191,7 +193,11 @@ export default function ImmersiveUI() {
               animate={{
                 x: mousePos.x - 20,
                 y: mousePos.y - 20,
-                scale: cursorMode === 'action' ? 1.35 : cursorMode === 'heading' ? 1.15 : 1,
+                // No growth over links/buttons. The mark is 40px and sat centred
+                // on top of every CTA label — "Request a private viewing" was
+                // unreadable while hovered. Headings keep a small nudge because
+                // nothing interactive is underneath them.
+                scale: cursorMode === 'heading' ? 1.15 : 1,
                 rotate: cursorMode === 'heading' ? [0, 8, -8, 0] : 0,
               }}
               transition={{

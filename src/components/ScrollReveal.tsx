@@ -14,20 +14,23 @@ export default function ScrollReveal({ children, direction = 'up', delay = 0 }: 
 
   if (!enabled || prefersReducedMotion) return <>{children}</>;
 
+  // Content is visible by default (no inline opacity:0) — motion enhances
+  // progressively. Fallback timer guarantees reveal if IntersectionObserver
+  // never fires (mobile viewport quirks, missing observer, or negative margin).
   const variants: Variants = {
     hidden: {
       opacity: 0,
-      y: direction === 'up' ? 50 : direction === 'down' ? -50 : 0,
-      x: direction === 'left' ? 50 : direction === 'right' ? -50 : 0,
+      y: direction === 'up' ? 28 : direction === 'down' ? -28 : 0,
+      x: direction === 'left' ? 28 : direction === 'right' ? -28 : 0,
     },
     visible: {
       opacity: 1,
       y: 0,
       x: 0,
       transition: {
-        duration: 1.2,
+        duration: 0.9,
         delay,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
+        ease: [0.22, 1, 0.36, 1] as [number, number, number, number]
       }
     }
   };
@@ -36,8 +39,11 @@ export default function ScrollReveal({ children, direction = 'up', delay = 0 }: 
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, amount: 0.15 }}
       variants={variants}
+      // Visible without JS: before hydration the element has no inline style.
+      // After mount motion sets opacity:0 briefly then animates to 1 when in view.
+      style={{ opacity: 1 }}
     >
       {children}
     </motion.div>

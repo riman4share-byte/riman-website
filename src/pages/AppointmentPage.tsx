@@ -85,6 +85,42 @@ export default function AppointmentPage() {
     if (error) setError('');
   };
 
+  // .ics calendar download — confirmation step deliverable
+  const downloadIcs = () => {
+    const dt = form.date ? form.date.replace(/-/g, '') : '';
+    const [time, period] = (form.time || '11:00 AM').split(' ');
+    const [hRaw, mRaw] = (time || '11:00').split(':');
+    let h = parseInt(hRaw || '11', 10);
+    const m = mRaw || '00';
+    if (period === 'PM' && h < 12) h += 12;
+    if (period === 'AM' && h === 12) h = 0;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const start = `${dt}T${pad(h)}${m}00`;
+    const endH = Math.min(h + 1, 23);
+    const end = `${dt}T${pad(endH)}${m}00`;
+    const ics = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Riman Fashion//Appointment//EN',
+      'BEGIN:VEVENT',
+      `UID:riman-${Date.now()}@rimanfashion`,
+      `DTSTART;TZID=Asia/Dubai:${start}`,
+      `DTEND;TZID=Asia/Dubai:${end}`,
+      'SUMMARY:Private Viewing — Riman Fashion Sharjah',
+      'LOCATION:Riman Fashion, Al Zahra St, Sharjah, UAE',
+      `DESCRIPTION:${gownNames.length ? 'Gowns: ' + gownNames.join(', ') + '. ' : ''}Bring reference photos and your shoe heels.`,
+      'END:VEVENT',
+      'END:VCALENDAR',
+    ].join('\r\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'riman-fitting.ics';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const today = new Date().toISOString().split('T')[0];
 
   const validate = (): boolean => {
@@ -151,6 +187,12 @@ export default function AppointmentPage() {
           </p>
           <div className="w-12 h-px bg-terracotta mx-auto mb-6" />
           <p className="font-body text-sm text-stone-600 mb-10">{t('appointment.confirmation_sent')} {form.email}. {t('appointment.our_team_reach')}</p>
+          <button
+            onClick={downloadIcs}
+            className="btn-luxury-outline inline-block mt-4 px-10 w-full sm:w-auto"
+          >
+            {isRtl ? 'أضيفي إلى التقويم (.ics)' : 'Add to calendar (.ics)'}
+          </button>
           <a
             href={buildWhatsAppUrl(
               incomingGowns.length

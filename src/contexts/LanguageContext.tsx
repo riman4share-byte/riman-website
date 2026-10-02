@@ -1855,7 +1855,10 @@ const LanguageContext = createContext<LanguageContextType>(fallbackValue);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
-    return (localStorage.getItem('riman_lang') as Language) || 'ar';
+    // English first. Bridal clientele for a UAE atelier is overwhelmingly
+    // international, and defaulting to Arabic meant every first-time visitor
+    // landed on a mirrored, right-to-left page they did not ask for.
+    return (localStorage.getItem('riman_lang') as Language) || 'en';
   });
 
   useEffect(() => {

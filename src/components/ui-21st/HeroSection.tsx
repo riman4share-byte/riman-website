@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import CalligraphicAccent from '../salon/CalligraphicAccent';
 import KineticHeading from '../motion/KineticHeading';
+import MaskReveal from '../motion/MaskReveal';
 
 const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
 const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
@@ -18,8 +19,6 @@ function prefersReducedData() {
 export default function HeroSection21st() {
   const { t, language } = useLanguage();
   const [videoError, setVideoError] = useState(false);
-  // Poster paints immediately; the 16.9 MB clip is only requested once the
-  // page has settled, and never on a data-saver or 2G connection.
   const [showVideo, setShowVideo] = useState(false);
 
   useEffect(() => {
@@ -52,13 +51,12 @@ export default function HeroSection21st() {
   }, [videoError]);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center bg-onyx overflow-hidden pt-[clamp(7rem,22vh,14rem)]">
-      {/* Poster is always present as the base layer — the video crossfades over it */}
+    <section id="hero" className="relative min-h-[92svh] flex items-center justify-center bg-onyx overflow-hidden">
+      {/* Near-full-bleed gown: light scrim only, the dress is the hero */}
       <img
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-[center_28%] ken-burns-slow"
         src={HERO_POSTER}
-        alt=""
-        aria-hidden="true"
+        alt={language === 'ar' ? 'فستان سهرة لامع من ريمان للأزياء في الشارقة' : 'Lamé evening gown from the Riman atelier in Sharjah'}
         loading="eager"
         fetchPriority="high"
         decoding="async"
@@ -87,55 +85,62 @@ export default function HeroSection21st() {
           }}
         />
       )}
-      <div className="absolute inset-0 bg-onyx/60" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80" aria-hidden="true" />
+      {/* Minimal overlay — bottom gradient for legibility only */}
+      <div className="absolute inset-0 bg-gradient-to-t from-onyx/85 via-onyx/15 to-onyx/20" aria-hidden="true" />
       <CalligraphicAccent
         word="أناقة"
-        className="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[clamp(6rem,16vw,14rem)] opacity-25 pointer-events-none"
+        className="top-[18%] end-[6%] text-[clamp(5rem,12vw,11rem)] opacity-20 pointer-events-none"
       />
-      <div className="relative z-10 text-center px-6 max-w-4xl mx-auto animate-fade-in">
-        <p className="font-label text-xs md:text-sm tracking-[0.35em] uppercase text-white mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {t('hero.subtitle')}
-        </p>
-        <p className="font-label text-xs tracking-[0.25em] uppercase text-bone/90 mb-6 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {t('cat.bridal')} · {t('cat.evening')} · {t('cat.rentals')}
-        </p>
-        <p className="font-label text-xs tracking-[0.3em] uppercase text-terracotta-light mb-5 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {t('hero.title')}
-        </p>
-        <KineticHeading
-          as="h1"
-          text={t('hero.headline')}
-          emphasisChars={['&']}
-          className="font-heading text-white font-light leading-[1.02] text-[clamp(2rem,5.6vw,5rem)] mb-6 [text-shadow:0_2px_24px_rgba(0,0,0,0.7)]"
-        />
-        <p className="font-body text-base md:text-lg text-white leading-relaxed mb-4 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب — تجربة خاصة في الشارقة' : 'Buy · Rent · Bespoke — private fittings in Sharjah'}
-        </p>
-        <p className="font-label text-xs tracking-[0.2em] uppercase text-white/90 mb-10 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {t('invitation.contact_line')}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12">
-          <Link
-            to="/appointment"
-            className="btn-couture-ghost"
-            aria-label={t('cta.viewing')}
-          >
-            {t('cta.viewing')}
-          </Link>
-          <Link
-            to="/collection/bridal"
-            className="btn-couture-ghost"
-            aria-label={t('cta.explore')}
-          >
-            {t('cta.explore')}
-          </Link>
+
+      {/*
+        Centred editorial composition.
+
+        Was bottom-left aligned. The copy is now optically centred both ways so
+        the headline sits on the gown's centre line rather than fighting the
+        left gutter.
+
+        Vertical management is explicit, because two things collide with a
+        centred block: the fixed header above, and the "discover" scroll cue
+        below.
+          - pt-* reserves the header (h-20 / md:h-24). The old bottom-anchored
+            layout had no top clearance, so on a short viewport with a tall
+            headline the eyebrow and first line rode up underneath the bar —
+            measured overlapping at 1440x900 and 1280x720.
+          - pb-* reserves the scroll cue at bottom-8, so the CTA can never sit
+            on top of it.
+        min-h is only a floor, so the section grows rather than clipping.
+      */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-24 md:pb-28 text-center">
+        <div className="max-w-3xl mx-auto">
+          <p className="font-label text-[11px] md:text-xs tracking-[0.4em] uppercase text-bone/85 mb-6 [text-shadow:0_1px_10px_rgba(22,21,19,0.7)]">
+            <MaskReveal delay={0.05}>{t('hero.subtitle')}</MaskReveal>
+          </p>
+          <KineticHeading
+            as="h1"
+            text={t('hero.headline')}
+            emphasisChars={['&']}
+            delay={0.3}
+            className="font-heading text-bone font-light leading-[1.04] text-[clamp(2.4rem,6vw,5.5rem)] mb-8 [text-shadow:0_2px_28px_rgba(22,21,19,0.55)]"
+          />
+          <p className="font-label text-[11px] tracking-[0.3em] uppercase text-terracotta-light mb-10 [text-shadow:0_1px_10px_rgba(22,21,19,0.7)]">
+            <MaskReveal delay={0.5}>{language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب' : 'Buy · Rent · Bespoke'}</MaskReveal>
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+            <Link
+              to="/appointment"
+              className="btn-couture-ghost !text-bone min-h-[52px]"
+              aria-label={t('cta.viewing')}
+            >
+              {t('cta.viewing')}
+            </Link>
+            <span className="hidden sm:block h-px w-16 bg-bone/30" aria-hidden="true" />
+            <span className="hidden sm:block font-label text-[11px] tracking-[0.25em] uppercase text-bone/60">
+              {language === 'ar' ? 'منذ ٢٠١١ · الشارقة' : 'Since 2011 · Sharjah'}
+            </span>
+          </div>
         </div>
-        <p className="mt-8 font-label text-xs tracking-[0.2em] uppercase text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.8)]">
-          {language === 'ar' ? '★★★★★ أكثر من 200 عروس · fittings خاصة يومياً' : '★★★★★ 200+ brides · Private fittings daily'}
-        </p>
       </div>
-      <span aria-hidden="true" className="hidden sm:block absolute bottom-8 left-1/2 -translate-x-1/2 font-label text-xs tracking-[0.3em] uppercase text-white/80">
+      <span aria-hidden="true" className="hidden md:block absolute bottom-8 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 font-label text-[11px] tracking-[0.35em] uppercase text-bone/60">
         {t('hero.discover')}
       </span>
     </section>

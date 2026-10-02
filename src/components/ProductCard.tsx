@@ -83,12 +83,14 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       {...(scrollRevealEnabled ? {
         initial: { opacity: 0, y: 20 },
         whileInView: { opacity: 1, y: 0 },
-        viewport: { once: true }
+        viewport: { once: true, amount: 0.15 }
       } : {})}
+      // No invisible default — visible without JS/observer
+      style={{ opacity: 1 }}
       className="group relative"
     >
       <div className="block overflow-hidden relative aspect-[3/4] bg-stone-100 mb-4 cursor-pointer">
@@ -107,8 +109,8 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
           />
         </Link>
         
-        {/* Badges — above link, pointer-events-none so clicks pass through */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none z-10">
+        {/* Badges — logical inset so RTL mirrors correctly */}
+        <div className="absolute top-4 start-4 flex flex-col gap-2 pointer-events-none z-10">
           {product.isNew && (
             <span className="bg-terracotta text-white text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
               {t('badge.new')}

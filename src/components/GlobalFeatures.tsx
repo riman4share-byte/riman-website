@@ -55,18 +55,16 @@ export default function GlobalFeatures() {
 
   return (
     <>
-      {/* WhatsApp Float — lifts above cookie banner + bottom nav to avoid collision */}
+      {/* WhatsApp — ink + gold restyle */}
       {whatsappEnabled && (
         <a
           href="https://wa.me/971553730792"
           target="_blank"
           rel="noopener noreferrer"
-          className={`fixed right-4 md:right-10 z-[100] w-12 h-12 md:w-14 md:h-14 bg-[#25D366] text-white flex items-center justify-center hover:scale-110 transition-all ${
-            showCookies ? 'bottom-36 md:bottom-32' : 'bottom-20 md:bottom-10'
-          }`}
+          className="fixed end-4 md:end-8 bottom-20 md:bottom-6 z-[100] w-12 h-12 md:w-13 md:h-13 bg-onyx text-ivory border border-terracotta/30 flex items-center justify-center hover:border-terracotta hover:scale-[1.04] transition-all"
           aria-label={t('common.whatsapp_label')}
         >
-          <MessageCircle className="w-8 h-8 fill-current" />
+          <MessageCircle className="w-6 h-6 md:w-7 md:h-7" />
         </a>
       )}
 
@@ -112,34 +110,32 @@ export default function GlobalFeatures() {
         )}
       </AnimatePresence>
 
-      {/* Cookie Banner */}
+      {/* Cookie notice — small bottom-corner card, never covering content */}
       <AnimatePresence>
         {showCookies && (
-          <motion.div 
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            className="fixed bottom-0 left-0 w-full z-[150] bg-ivory border-t border-stone-200 p-6 md:p-8"
+          <motion.div
+            initial={{ y: 16, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 16, opacity: 0 }}
+            className="fixed bottom-4 end-4 z-[150] max-w-sm bg-ivory border border-stone-200 p-5 shadow-lg"
+            role="dialog"
+            aria-label={t('cookies.heading')}
           >
-            <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-start">
-                <p className="text-micro tracking-widest uppercase text-stone-600 mb-1">{t('cookies.heading')}</p>
-                <p className="text-xs text-stone-800 tracking-wide">{t('cookies.body')} <Link to="/privacy" className="underline hover:text-terracotta-dark">{t('cookies.learn')}</Link>.</p>
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={handleRejectCookies}
-                  className="px-8 py-3 border border-stone-300 text-stone-700 text-micro tracking-[0.2em] uppercase hover:border-stone-500 transition-all font-bold"
-                >
-                  {t('cookies.reject')}
-                </button>
-                <button
-                  onClick={handleAcceptCookies}
-                  className="px-8 py-3 bg-stone-900 text-white text-micro tracking-[0.2em] uppercase hover:bg-stone-800 transition-all font-bold"
-                >
-                  {t('cookies.accept')}
-                </button>
-              </div>
+            <p className="text-micro tracking-widest uppercase text-stone-600 mb-1">{t('cookies.heading')}</p>
+            <p className="text-xs text-stone-700 leading-relaxed mb-4">{t('cookies.body')} <Link to="/privacy" className="underline hover:text-terracotta-dark">{t('cookies.learn')}</Link>.</p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={handleRejectCookies}
+                className="px-5 py-2 border border-stone-300 text-stone-700 text-micro tracking-[0.2em] uppercase hover:border-stone-500 transition-colors font-bold"
+              >
+                {t('cookies.reject')}
+              </button>
+              <button
+                onClick={handleAcceptCookies}
+                className="px-5 py-2 bg-onyx text-white text-micro tracking-[0.2em] uppercase hover:bg-stone-800 transition-colors font-bold"
+              >
+                {t('cookies.accept')}
+              </button>
             </div>
           </motion.div>
         )}

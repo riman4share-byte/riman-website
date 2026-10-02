@@ -77,11 +77,16 @@ export default function WishlistPage() {
     <div className="pt-32 pb-20 bg-ivory min-h-screen">
       <div className="container mx-auto px-6">
         <header className="text-center mb-20">
+           <p className="font-label text-[11px] tracking-[0.35em] uppercase text-terracotta-dark mb-4">
+             {isSharedView ? t('selection.shared_title') : (language === 'ar' ? 'قائمة القياسات' : 'The Fitting List')}
+           </p>
            <h1 className="font-heading text-4xl md:text-6xl text-stone-800 tracking-wider uppercase mb-4">
-             {isSharedView ? t('selection.shared_title') : t('selection.title')}
+             {isSharedView ? t('selection.shared_title') : (language === 'ar' ? 'قائمة القياسات' : 'Fitting List')}
            </h1>
            <p className="font-body text-stone-600 text-micro tracking-[0.2em] uppercase italic">
-             {isSharedView ? t('selection.shared_subtitle') : t('selection.subtitle')}
+             {language === 'ar'
+               ? 'احجزي قياسًا خاصًا لهذه الفساتين'
+               : 'Book a private fitting for these gowns'}
            </p>
            <p className="font-body text-stone-600 text-micro tracking-[0.2em] uppercase italic">{displayProducts.length} {t('selection.count')}</p>
         </header>
@@ -97,7 +102,7 @@ export default function WishlistPage() {
               onClick={() => requestViewing(displayProducts)}
               className="btn-luxury px-12 w-full sm:w-auto"
             >
-              {t('selection.request_viewing')}
+              {language === 'ar' ? 'احجزي قياسًا لهذه الفساتين' : 'Book a fitting for these gowns'}
             </button>
             {!isSharedView && (
               <button
@@ -169,7 +174,7 @@ export default function WishlistPage() {
               onClick={() => requestViewing(displayProducts)}
               className="btn-luxury px-12 w-full sm:w-auto"
             >
-              {t('selection.request_viewing')}
+              {language === 'ar' ? 'احجزي قياسًا لهذه الفساتين' : 'Book a fitting for these gowns'}
             </button>
           </div>
           </>

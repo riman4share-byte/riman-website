@@ -192,6 +192,26 @@ export default function Footer() {
           </button>
         </div>
 
+        {/* Trust blocks */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-white/5 mb-8">
+          <div className="text-center">
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Since 2011</p>
+            <p className="text-xs text-stone-500 mt-1">Sharjah atelier</p>
+          </div>
+          <div className="text-center">
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Bespoke Tailoring</p>
+            <p className="text-xs text-stone-500 mt-1">Made to measure</p>
+          </div>
+          <div className="text-center">
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Free Fittings</p>
+            <p className="text-xs text-stone-500 mt-1">& alterations</p>
+          </div>
+          <div className="text-center">
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Salon Hours</p>
+            <p className="text-xs text-stone-500 mt-1">{settings.contact.hours || '11am – 8:30pm'}</p>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-body text-micro text-stone-600 uppercase tracking-[0.2em] text-center md:text-left">

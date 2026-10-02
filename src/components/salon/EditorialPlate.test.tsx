@@ -33,7 +33,9 @@ describe('EditorialPlate', () => {
         </LanguageProvider>
       </MemoryRouter>
     );
-    expect(screen.getByAltText('Ivory Mikado Gown')).toHaveAttribute('src', '/assets/gown.jpg');
+    // The alt carries the product name plus an atelier qualifier, so match on
+    // the name rather than pinning the whole string.
+    expect(screen.getByAltText(/^Ivory Mikado Gown/)).toHaveAttribute('src', '/assets/gown.jpg');
     expect(screen.getByText('Look 01')).toBeInTheDocument();
     expect(screen.getByText('Mikado Silk')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /view & reserve/i })).toHaveAttribute('href', '/product/p1');

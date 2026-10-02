@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import ScrollReveal from '../ScrollReveal';
 
 export default function ElegantCarousel21st() {
   const { products } = useData();
@@ -25,11 +26,11 @@ export default function ElegantCarousel21st() {
           </Link>
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 snap-x" dir="ltr">
-          {items.map((p) => (
+          {items.map((p, i) => (
+            <ScrollReveal key={p.id} delay={i * 0.06}>
             <Link
-              key={p.id}
               to={`/product/${p.id}`}
-              className="snap-start shrink-0 w-64 group focus-visible:ring-2 focus-visible:ring-gold outline-none"
+              className="snap-start shrink-0 w-64 group block focus-visible:ring-2 focus-visible:ring-gold outline-none"
             >
               <div className="aspect-[3/4] overflow-hidden bg-stone-100 border border-stone-200">
                 <img
@@ -43,6 +44,7 @@ export default function ElegantCarousel21st() {
               <p className="mt-3 text-xs tracking-[0.2em] uppercase text-stone-500">{p.category}</p>
               <p className="font-heading text-stone-800 truncate">{p.name}</p>
             </Link>
+            </ScrollReveal>
           ))}
         </div>
       </div>

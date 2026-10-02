@@ -13,7 +13,15 @@ interface CollectionDef {
   match: (p: Product) => boolean;
 }
 
-const FALLBACK_IMAGE = '/assets/rimanfashion_3678245315913995332_6730733643_1_2025-07-16.jpg';
+const DISTINCT_FALLBACKS: Record<string, string> = {
+  bridal: '/assets/rimanfashion_3668321659658199107_227867687_1_2025-07-03.jpg',
+  couture: '/assets/rimanfashion_3689099455082854747_6730733643_1_2025-07-31.jpg',
+  rental: '/assets/rimanfashion_3669200303742063641_227867687_1_2025-07-04.jpg',
+  accessories: '/assets/rimanfashion_3668024712984663829_6730733643_1_2025-07-02.jpg',
+  jewelry: '/assets/rimanfashion_3705450535693995034_353452888_1_2025-08-23.jpg',
+  all: '/assets/rimanfashion_3678245315913995332_6730733643_1_2025-07-16.jpg',
+};
+const FALLBACK_IMAGE = DISTINCT_FALLBACKS.all;
 
 const collectionDefs: CollectionDef[] = [
   {
@@ -102,7 +110,7 @@ export default function CollectionsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
               {collectionDefs.map((def, idx) => {
                 const matching = products.filter(def.match);
-                const cover = matching[0]?.images?.[0] || FALLBACK_IMAGE;
+                const cover = matching[0]?.images?.[0] || DISTINCT_FALLBACKS[def.slug] || FALLBACK_IMAGE;
                 return (
                   <motion.div
                     key={def.slug}
@@ -121,7 +129,8 @@ export default function CollectionsPage() {
                           src={cover}
                           alt={t(def.nameKey)}
                           loading="lazy"
-                          onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
+                          decoding="async"
+                          onError={(e) => { (e.target as HTMLImageElement).src = DISTINCT_FALLBACKS[def.slug] || FALLBACK_IMAGE; }}
                           className="w-full h-full object-cover transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
                         />
                       </div>

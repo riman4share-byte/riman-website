@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, User, ShoppingBag, Menu, X, Globe, Search, Sparkles, ChevronRight, Calendar, Scissors, HelpCircle, Phone, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -9,21 +9,101 @@ import { useWishlist } from '../contexts/WishlistContext';
 import { useScrollLock } from '../hooks/useScrollLock';
 import Logo from './Logo';
 
-const leftNavLinks = [
-  // The three shop destinations are the primary nav and always fit. About and
-  // Journal are secondary: the full five-item set is wider than the 1fr track
-  // below 1536px, and as a fit-content item it overlapped the centred logo
-  // rather than shrinking. Both remain in the mobile drawer and the footer.
-  { label: "About", path: "/about", key: 'nav.about', hideBelow: 'xl' },
-  { label: "Bridal", path: "/collection/bridal", key: 'nav.bridal' },
-  { label: "Couture", path: "/collection/couture", key: 'nav.couture' },
-  { label: "Collections", path: "/collections", key: 'nav.collections' },
-  { label: "Journal", path: "/journal", key: 'nav.journal', hideBelow: '2xl' },
+interface NavItem {
+  path: string;
+  key: string;
+  icon?: typeof BookOpen;
+}
+
+/**
+ * One nav definition, used by both the desktop bar and the mobile drawer.
+ * These were three separate inline arrays, so a new destination had to be
+ * added in three places and routinely drifted between them.
+ */
+const PRIMARY_LINKS: NavItem[] = [
+  { path: '/collection/bridal', key: 'nav.bridal' },
+  { path: '/collection/couture', key: 'nav.couture' },
+  { path: '/collections', key: 'nav.collections' },
+  { path: '/about', key: 'nav.about' },
 ];
 
-const rightNavLinks = [
-  { label: "Contact", path: "/contact", key: 'nav.contact' },
+const DRAWER_GROUPS: { titleKey: string; links: NavItem[] }[] = [
+  {
+    titleKey: 'header.collections',
+    links: [
+      { path: '/', key: 'nav.home' },
+      { path: '/collection/bridal', key: 'nav.bridal' },
+      { path: '/collection/couture', key: 'nav.couture' },
+      { path: '/collections', key: 'nav.collections' },
+      { path: '/journal', key: 'nav.journal', icon: BookOpen },
+    ],
+  },
+  {
+    titleKey: 'header.atelier',
+    links: [
+      { path: '/gallery', key: 'nav.gallery' },
+      { path: '/style-quiz', key: 'nav.style_quiz', icon: Sparkles },
+    ],
+  },
+  {
+    titleKey: 'header.services',
+    links: [
+      { path: '/appointment', key: 'nav.appointment', icon: Calendar },
+      { path: '/alterations', key: 'nav.alterations', icon: Scissors },
+      { path: '/faq', key: 'nav.faq', icon: HelpCircle },
+      { path: '/contact', key: 'nav.contact', icon: Phone },
+    ],
+  },
 ];
+
+const HEADER_H = 'h-20 md:h-24';
+
+/**
+ * Colour is resolved once into a tone object instead of an inline ternary
+ * repeated on every element. Previously each of ~10 nodes re-tested
+ * `overDark / isHome / else`, which is how the three states drifted apart and
+ * left, for example, one icon on the wrong background after a tweak.
+ */
+interface Tone {
+  bar: string;
+  link: string;
+  rule: string;
+  icon: string;
+  mark: string;
+  wordmark: string;
+}
+
+const TONE_OVER_DARK: Tone = {
+  bar: 'bg-gradient-to-b from-black/55 via-black/20 to-transparent border-b border-transparent',
+  link: 'text-white/75 hover:text-white',
+  rule: 'bg-bone/80',
+  icon: 'text-white/85 hover:text-white',
+  mark: 'brightness-0 invert',
+  wordmark: 'text-white/70',
+};
+
+const TONE_ONYX: Tone = {
+  bar: 'bg-onyx/95 border-b border-white/10',
+  link: 'text-bone/70 hover:text-bone',
+  rule: 'bg-bone/80',
+  icon: 'text-bone/80 hover:text-bone',
+  mark: 'brightness-0 invert opacity-90',
+  wordmark: 'text-bone/60',
+};
+
+const TONE_IVORY: Tone = {
+  bar: 'bg-ivory/95 backdrop-blur-sm border-b border-stone-200/70',
+  link: 'text-stone-500 hover:text-stone-900',
+  rule: 'bg-stone-900',
+  icon: 'text-stone-600 hover:text-stone-900',
+  mark: '',
+  wordmark: 'text-stone-500',
+};
+
+/** Shared geometry so every bar child aligns to the same optical baseline. */
+const ICON_BTN =
+  'min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors duration-300';
+const ICON = 'w-5 h-5 shrink-0';
 
 export default function Header() {
   const { language, setLanguage, t, isRtl } = useLanguage();
@@ -31,16 +111,15 @@ export default function Header() {
   const { wishlist } = useWishlist();
   const wishlistCount = wishlist.length;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [logoPos, setLogoPos] = useState({ x: 0, y: 0 });
   const [isScrolled, setIsScrolled] = useState(false);
 
   const location = useLocation();
   const isHome = location.pathname === '/';
-  // Light content (white text/icons) whenever the header sits over the dark
-  // hero — home at top (transparent + scrim) or home scrolled (translucent
-  // onyx). Inner pages keep the solid ivory bar with dark content.
-  const onDark = isHome;
-  const scrolledHome = isHome && isScrolled;
+  // Transparent only at the very top of the home page, where the hero is dark.
+  // Everywhere else — including home once scrolled — the bar is solid, so it
+  // never has to guess whether what is behind it is light or dark.
+  const overDark = isHome && !isScrolled;
+  const tone: Tone = overDark ? TONE_OVER_DARK : isHome ? TONE_ONYX : TONE_IVORY;
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
@@ -49,24 +128,14 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleLogoMove = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setLogoPos({ x: x * 0.3, y: y * 0.3 });
-  };
-
-  const resetLogo = () => setLogoPos({ x: 0, y: 0 });
-
   useScrollLock(isMenuOpen);
 
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // The mobile drawer is a modal dialog (aria-modal), so Escape must close it
-  // and focus must not be able to wander into the page behind it. Without
-  // this, keyboard and screen-reader users are trapped in the open menu.
+  // The drawer is a modal dialog, so Escape must close it and focus must not
+  // be able to wander into the page behind it.
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
 
@@ -83,7 +152,6 @@ export default function Header() {
       }
       if (e.key !== 'Tab' || !drawerRef.current) return;
 
-      // Simple focus trap across the drawer's tabbable controls.
       const focusables = Array.from(
         drawerRef.current.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -109,179 +177,176 @@ export default function Header() {
     };
   }, [isMenuOpen]);
 
+  const actions: { to: string; label: string; badge?: number; children: ReactNode }[] = [
+    { to: '/search', label: t('header.search'), children: <Search className={ICON} strokeWidth={1.5} /> },
+    {
+      to: '/wishlist',
+      label: t('header.your_selection'),
+      badge: wishlistCount,
+      children: <Heart className={ICON} strokeWidth={1.5} />,
+    },
+    { to: '/profile', label: t('header.account'), children: <User className={ICON} strokeWidth={1.5} /> },
+    {
+      to: '/checkout',
+      label: t('header.bag'),
+      badge: totalItems,
+      children: <ShoppingBag className={ICON} strokeWidth={1.5} />,
+    },
+  ];
+
   return (
     <header
       id="header"
       dir={isRtl ? 'rtl' : 'ltr'}
       className={cn(
-        "top-0 left-0 w-full z-[100] transition-all duration-500 ease-[0.16,1,0.3,1]",
-        isHome ? "fixed" : "absolute",
-        scrolledHome
-          ? "bg-onyx/95 py-3 border-b border-white/10"
-          : !isHome
-            ? "bg-ivory py-3 border-b border-stone-200/70"
-            : "bg-gradient-to-b from-black/60 via-black/25 to-transparent py-5 md:py-8"
+        'fixed top-0 inset-x-0 z-[100] transition-colors duration-500',
+        tone.bar,
       )}
     >
-      {((!isHome) || scrolledHome) && (
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+      {!overDark && (
+        <div
+          className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-terracotta/40 to-transparent"
+          aria-hidden="true"
+        />
       )}
-      <div className="w-full px-5 sm:px-8 lg:px-10 2xl:px-16 grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-        {/* Left: mobile menu trigger + primary navigation.
-            justify-self-stretch (not start) so the group is clamped to its 1fr
-            track: as a fit-content item it grew to 597px and spilled over the
-            centred logo between 1024px and 1440px. */}
-        <div className="flex min-w-0 items-center justify-self-stretch">
-          <button
-            onClick={() => setIsMenuOpen(true)}
+
+      {/*
+        Three equal columns: nav, logo, actions. A 1fr/auto/1fr grid keeps the
+        logo optically centred and pulls both clusters inward to a consistent
+        inner edge, instead of letting them float against the viewport border.
+        Under dir="rtl" the columns mirror automatically.
+      */}
+      <div
+        className={cn(
+          'relative w-full grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 px-6 sm:px-10 lg:px-14',
+          HEADER_H,
+        )}
+      >
+        {/* ── Start: primary nav (desktop) ── */}
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9 justify-self-start" aria-label="Primary">
+          {PRIMARY_LINKS.map((link) => {
+            const active = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                aria-current={active ? 'page' : undefined}
+                className={cn(
+                  'group relative whitespace-nowrap font-label text-[11px] uppercase tracking-[0.18em]',
+                  'transition-colors duration-300 min-h-[44px] flex items-center',
+                  tone.link,
+                )}
+              >
+                {t(link.key)}
+                <span
+                  className={cn(
+                    'absolute bottom-2 start-0 h-px transition-all duration-300',
+                    active ? 'w-full' : 'w-0 group-hover:w-full',
+                    tone.rule,
+                  )}
+                  aria-hidden="true"
+                />
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* ── Start: menu trigger (below lg) ── */}
+        <button
+          onClick={() => setIsMenuOpen(true)}
+          className={cn(
+            'lg:hidden justify-self-start -ms-2 p-2 flex items-center justify-center transition-colors',
+            tone.icon,
+          )}
+          aria-label={t('header.menu_open')}
+          aria-expanded={isMenuOpen}
+        >
+          <Menu className={ICON} strokeWidth={1.5} />
+        </button>
+
+        {/* ── Centre: mark + wordmark ── */}
+        <Link
+          to="/"
+          id="logo"
+          className="justify-self-center flex flex-col items-center gap-1.5"
+          aria-label="Riman Fashion home"
+        >
+          {/*
+            The monogram is cropped from riman-logo.png. Rendering that file
+            directly showed its baked-in "RIMAN FASHION" wordmark *and* a
+            separate "RIMAN" caption underneath, so the bar carried two
+            wordmarks stacked. The mark alone plus real text gives one lockup,
+            and the text then follows the bar's colour instead of being fixed
+            gold baked into a bitmap.
+          */}
+          <img
+            src="/riman-mark.png"
+            alt=""
+            aria-hidden="true"
+            width={40}
+            height={40}
+            className={cn('w-9 md:w-10 h-9 md:h-10 object-contain transition-colors duration-500', tone.mark)}
+          />
+          <span
             className={cn(
-              "lg:hidden -ms-2 p-2 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50",
-              onDark ? "text-white/90 hover:text-white" : "text-stone-700 hover:text-stone-900"
+              'font-heading text-[11px] uppercase leading-none',
+              // Optical centring: wide tracking adds a trailing gap on the last
+              // letter, so nudge back by half of it.
+              'tracking-[0.42em] translate-x-[0.21em] whitespace-nowrap transition-colors duration-500',
+              tone.wordmark,
             )}
-            aria-label={t('header.menu_open')}
           >
-            <Menu className="w-6 h-6" strokeWidth={1.5} />
-          </button>
+            Riman
+          </span>
+        </Link>
 
-          <nav className="hidden lg:flex min-w-0 items-center gap-5 xl:gap-8 2xl:gap-8" aria-label="Primary">
-            {leftNavLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "group relative whitespace-nowrap font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] transition-colors duration-300",
-                  link.hideBelow === '2xl' && "hidden 2xl:block",
-                  link.hideBelow === 'xl' && "hidden xl:block",
-                  onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
-                )}
-              >
-                {link.key ? t(link.key) : link.label}
-                <span
-                  className={cn(
-                    "absolute -bottom-1.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full",
-                    onDark ? "bg-white/80" : "bg-stone-900"
-                  )}
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        {/* Center: logo, optically centered */}
-        <div className="flex items-center justify-center">
-          <motion.div
-            onMouseMove={handleLogoMove}
-            onMouseLeave={resetLogo}
-            animate={{ x: logoPos.x, y: logoPos.y }}
-            transition={{ type: 'spring', stiffness: 150, damping: 15 }}
-            className="relative z-10 flex flex-col items-center"
-          >
-            <Link
-              to="/"
-              id="logo"
-              className="flex flex-col items-center py-1"
-              aria-label="Riman Fashion home"
-            >
-              <Logo
-                variant="gold"
-                className={cn("transition-all duration-700", onDark ? "w-12" : "w-10")}
-                showText={false}
-              />
-              <span
-                className={cn(
-                  "mt-1.5 -me-[0.4em] font-heading text-micro uppercase tracking-[0.4em] whitespace-nowrap transition-colors duration-700",
-                  onDark ? "text-white/60" : "text-stone-500"
-                )}
-              >
-                Riman
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* Right: contact + language + minimal line icons. Clamped to its track for the
-            same reason as the left group. */}
-        <div className="flex min-w-0 items-center justify-self-end gap-5 xl:gap-6">
-          <nav className="hidden xl:flex items-center" aria-label="Atelier">
-            {rightNavLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "group relative font-label text-micro uppercase tracking-[0.12em] xl:tracking-[0.15em] whitespace-nowrap transition-colors duration-300",
-                  onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
-                )}
-              >
-                {link.key ? t(link.key) : link.label}
-                <span
-                  className={cn(
-                    "absolute -bottom-1.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full",
-                    onDark ? "bg-white/80" : "bg-stone-900"
-                  )}
-                  aria-hidden="true"
-                />
-              </Link>
-            ))}
-          </nav>
-
+        {/* ── End: language + actions ── */}
+        {/*
+          Everything here is hidden below md on purpose: MobileBottomNav takes
+          over at that breakpoint and already carries search, wishlist, bag and
+          account. Showing them in both places meant two search entries and two
+          bag badges on every phone. The breakpoint is deliberately `md`, not
+          `lg`, because the bottom nav disappears at md — anything hidden in the
+          header past md would otherwise be unreachable on a tablet.
+        */}
+        <div className="hidden md:flex items-center justify-self-end gap-1 md:gap-2 lg:gap-3">
           <button
             onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
             className={cn(
-              "hidden sm:flex items-center gap-1.5 font-label text-[11px] uppercase tracking-[0.1em] transition-colors duration-300",
-              onDark ? "text-white/70 hover:text-white" : "text-stone-500 hover:text-stone-900"
+              'flex items-center gap-1.5 font-label text-[11px] uppercase tracking-[0.1em]',
+              'transition-colors duration-300 min-h-[44px] px-2',
+              tone.link,
             )}
             aria-label={language === 'en' ? t('header.switch_to_ar') : t('header.switch_to_en')}
           >
-            <Globe className="w-[18px] h-[18px]" strokeWidth={1.5} aria-hidden="true" />
+            <Globe className="w-[18px] h-[18px] shrink-0" strokeWidth={1.5} aria-hidden="true" />
             <span className="hidden xl:inline">{language === 'en' ? 'عربي' : 'EN'}</span>
           </button>
 
-          <Link
-            to="/search"
-            className={cn("transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
-            aria-label={t('header.search')}
-          >
-            <Search className="w-5 h-5" strokeWidth={1.5} />
-          </Link>
+          <span className="w-px h-4 bg-current opacity-20 mx-1" aria-hidden="true" />
 
-          <Link
-            to="/wishlist"
-            className={cn("hidden lg:block relative group/wishlist transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
-            aria-label={t('header.your_selection')}
-          >
-            <Heart className="w-5 h-5 transition-transform duration-300 group-hover/wishlist:scale-110" strokeWidth={1.5} />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-terracotta-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
-
-          <Link
-            to="/profile"
-            className={cn("hidden md:block transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
-            aria-label={t('header.account')}
-          >
-            <User className="w-5 h-5" strokeWidth={1.5} />
-          </Link>
-
-          <Link
-            to="/checkout"
-            className={cn("relative group/cart transition-colors duration-300", onDark ? "text-white/80 hover:text-white" : "text-stone-600 hover:text-stone-900")}
-            aria-label={t('header.bag')}
-          >
-            <ShoppingBag className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" strokeWidth={1.5} />
-            {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-terracotta-dark text-white text-micro font-medium min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full leading-none">
-                {totalItems}
-              </span>
-            )}
-          </Link>
+          {actions.map((action) => (
+            <Link
+              key={action.to}
+              to={action.to}
+              className={cn(ICON_BTN, 'relative', tone.icon)}
+              aria-label={action.label}
+            >
+              {action.children}
+              {!!action.badge && action.badge > 0 && (
+                <span
+                  className="absolute top-1 end-0 bg-terracotta text-white text-[10px] font-bold min-w-[16px] h-[16px] px-1 flex items-center justify-center leading-none"
+                  aria-hidden="true"
+                >
+                  {action.badge}
+                </span>
+              )}
+            </Link>
+          ))}
         </div>
       </div>
 
-      {/* Mobile Sidebar Navigation */}
+      {/* ─────────────────── Mobile drawer ─────────────────── */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
@@ -302,11 +367,10 @@ export default function Header() {
               aria-modal="true"
               aria-label={t('header.menu_open')}
               className={cn(
-                "fixed top-0 h-full w-[75%] bg-stone-50 z-[60] flex flex-col border-r border-stone-200/50",
-                isRtl ? "right-0" : "left-0"
+                'fixed top-0 h-full w-[85%] max-w-sm bg-stone-50 z-[60] flex flex-col border-e border-stone-200/50',
+                isRtl ? 'right-0' : 'left-0',
               )}
             >
-              {/* Close Button Header */}
               <div className="flex justify-between items-center p-4 border-b border-stone-200/50 bg-ivory">
                 <Logo variant="gold" className="w-10" showText={false} />
                 <button
@@ -318,133 +382,66 @@ export default function Header() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-terracotta/30 to-transparent" />
 
-               <div className="flex-1 overflow-y-auto px-5 py-6">
-                {/* Utility row: language + search, always reachable on mobile */}
+              <div className="flex-1 overflow-y-auto px-5 py-6">
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="flex flex-1 border border-stone-200" role="group" aria-label="Language">
+                  <div
+                    className="flex flex-1 border border-stone-200"
+                    role="group"
+                    aria-label="Language"
+                  >
                     {(['en', 'ar'] as const).map((lang) => (
                       <button
                         key={lang}
                         onClick={() => setLanguage(lang)}
                         aria-pressed={language === lang}
                         className={cn(
-                          "flex-1 min-h-[44px] font-label text-micro tracking-[0.2em] uppercase transition-colors",
-                          language === lang ? "bg-stone-800 text-white" : "text-stone-600 hover:bg-stone-100"
+                          'flex-1 min-h-[44px] font-label text-[11px] tracking-[0.2em] uppercase transition-colors',
+                          language === lang
+                            ? 'bg-stone-800 text-white'
+                            : 'text-stone-600 hover:bg-stone-100',
                         )}
                       >
-                        {lang === 'en' ? 'EN' : 'AR'}
+                        {lang === 'en' ? 'EN' : 'عربي'}
                       </button>
                     ))}
                   </div>
-                  <Link
-                    to="/search"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 min-h-[44px] px-4 border border-stone-200 font-label text-micro tracking-[0.2em] uppercase text-stone-700 hover:border-terracotta"
-                    aria-label={t('header.search')}
-                  >
-                    <Search className="w-4 h-4" />
-                  </Link>
-                </div>
-                {/* Primary Navigation */}
-                <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.collections')}</p>
-                  <nav className="flex flex-col gap-1">
-                    {[
-                      { label: 'Home', path: '/', key: 'nav.home' },
-                      { label: 'About', path: '/about', key: 'nav.about' },
-                      { label: 'Bridal', path: '/collection/bridal', key: 'nav.bridal' },
-                      { label: 'Couture', path: '/collection/couture', key: 'nav.couture' },
-                      { label: 'Collections', path: '/collections', key: 'nav.collections' },
-                      { label: 'Journal', path: '/journal', key: 'nav.journal', icon: BookOpen },
-                    ].map((link, idx) => (
-                      <motion.div
-                        key={link.path}
-                        initial={{ opacity: 0, x: isRtl ? 10 : -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 + idx * 0.03 }}
-                      >
-                        <Link
-                          to={link.path}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
-                        >
-                          <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
-                            {link.key ? t(link.key) : link.label}
-                          </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </nav>
                 </div>
 
-                {/* Atelier Links */}
-                <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.atelier')}</p>
-                  <nav className="flex flex-col gap-1">
-                    {[
-                      { label: 'Gallery', path: '/gallery', key: 'nav.gallery' },
-                      { label: 'Style Quiz', path: '/style-quiz', key: 'nav.style_quiz', icon: Sparkles },
-                    ].map((link, idx) => (
-                      <motion.div
-                        key={link.path}
-                        initial={{ opacity: 0, x: isRtl ? 10 : -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 + idx * 0.03 }}
-                      >
-                        <Link
-                          to={link.path}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
+                {DRAWER_GROUPS.map((group) => (
+                  <div key={group.titleKey} className="mb-5">
+                    <p className="text-[11px] tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">
+                      {t(group.titleKey)}
+                    </p>
+                    <nav className="flex flex-col gap-1">
+                      {group.links.map((link, idx) => (
+                        <motion.div
+                          key={link.path}
+                          initial={{ opacity: 0, x: isRtl ? 10 : -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + idx * 0.03 }}
                         >
-                          <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
-                            {link.key ? t(link.key) : link.label}
-                          </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </nav>
-                </div>
+                          <Link
+                            to={link.path}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
+                          >
+                            <span className="flex items-center gap-2">
+                              {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
+                              {t(link.key)}
+                            </span>
+                            <ChevronRight
+                              className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors rtl:rotate-180"
+                            />
+                          </Link>
+                        </motion.div>
+                      ))}
+                    </nav>
+                  </div>
+                ))}
 
-                {/* Services */}
-                <div className="mb-5">
-                  <p className="text-micro tracking-[0.2em] uppercase text-terracotta-dark font-bold mb-3">{t('header.services')}</p>
-                  <nav className="flex flex-col gap-1">
-                    {[
-                      { label: 'Book Appointment', path: '/appointment', key: 'nav.appointment', icon: Calendar },
-                      { label: 'Alterations', path: '/alterations', key: 'nav.alterations', icon: Scissors },
-                      { label: 'FAQ', path: '/faq', key: 'nav.faq', icon: HelpCircle },
-                      { label: 'Contact', path: '/contact', key: 'nav.contact', icon: Phone },
-                    ].map((link, idx) => (
-                      <motion.div
-                        key={link.path}
-                        initial={{ opacity: 0, x: isRtl ? 10 : -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + idx * 0.03 }}
-                      >
-                        <Link
-                          to={link.path}
-                          onClick={() => setIsMenuOpen(false)}
-                          className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-700 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
-                        >
-                          <span className="flex items-center gap-2">
-                            {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}
-                            {link.key ? t(link.key) : link.label}
-                          </span>
-                          <ChevronRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
-                        </Link>
-                      </motion.div>
-                    ))}
-                  </nav>
-                </div>
-
-                {/* Dual CTA: booking (primary) + shop (secondary) */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 mt-8">
                   <Link
                     to="/appointment"
                     onClick={() => setIsMenuOpen(false)}
@@ -453,7 +450,7 @@ export default function Header() {
                     {t('cta.appointment')}
                   </Link>
                   <Link
-                    to="/search"
+                    to="/collection/bridal"
                     onClick={() => setIsMenuOpen(false)}
                     className="flex w-full min-h-[52px] items-center justify-center text-center py-3 font-label text-xs tracking-[0.25em] uppercase border border-stone-800 text-stone-800 hover:border-terracotta hover:text-terracotta-dark transition-colors"
                   >
@@ -463,7 +460,9 @@ export default function Header() {
               </div>
 
               <div className="p-4 mt-auto bg-ivory border-t border-stone-100">
-                <span className="text-micro tracking-widest uppercase text-stone-600 block text-center">{t('header.tagline')}</span>
+                <span className="text-[11px] tracking-widest uppercase text-stone-600 block text-center">
+                  {t('header.tagline')}
+                </span>
               </div>
             </motion.div>
           </>

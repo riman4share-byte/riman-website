@@ -9,14 +9,14 @@ interface ChapterLabelProps {
 export default function ChapterLabel({ numeral, titleKey }: ChapterLabelProps) {
   const { t } = useLanguage();
   return (
-    <div className="flex items-center gap-5 md:gap-7">
+    <div className="flex items-baseline gap-5 md:gap-7">
       <span
         aria-hidden="true"
-        className="font-heading text-5xl md:text-7xl leading-none font-light text-stone-300 select-none"
+        className="font-heading text-6xl md:text-8xl leading-none font-light text-stone-200 select-none"
       >
         {numeral}
       </span>
-      <span className="h-px w-8 bg-gold/50" aria-hidden="true" />
+      <span className="h-px w-10 bg-terracotta/40 self-center" aria-hidden="true" />
       <KineticHeading
         as="h2"
         text={t(titleKey)}

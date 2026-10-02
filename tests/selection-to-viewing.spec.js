@@ -41,15 +41,27 @@ test.describe('Booking-first conversion', () => {
     await cards.nth(1).locator('button', { hasText: /add to wishlist/i }).click();
 
     await page.goto('/wishlist');
-    const req = page.getByRole('button', { name: /request private viewing|طلب مشاهدة خاصة/i }).first();
+    const req = page.getByRole('button', { name: /book a private fitting|request private viewing|احجزي قياسًا خاصًا|طلب مشاهدة خاصة/i }).first();
     await expect(req).toBeVisible();
     await req.click();
     await expect(page).toHaveURL(/\/appointment/);
     await expect(page.locator('text=/your selected pieces|قطعك المختارة/i')).toBeVisible();
   });
 
-  test('first visit defaults to Arabic RTL', async ({ page }) => {
+  test('first visit defaults to English LTR', async ({ page }) => {
+    // Was 'defaults to Arabic RTL'. The default is now English: bridal
+    // clientele for a UAE atelier is overwhelmingly international, so a
+    // first-time visitor should not land on a mirrored page by default.
+    // Arabic is still one tap away, in the header and the mobile drawer.
     await page.addInitScript(() => localStorage.removeItem('riman_lang'));
+    await waitForApp(page);
+    await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
+  });
+
+  test('a returning Arabic visitor keeps Arabic RTL', async ({ page }) => {
+    // The other half of the change: the default only applies to a first visit.
+    // An explicit stored preference must survive.
+    await page.addInitScript(() => localStorage.setItem('riman_lang', 'ar'));
     await waitForApp(page);
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   });

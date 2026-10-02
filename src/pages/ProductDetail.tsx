@@ -195,6 +195,8 @@ export default function ProductDetail() {
 
   const isRent = product.productType === 'rent' || product.productType === 'both';
   const isSale = product.productType === 'sale' || product.productType === 'both';
+  // Buy/Rent toggle state — preselects the only available mode for single-type products
+  const [purchaseMode, setPurchaseMode] = useState<'sale' | 'rent'>(isSale && !isRent ? 'sale' : 'rent');
 
   const reserveViewing = () => {
     if (product) {
@@ -402,16 +404,36 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {/* Pricing */}
+              {/* Pricing — Buy/Rent toggle updates the hero price */}
               <div className="mb-8 p-5 bg-terracotta/5 flex flex-col gap-4">
-                {isSale && (
+                {isSale && isRent && (
+                  <div className="flex" role="tablist" aria-label={t('pricing.consultation_note')}>
+                    {(['sale', 'rent'] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        role="tab"
+                        aria-selected={purchaseMode === mode}
+                        onClick={() => setPurchaseMode(mode)}
+                        className={cn(
+                          'flex-1 min-h-[44px] font-label text-[11px] tracking-[0.25em] uppercase border transition-colors duration-500',
+                          purchaseMode === mode
+                            ? 'bg-onyx text-bone border-onyx'
+                            : 'bg-transparent text-stone-600 border-stone-200 hover:border-terracotta hover:text-terracotta-dark'
+                        )}
+                      >
+                        {mode === 'sale' ? t('product.purchase') : t('product.rent')}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {((isSale && !isRent) || (isSale && isRent && purchaseMode === 'sale')) && (
                   <div className="flex justify-between items-baseline">
                     <span className="font-body text-micro tracking-widest uppercase text-stone-600 font-medium">{t('product.purchase_value')}</span>
                     <span className="font-heading text-3xl text-stone-800"><span className="text-sm font-body text-stone-600 uppercase tracking-widest me-2">{t('pricing.from')}</span>{formatPrice(product.salePrice || 0)}</span>
                   </div>
                 )}
-                {isRent && (
-                  <div className="flex justify-between items-baseline pt-4 border-t border-stone-200/60">
+                {((isRent && !isSale) || (isRent && isSale && purchaseMode === 'rent')) && (
+                  <div className="flex justify-between items-baseline pt-4 border-t border-stone-200/60 first:border-t-0 first:pt-0">
                     <div>
                       <span className="font-body text-micro tracking-widest uppercase text-stone-600 block font-medium">{t('product.rental_7day')}</span>
                       <span className="text-micro text-stone-600 uppercase tracking-wider italic">({t('product.rental_includes')})</span>
@@ -463,7 +485,7 @@ export default function ProductDetail() {
 
               {/* Selection */}
               <div className="space-y-6 mb-10">
-                {isRent && (
+                {isRent && (!isSale || purchaseMode === 'rent') && (
                   <div className="p-5 bg-stone-50">
                     <div className="flex justify-between items-center mb-3">
                       <span className="font-body text-micro tracking-[0.2em] uppercase text-stone-800">{t('product.rental_availability')}</span>
@@ -503,24 +525,34 @@ export default function ProductDetail() {
                       <Sparkles className="w-4 h-4" />
                       {t('product.reserve_viewing')}
                     </button>
-                    <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
-                      {isAddingToCart ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>
-                          <ShoppingBag className="w-3.5 h-3.5" />
-                          {isRent ? t('product.book_rental') : t('product.add_to_collection')}
-                        </>
-                      )}
-                    </button>
+                    {(!isSale || purchaseMode === 'sale' || (isRent && purchaseMode === 'rent')) && (
+                      <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
+                        {isAddingToCart ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                            {isRent && (purchaseMode === 'rent' || !isSale) ? t('product.book_rental') : t('product.add_to_collection')}
+                          </>
+                        )}
+                      </button>
+                    )}
                     {errorMsg && (
                       <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-micro text-rose-500 uppercase tracking-widest text-center font-bold">
                         {errorMsg}
                       </motion.p>
                     )}
                   </div>
-                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition-all", saved ? "border-rose-200 text-rose-500 bg-rose-50" : "border-stone-200 text-stone-600 hover:text-rose-500 hover:border-rose-200")} aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}>
-                    <Heart className={cn("w-4 h-4", saved && "fill-current")} />
+                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition-all relative overflow-hidden group", saved ? "border-terracotta/40 text-terracotta-dark bg-terracotta/[0.06]" : "border-stone-200 text-stone-600 hover:text-terracotta-dark hover:border-terracotta/40")} aria-label={saved ? (language === 'ar' ? 'إزالة من قائمة القياسات' : 'Remove from fitting list') : (language === 'ar' ? 'أضف إلى قائمة القياسات' : 'Add to fitting list')}>
+                    {/* gold thread fill on wishlist */}
+                    <motion.span
+                      aria-hidden="true"
+                      className="absolute inset-x-0 bottom-0 bg-terracotta/15"
+                      initial={false}
+                      animate={{ height: saved ? '100%' : '0%' }}
+                      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                    <Heart className={cn("w-4 h-4 relative", saved && "fill-current")} />
                   </button>
                 </div>
               </div>

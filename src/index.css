@@ -233,16 +233,105 @@
 /* Import print stylesheet */
 @import "./print.css";
 
+  /* ══════════════════════════════════════════════════════════════
+     COUTURE BUTTONS
+
+     One rule set, 53 call sites. These are upgraded in CSS rather than in JSX
+     so every existing button inherits the interaction with no churn.
+
+     The interaction is deliberately weighted rather than snappy:
+       - a fill wipes in from the inline-start edge (scaleX, GPU-only, no
+         layout shift, so the button frame never resizes mid-hover)
+       - a 1px lift, then a slight press
+       - the gold rule on ghost buttons sweeps from the centre outward
+
+     Deliberately NOT animated: letter-spacing. Opening the tracking on hover
+     reflows the label, so a long CTA like "REQUEST A PRIVATE VIEWING" visibly
+     jitters ~24px wide as the pointer enters. Tracking animation is applied to
+     .link-couture instead, where labels are one word and the shift is 1-2px.
+     ══════════════════════════════════════════════════════════════ */
+
   .btn-luxury {
-    @apply relative overflow-hidden inline-flex items-center justify-center px-10 py-4 font-label text-xs tracking-[0.25em] uppercase transition-colors duration-500 bg-transparent text-stone-800 border border-stone-800 hover:bg-stone-800 hover:text-ivory;
+    @apply relative overflow-hidden inline-flex items-center justify-center px-10 py-4 font-label text-xs uppercase text-stone-800 border border-stone-800;
+    /* isolate: lets the fill sit behind the label at z-index -1 even though the
+       label is often a bare text node with no element of its own to stack. */
+    isolation: isolate;
+    letter-spacing: 0.25em;
+    transition:
+      color 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-luxury::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-stone-800);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-luxury:hover {
+    color: var(--color-ivory);
+    transform: translateY(-1px);
+  }
+  .btn-luxury:hover::before {
+    transform: scaleX(1);
+  }
+  .btn-luxury:active {
+    transform: translateY(0) scale(0.985);
+    transition-duration: 180ms;
+  }
+  [dir='rtl'] .btn-luxury::before {
+    transform-origin: right center;
   }
 
+  /* Secondary: same wipe, tinted rather than solid, so the label keeps its
+     contrast instead of inverting to ivory on a mid-tone fill. */
   .btn-luxury-outline {
-    @apply inline-flex items-center justify-center px-8 py-3 font-label text-xs tracking-[0.25em] uppercase transition-colors duration-500 bg-transparent text-stone-700 border border-stone-400/60 hover:border-terracotta hover:text-terracotta-dark;
+    @apply relative overflow-hidden inline-flex items-center justify-center px-8 py-3 font-label text-xs uppercase text-stone-700 border border-stone-400/60;
+    isolation: isolate;
+    letter-spacing: 0.25em;
+    transition:
+      color 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-luxury-outline::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: color-mix(in srgb, var(--color-terracotta) 12%, transparent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-luxury-outline:hover {
+    color: var(--color-terracotta-dark);
+    border-color: var(--color-terracotta);
+    transform: translateY(-1px);
+  }
+  .btn-luxury-outline:hover::before {
+    transform: scaleX(1);
+  }
+  .btn-luxury-outline:active {
+    transform: translateY(0) scale(0.985);
+    transition-duration: 180ms;
+  }
+  [dir='rtl'] .btn-luxury-outline::before {
+    transform-origin: right center;
   }
 
+  /* Ghost, on imagery: no fill (it would fight the photo), gold rule sweeps
+     out from the centre and a press confirms the hit. */
   .btn-couture-ghost {
-    @apply relative inline-flex items-center justify-center min-h-[52px] px-2 font-label text-xs uppercase tracking-[0.25em] text-stone-800 transition-colors duration-500;
+    @apply relative inline-flex items-center justify-center min-h-[52px] px-2 font-label text-xs uppercase text-stone-800;
+    letter-spacing: 0.25em;
+    transition:
+      color 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-couture-ghost::after {
     content: '';
@@ -253,14 +342,18 @@
     height: 1px;
     background: var(--color-gold);
     transform: scaleX(0.35);
-    transform-origin: left;
-    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .btn-couture-ghost:hover {
     color: var(--color-gold-dark);
+    transform: translateY(-1px);
   }
   .btn-couture-ghost:hover::after {
     transform: scaleX(1);
+  }
+  .btn-couture-ghost:active {
+    transform: translateY(0) scale(0.985);
+    transition-duration: 180ms;
   }
 
   .btn-luxury:focus-visible,
@@ -272,6 +365,10 @@
 
   .link-couture {
     position: relative;
+    letter-spacing: 0.25em;
+    /* Safe to animate tracking here: these labels are one or two words, so the
+       reflow is 1-2px rather than the ~24px jitter a long CTA would get. */
+    transition: letter-spacing 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .link-couture::after {
     content: '';
@@ -283,14 +380,49 @@
     background: var(--color-terracotta);
     transform: scaleX(0.25);
     transform-origin: left;
-    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .link-couture:hover::after,
   .link-couture:focus-visible::after {
     transform: scaleX(1);
   }
-  [dir="rtl"] .link-couture::after {
+  .link-couture:hover,
+  .link-couture:focus-visible {
+    letter-spacing: 0.32em;
+  }
+  [dir='rtl'] .link-couture::after {
     transform-origin: right;
+  }
+
+  /* Reduced motion: keep the state change, drop the travel. The fill still
+     appears and the colour still inverts — it just arrives instantly instead
+     of wiping, so the button never looks broken or inert. */
+  @media (prefers-reduced-motion: reduce) {
+    .btn-luxury,
+    .btn-luxury-outline,
+    .btn-couture-ghost,
+    .link-couture {
+      transition-duration: 0.01ms !important;
+      transform: none !important;
+    }
+    .btn-luxury::before,
+    .btn-luxury-outline::before {
+      transition-duration: 0.01ms !important;
+    }
+    .btn-luxury:hover::before,
+    .btn-luxury-outline:hover::before {
+      /* Full-scale the fill outright: scaleX(1) via the base rule is what the
+         wipe animates to, so removing the transition alone would leave it
+         collapsed and the hover looking like a no-op. */
+      transform: scaleX(1);
+    }
+    .btn-couture-ghost::after,
+    .link-couture::after {
+      transition-duration: 0.01ms !important;
+    }
+    .link-couture:hover {
+      letter-spacing: 0.25em;
+    }
   }
 
   .heading-display {
@@ -329,6 +461,19 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .ken-burns > img { animation: none; transform: scale(1.04); }
+  }
+
+  /* Hero-level slow Ken Burns applied directly to an <img> */
+  @keyframes ken-burns-slow {
+    from { transform: scale(1.0) translateY(0); }
+    to   { transform: scale(1.08) translateY(-1.2%); }
+  }
+  .ken-burns-slow {
+    animation: ken-burns-slow 30s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ken-burns-slow { animation: none; }
   }
 
   .card-couture {
