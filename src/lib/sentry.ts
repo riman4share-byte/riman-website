@@ -53,7 +53,7 @@ export function initSentry() {
     ],
   });
 
-  console.log('[Sentry] Initialized');
+  console.info('[Sentry] Initialized');
 }
 
 export { Sentry };

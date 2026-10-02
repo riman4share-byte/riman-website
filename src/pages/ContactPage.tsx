@@ -109,7 +109,7 @@ export default function ContactPage() {
               <ContactInfoItem 
                 icon={<Phone className="w-5 h-5" />}
                 title={t('contact.contact_details')}
-                content={t('contact.phone_email')}
+                content={`${t('contact.phone_label')}: ${settings.contact.phone || '+971 55 373 0792'} | ${t('form.email')}: ${settings.contact.email || 'info@riman.ae'}`}
               />
               <ContactInfoItem 
                 icon={<Clock className="w-5 h-5" />}

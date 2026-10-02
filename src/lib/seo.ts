@@ -153,11 +153,6 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     description: 'Riman Fashion payment cancelled.',
     noIndex: true,
   },
-  '/demo-21st': {
-    title: 'Riman Fashion',
-    description: 'Preview.',
-    noIndex: true,
-  },
 };
 
 // ────────────────────────────────

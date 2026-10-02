@@ -105,6 +105,15 @@ describe('buildRobotsTxt', () => {
     expect(txt).toContain('Disallow: /payment/success');
     expect(txt).toContain('Disallow: /auth');
   });
+
+  it('does not block routes that do not exist', () => {
+    // /demo-21st was a design-demo scaffold that never became a route; a
+    // Disallow line for it is misleading noise in a file crawlers read.
+    const txt = buildRobotsTxt(SITE);
+    expect(txt).not.toContain('/demo-21st');
+    // Nothing may be blocked at the site root, which would deindex everything.
+    expect(txt).not.toMatch(/Disallow: \/\s*$/m);
+  });
 });
 
 describe('routeToOutputFile', () => {

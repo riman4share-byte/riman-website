@@ -10,6 +10,5 @@ Disallow: /profile
 Disallow: /checkout
 Disallow: /payment/success
 Disallow: /payment/cancel
-Disallow: /demo-21st
 
 Sitemap: https://riman-website.pages.dev/sitemap.xml

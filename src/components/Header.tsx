@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, User, ShoppingBag, Menu, X, Globe, Search, Sparkles, ChevronRight, Calendar, Scissors, HelpCircle, Phone, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -63,6 +63,51 @@ export default function Header() {
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
+
+  // The mobile drawer is a modal dialog (aria-modal), so Escape must close it
+  // and focus must not be able to wander into the page behind it. Without
+  // this, keyboard and screen-reader users are trapped in the open menu.
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setIsMenuOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab' || !drawerRef.current) return;
+
+      // Simple focus trap across the drawer's tabbable controls.
+      const focusables = Array.from(
+        drawerRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null);
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [isMenuOpen]);
 
   return (
     <header
@@ -248,12 +293,14 @@ export default function Header() {
               className="fixed inset-0 bg-stone-900/60 z-50 backdrop-blur-md"
             />
             <motion.div
+              ref={drawerRef}
               initial={{ x: isRtl ? '100%' : '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: isRtl ? '100%' : '-100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
               role="dialog"
               aria-modal="true"
+              aria-label={t('header.menu_open')}
               className={cn(
                 "fixed top-0 h-full w-[75%] bg-stone-50 z-[60] flex flex-col border-r border-stone-200/50",
                 isRtl ? "right-0" : "left-0"
@@ -263,6 +310,7 @@ export default function Header() {
               <div className="flex justify-between items-center p-4 border-b border-stone-200/50 bg-ivory">
                 <Logo variant="gold" className="w-10" showText={false} />
                 <button
+                  ref={closeButtonRef}
                   onClick={() => setIsMenuOpen(false)}
                   className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-white transition-all duration-300"
                   aria-label={t('header.menu_close')}

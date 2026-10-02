@@ -7,6 +7,7 @@ import { Instagram, Facebook, Mail, Phone, MapPin, ChevronUp, ArrowRight, Chevro
 import { motion, AnimatePresence } from 'motion/react';
 import Logo from './Logo';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSettings } from '../contexts/SettingsContext';
 import { cn } from '../lib/utils';
 
 function CollapsibleSection({ title, children, defaultOpen = false }: { title: string, children: React.ReactNode, defaultOpen?: boolean }) {
@@ -42,6 +43,10 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
 
 export default function Footer() {
   const { t } = useLanguage();
+  // Contact details are admin-editable in site_settings; rendering the
+  // translation string here meant the footer's phone silently disagreed with
+  // the contact page and the admin panel.
+  const { settings } = useSettings();
 
   const newsletterSchema = z.object({
     email: z.string().email(t('footer.valid_email'))
@@ -53,17 +58,18 @@ export default function Footer() {
     resolver: zodResolver(newsletterSchema)
   });
 
+  // The newsletter previously wrote to localStorage and reported success. That
+  // is silent data loss: the visitor saw "subscribed" and the address existed
+  // only in their own browser, so the atelier never received a single email.
+  // There is no newsletter table and no mailing-list provider wired up, so
+  // rather than pretend, the form hands the address to WhatsApp — the same
+  // channel the rest of the site uses — and says so.
   const onNewsletterSubmit = async (data: NewsletterForm) => {
-    try {
-      const existing = JSON.parse(localStorage.getItem('riman_newsletter') || '[]');
-      if (!existing.includes(data.email)) {
-        existing.push(data.email);
-        localStorage.setItem('riman_newsletter', JSON.stringify(existing));
-      }
-    } catch {
-      // ignore storage failures
-    }
-    await new Promise(resolve => setTimeout(resolve, 600));
+    const number = (settings.social.whatsapp || '971553730792').replace(/[^\d]/g, '');
+    const message = encodeURIComponent(
+      `Please add ${data.email} to the Riman Fashion mailing list.`,
+    );
+    window.open(`https://wa.me/${number}?text=${message}`, '_blank', 'noopener,noreferrer');
     reset();
   };
 
@@ -120,7 +126,7 @@ export default function Footer() {
             <div className="flex items-center gap-4 justify-center md:justify-start">
               <SocialLink href="https://instagram.com/rimanfashion" icon={<Instagram />} label="Instagram" />
               <SocialLink href="https://facebook.com/rimanfashion" icon={<Facebook />} label="Facebook" />
-              <SocialLink href="mailto:boutique@riman.ae" icon={<Mail />} label="Email" />
+              <SocialLink href={`mailto:${settings.contact.email || 'info@riman.ae'}`} icon={<Mail />} label="Email" />
             </div>
           </div>
 
@@ -161,7 +167,7 @@ export default function Footer() {
                 <div className="flex gap-3">
                   <Phone className="w-4 h-4 text-terracotta-dark shrink-0" />
                   <p className="font-body text-xs md:text-sm text-stone-400 uppercase tracking-[0.05em]">
-                    +971 553 730 792
+                    {settings.contact.phone || '+971 55 373 0792'}
                   </p>
                 </div>
               </div>

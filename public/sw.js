@@ -1,10 +1,23 @@
-const CACHE_NAME = 'riman-v1';
-const SHELL_URLS = ['/', '/index.html', '/riman-logo.png'];
+// Bump when the precache list changes: the install handler only re-runs when
+// sw.js itself is byte-different, so a stale name would keep serving the old
+// shell indefinitely.
+const CACHE_NAME = 'riman-v2';
+const SHELL_URLS = ['/', '/index.html', '/apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(SHELL_URLS))
+      // Add entries individually. addAll() is atomic: one 404 anywhere in the
+      // list rejects the whole promise, the install fails, and the worker is
+      // never activated — so a single renamed asset silently disables offline
+      // support for every visitor.
+      .then(cache => Promise.all(
+        SHELL_URLS.map(url =>
+          cache.add(new Request(url, { cache: 'reload' })).catch(err => {
+            console.warn('[sw] precache skipped', url, err);
+          })
+        )
+      ))
       .then(() => self.skipWaiting())
   );
 });

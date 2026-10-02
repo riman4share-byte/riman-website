@@ -80,9 +80,16 @@ const PUBLIC_STATIC_ROUTES: { route: string; title: string; description: string 
 ];
 
 /** Routes that must NEVER be prerendered or listed in the sitemap. */
+// '/demo-21st' was listed here and in seo.ts, but no such route has ever
+// existed in App.tsx — it was scaffolding for a design demo. A Disallow line
+// for a page that does not exist is misleading noise in robots.txt.
+//
+// Kept: the real private routes. Note that a `Disallow: /admin` prefix already
+// covers /admin/orders, /admin/settings and the rest of the dashboard, so the
+// sub-paths do not need listing individually.
 export const PRIVATE_ROUTES = [
   '/admin', '/auth', '/profile', '/checkout', '/payment/success', '/payment/cancel',
-  '/wishlist', '/search', '/demo-21st',
+  '/wishlist', '/search',
 ];
 
 export function isPrivateRoute(route: string): boolean {

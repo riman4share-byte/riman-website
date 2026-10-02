@@ -9,9 +9,16 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/riman-logo.png",
-      "sizes": "469x532",
-      "type": "image/png"
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": ["shopping", "lifestyle"],
