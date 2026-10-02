@@ -15,7 +15,9 @@
     <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
     <!-- Square, brand-background icon. iOS letterboxes non-square artwork. -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/apple-touch-icon.png" />
+    <!-- Browsers request /favicon.ico unconditionally. Without a real file
+         there, the SPA rewrite served index.html as text/html for the icon. -->
+    <link rel="shortcut icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f0d0a" />
 
@@ -69,8 +71,8 @@
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
-        "opens": "11:00",
-        "closes": "21:00"
+        "opens": "10:00",
+        "closes": "22:00"
       },
       "priceRange": "$$$",
       "sameAs": ["https://instagram.com/rimanfashion", "https://facebook.com/rimanfashion"]
@@ -79,7 +81,7 @@
     <!--/prerender-jsonld-->
   </head>
   <body>
-    <div id="root"><!--prerender-body--><header class="prerender-shell" style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;"><p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Riman Fashion — Sharjah</p><h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">Bridal &amp; Evening Couture</h1><p style="font-size:16px;line-height:1.7;">Bespoke bridal gowns, evening couture, premium rentals and fine jewelry — hand-finished in our atelier at Al Zahra St, Sharjah. Private viewings daily, 11AM–9PM.</p><nav><a href="/collections">Collections</a> · <a href="/about">About</a> · <a href="/appointment">Book a private viewing</a> · <a href="/contact">Contact</a></nav></header><!--/prerender-body--></div>
+    <div id="root"><!--prerender-body--><header class="prerender-shell" style="font-family:Georgia,serif;max-width:880px;margin:0 auto;padding:64px 24px;"><p style="letter-spacing:0.3em;text-transform:uppercase;font-size:12px;">Riman Fashion — Sharjah</p><h1 style="font-size:40px;letter-spacing:0.08em;text-transform:uppercase;">Bridal &amp; Evening Couture</h1><p style="font-size:16px;line-height:1.7;">Bespoke bridal gowns, evening couture, premium rentals and fine jewelry — hand-finished in our atelier at Al Zahra St, Sharjah. Private viewings Saturday to Thursday, 10AM–10PM.</p><nav><a href="/collections">Collections</a> · <a href="/about">About</a> · <a href="/appointment">Book a private viewing</a> · <a href="/contact">Contact</a></nav></header><!--/prerender-body--></div>
 <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

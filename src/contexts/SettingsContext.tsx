@@ -20,7 +20,7 @@ interface SettingsContextType {
 
 const defaultSettings: SiteSettings = {
   branding: { siteName: 'Riman Fashion', tagline: 'Bridal · Engagement · Evening Couture — Sharjah, UAE', logoText: 'Riman' },
-  contact: { email: 'boutique@riman.ae', phone: '+971 55 373 0792', address: 'Al Zahra St, Sharjah, UAE', hours: 'Daily: 11AM – 9PM | Friday: after prayer – 9PM' },
+  contact: { email: 'info@riman.ae', phone: '+971 55 373 0792', address: 'Al Zahra St, Sharjah, UAE', hours: 'Sat-Thu, 10am - 10pm' },
   social: { instagram: '@rimanfashion', whatsapp: '+971553730792', facebook: 'rimanfashion', twitter: 'rimanfashion', youtube: 'rimanfashion', tiktok: '@rimanfashion', pinterest: 'rimanfashion' },
   homepage: { heroTitle: 'Reverie & Essence', heroSubtitle: "Sharjah's Most Majestic Couture", heroCta: 'Request A Private Viewing', heroBgImage: '/images/hero-default.jpg', aboutTitle: 'The Riman Legacy', aboutDescription: 'Founded in the vibrant cultural landscape of Sharjah.', brandQuote: 'In the heart of Sharjah, we weave dreams into silk.', featuredTitle: 'Featured Designs' },
   features: { newsletter: true, whatsappBtn: true, preloader: true, instagramFeed: true, cookieBanner: true, scrollReveal: true, threeDViewer: true },

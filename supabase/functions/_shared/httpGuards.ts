@@ -6,19 +6,44 @@
 const IP_MAX_LEN = 64;
 const IP_SHAPE = /^[0-9a-fA-F:.]+$/;
 
+function isIpShaped(value: string): boolean {
+  return Boolean(value) && value.length <= IP_MAX_LEN && IP_SHAPE.test(value);
+}
+
 /**
- * Best-effort client IP for rate-limit bucketing on the Supabase edge
- * (Fly.io sets x-forwarded-for; Cloudflare proxy sets cf-connecting-ip).
- * Never throws, never returns long attacker-controlled blobs: anything
- * malformed is collapsed to "unknown" (a shared bucket, which is SAFER —
- * garbage keys don't get unlimited individual budgets).
+ * Best-effort client IP for rate-limit bucketing.
+ *
+ * `x-forwarded-for` is a client-settable request header. A naive read of its
+ * FIRST entry — the conventional "left-most = original client" assumption —
+ * is therefore attacker-controlled: sending a different `X-Forwarded-For` on
+ * each request gives every request its own rate-limit bucket, so the limiter
+ * can be bypassed with a one-line curl loop. That is the opposite of what a
+ * rate limiter is for.
+ *
+ * Proxies APPEND to the header, so the RIGHT-most entry is the one written by
+ * the closest trusted hop and cannot be overridden by the caller. That is what
+ * we read here.
+ *
+ * `cf-connecting-ip` is preferred when present: behind Cloudflare it is
+ * overwritten by the edge and is not client-forgeable.
+ *
+ * Never throws and never returns long attacker-controlled blobs. Anything
+ * malformed collapses to "unknown" — a single shared bucket, which is the safe
+ * direction: junk keys must not each get an unlimited personal budget.
  */
 export function clientIp(headers: Headers): string {
-  const candidate =
-    headers.get('cf-connecting-ip') ??
-    (headers.get('x-forwarded-for') || '').split(',')[0]?.trim();
-  if (!candidate || candidate.length > IP_MAX_LEN || !IP_SHAPE.test(candidate)) return 'unknown';
-  return candidate;
+  const cf = (headers.get('cf-connecting-ip') || '').trim();
+  if (isIpShaped(cf)) return cf;
+
+  const chain = (headers.get('x-forwarded-for') || '')
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean);
+  // Right-most first: the entry appended by the nearest trusted proxy.
+  for (let i = chain.length - 1; i >= 0; i--) {
+    if (isIpShaped(chain[i])) return chain[i];
+  }
+  return 'unknown';
 }
 
 /** Length-hiding constant-time string comparison for shared secrets. */

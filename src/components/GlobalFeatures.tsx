@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useFeature } from '../hooks/useFeature';
 import { useLanguage } from '../contexts/LanguageContext';
+import { hasCookieDecision, setCookieConsent } from '../lib/consent';
 
 export default function GlobalFeatures() {
   const { t } = useLanguage();
@@ -34,8 +35,7 @@ export default function GlobalFeatures() {
 
   useEffect(() => {
     if (!cookieEnabled) return;
-    const cookieConsent = localStorage.getItem('riman_cookie_consent');
-    if (!cookieConsent) setShowCookies(true);
+    if (!hasCookieDecision()) setShowCookies(true);
   }, [cookieEnabled]);
 
   const handleDismissNewsletter = () => {
@@ -44,12 +44,12 @@ export default function GlobalFeatures() {
   };
 
   const handleAcceptCookies = () => {
-    localStorage.setItem('riman_cookie_consent', 'accepted');
+    setCookieConsent('accepted');
     setShowCookies(false);
   };
 
   const handleRejectCookies = () => {
-    localStorage.setItem('riman_cookie_consent', 'rejected');
+    setCookieConsent('rejected');
     setShowCookies(false);
   };
 

@@ -114,10 +114,10 @@ export default function AdminSettings() {
         logoText: "Riman",
       },
       contact: {
-        email: "boutique@riman.ae",
+        email: "info@riman.ae",
         phone: "+971 55 373 0792",
         address: "Al Zahra St, Sharjah, UAE",
-        hours: "Daily: 11AM – 9PM | Friday: after prayer – 9PM",
+        hours: "Sat-Thu, 10am - 10pm",
       },
       social: {
         instagram: "@rimanfashion",

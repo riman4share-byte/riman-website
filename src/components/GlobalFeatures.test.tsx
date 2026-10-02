@@ -59,6 +59,14 @@ describe('GlobalFeatures', () => {
   });
 
   it('hides cookie banner once consent is stored', () => {
+    localStorage.setItem('riman_cookie_consent', 'rejected');
+    renderWithProviders(<GlobalFeatures />, 'cookieBanner', true);
+    expect(screen.queryByText(/Privacy|خصوصية/)).toBeNull();
+  });
+
+  it('hides cookie banner for a legacy "true" value, which is not consent', () => {
+    // Older builds wrote the bare string 'true'. It must still count as a
+    // decision already made, otherwise returning visitors see the banner again.
     localStorage.setItem('riman_cookie_consent', 'true');
     renderWithProviders(<GlobalFeatures />, 'cookieBanner', true);
     expect(screen.queryByText(/Privacy|خصوصية/)).toBeNull();

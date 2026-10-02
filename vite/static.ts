@@ -173,9 +173,9 @@ export function siteSchemas(siteUrl: string): Record<string, unknown>[] {
       address: { '@type': 'PostalAddress', streetAddress: 'Al Zahra St', addressLocality: 'Sharjah', addressCountry: 'AE' },
       openingHoursSpecification: {
         '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '11:00',
-        closes: '21:00',
+        dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+        opens: '10:00',
+        closes: '22:00',
       },
       sameAs: ['https://instagram.com/rimanfashion', 'https://facebook.com/rimanfashion'],
     },

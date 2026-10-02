@@ -9,6 +9,14 @@
         fake-order-total hole fixed by 20260916000005_orders_server_created_only.sql
    Instead, apply migrations in order from supabase/migrations/
    (files are named YYYYMMDD... and are safe to run once each).
+
+   It is also a HISTORICAL record of the original paste, kept for reference
+   only. It is missing everything applied since, including: the rental
+   overlap exclusion constraint (it still defines the old check_double_booking
+   trigger), orders.checkout_token, orders.stripe_payment_intent_id, the
+   needs_review status, notification_outbox, admin_allowlist, the webhook event
+   ledger, and rental_bookings.blocking_range. For the live shape of the
+   database, read supabase/migrations/ — that is the source of truth.
    ============================================================ */
 -- Riman Fashion - combined schema (STALE, see banner above)
 -- ============================================

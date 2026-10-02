@@ -207,9 +207,9 @@ export function localBusinessSchema() {
     telephone: '+971-55-373-0792',
     openingHoursSpecification: {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '11:00',
-      closes: '21:00',
+      dayOfWeek: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+      opens: '10:00',
+      closes: '22:00',
     },
   };
 }

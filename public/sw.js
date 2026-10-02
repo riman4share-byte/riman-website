@@ -2,7 +2,7 @@
 // sw.js itself is byte-different, so a stale name would keep serving the old
 // shell indefinitely.
 const CACHE_NAME = 'riman-v2';
-const SHELL_URLS = ['/', '/index.html', '/apple-touch-icon.png'];
+const SHELL_URLS = ['/', '/index.html', '/apple-touch-icon.png', '/favicon.ico'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

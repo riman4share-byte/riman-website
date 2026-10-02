@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import {
   buildPrerenderPages,
   buildRobotsTxt,
@@ -113,6 +114,36 @@ describe('buildRobotsTxt', () => {
     expect(txt).not.toContain('/demo-21st');
     // Nothing may be blocked at the site root, which would deindex everything.
     expect(txt).not.toMatch(/Disallow: \/\s*$/m);
+  });
+});
+
+describe('opening hours', () => {
+  it('agrees across the three places they are declared', () => {
+    // Hours were stated three different ways: the live site_settings row, the
+    // SettingsContext default, and the JSON-LD in index.html. Search engines
+    // read the JSON-LD, visitors read the settings row, so a mismatch means
+    // Google and the contact page publish different facts.
+    const liveDb = 'Sat-Thu, 10am - 10pm';
+    const defaults = readFileSync('src/contexts/SettingsContext.tsx', 'utf8');
+    const indexHtml = readFileSync('index.html', 'utf8');
+    const seoLib = readFileSync('src/lib/seo.ts', 'utf8');
+    const staticPlugin = readFileSync('vite/static.ts', 'utf8');
+
+    expect(defaults).toContain(`hours: '${liveDb}'`);
+
+    // JSON-LD: Saturday–Thursday, 10:00–22:00, and Friday must be absent —
+    // listing Friday would advertise opening on the one closed day.
+    // index.html is JSON (double quotes); the .ts sources are object literals
+    // (single quotes), so normalise before matching.
+    for (const src of [indexHtml, seoLib, staticPlugin]) {
+      const jsonLd = src.slice(src.indexOf('openingHoursSpecification'));
+      expect(jsonLd).toMatch(/opens["']?\s*:\s*["']10:00/);
+      expect(jsonLd).toMatch(/closes["']?\s*:\s*["']22:00/);
+      const days = jsonLd.slice(0, jsonLd.indexOf(']'));
+      expect(days).toContain('Saturday');
+      expect(days).toContain('Thursday');
+      expect(days).not.toContain('Friday');
+    }
   });
 });
 

@@ -7,6 +7,11 @@ import { Product } from '../types';
 import { fetchApprovedReviews, type Review } from '../services/reviews';
 import { categoryToSlug } from '../lib/utils';
 import {
+  getCookieConsent,
+  subscribeToCookieConsent,
+  type ConsentState,
+} from '../lib/consent';
+import {
   resolveRouteMeta,
   organizationSchema,
   localBusinessSchema,
@@ -271,9 +276,30 @@ export default function SEOHead({ title, description, image, noIndex, product: p
   // ――――――――――――――――――――――――――――――――――――――――――
   // Analytics injection (unchanged from original)
   // ――――――――――――――――――――――――――――――――――――――――――
+  // ―――――――――――――――――――――――――――――――――――――――――――
+  // Analytics — CONSENT-GATED
+  //
+  // All three of these are non-essential trackers: they set cookies and
+  // fingerprint the visitor. They previously loaded unconditionally, so a
+  // visitor who clicked "reject cookies" was still tracked. Each now requires
+  // an explicit "accepted", and re-runs when consent is granted later in the
+  // session so analytics starts without a page reload.
+  //
+  // The per-script id guards keep this idempotent: `load` fires once per tag
+  // and a granted consent cannot double-inject.
+  // ―――――――――――――――――――――――――――――――――――――――――――
+  const [consent, setConsent] = useState<ConsentState>('unknown');
+
+  useEffect(() => {
+    setConsent(getCookieConsent());
+    return subscribeToCookieConsent(setConsent);
+  }, []);
+
+  const analyticsAllowed = consent === 'accepted';
+
   useEffect(() => {
     const gaId = admin.gaId;
-    if (!gaId || document.getElementById('riman-ga')) return;
+    if (!analyticsAllowed || !gaId || document.getElementById('riman-ga')) return;
 
     // External loader keeps CSP clean: no inline scripts.
     const script = document.createElement('script');
@@ -281,11 +307,11 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     script.async = true;
     script.src = `/ga-loader.js?id=${encodeURIComponent(gaId)}`;
     document.head.appendChild(script);
-  }, [admin.gaId]);
+  }, [admin.gaId, analyticsAllowed]);
 
   useEffect(() => {
     const domain = admin.plausibleDomain;
-    if (!domain || document.getElementById('riman-plausible')) return;
+    if (!analyticsAllowed || !domain || document.getElementById('riman-plausible')) return;
 
     const script = document.createElement('script');
     script.id = 'riman-plausible';
@@ -293,11 +319,11 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     script.dataset.domain = domain;
     script.src = 'https://plausible.io/js/script.js';
     document.head.appendChild(script);
-  }, [admin.plausibleDomain]);
+  }, [admin.plausibleDomain, analyticsAllowed]);
 
   useEffect(() => {
     const siteId = admin.fathomSiteId;
-    if (!siteId || document.getElementById('riman-fathom')) return;
+    if (!analyticsAllowed || !siteId || document.getElementById('riman-fathom')) return;
 
     const script = document.createElement('script');
     script.id = 'riman-fathom';
@@ -305,7 +331,7 @@ export default function SEOHead({ title, description, image, noIndex, product: p
     script.dataset.site = siteId;
     script.defer = true;
     document.head.appendChild(script);
-  }, [admin.fathomSiteId]);
+  }, [admin.fathomSiteId, analyticsAllowed]);
 
   // Custom <head> code is applied safely and centrally by <SEOInjector /> (App.tsx)
   // via src/lib/safeHead.ts — this component must not manage it too.
