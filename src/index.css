@@ -219,11 +219,13 @@
 }
 
 @layer components {
-  /* AA-compliant gold for TEXT on the light surfaces (ivory/champagne/pearl).
-     Use this instead of `text-gold` for links, eyebrows, labels and captions
-     on light backgrounds. `text-gold` stays for dark/onyx sections. */
+  /* Legacy alias. The accent migration replaced every text-gold usage with
+     text-terracotta-dark (the AA-compliant ink step, 7.44:1 on bone) and the
+     legibility guards in this file fall back to brass-light inside dark
+     containers. No component references this rule any more; kept only so that
+     print.css and any external snippet still resolve it. */
   .text-gold-ink {
-    color: var(--color-gold-ink);
+    color: var(--color-terracotta-dark);
   }
   .placeholder\:text-stone-400::placeholder {
     color: var(--color-stone-500);

@@ -47,6 +47,31 @@ export default function ProductDetail() {
   const [errorMsg, setErrorMsg] = useState('');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareButtonRef = useRef<HTMLButtonElement>(null);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+
+  // Same dismissal contract as the collection sort menu: Escape closes and
+  // returns focus, a pointer press outside closes. The trigger now advertises
+  // aria-expanded so the state is not visual-only.
+  useEffect(() => {
+    if (!showShareMenu) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setShowShareMenu(false);
+      shareButtonRef.current?.focus();
+    };
+    const onPointerDown = (e: globalThis.MouseEvent) => {
+      const target = e.target as Node;
+      if (shareMenuRef.current?.contains(target) || shareButtonRef.current?.contains(target)) return;
+      setShowShareMenu(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onPointerDown);
+    };
+  }, [showShareMenu]);
   const [showDetails, setShowDetails] = useState(false);
   const [showArtistry, setShowArtistry] = useState(false);
   const [showCare, setShowCare] = useState(false);
@@ -282,15 +307,29 @@ export default function ProductDetail() {
 
                 {/* Share Menu */}
                 <div className="absolute bottom-5 right-5 z-20 flex gap-2">
-                  <button onClick={() => setShowShareMenu(!showShareMenu)} className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition-all" aria-label="Share this product">
-                    <Share2 className="w-3.5 h-3.5" />
+                  <button
+                    ref={shareButtonRef}
+                    onClick={() => setShowShareMenu(v => !v)}
+                    className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition-all"
+                    aria-label={t('product.share')}
+                    aria-haspopup="menu"
+                    aria-expanded={showShareMenu}
+                    aria-controls="product-share-menu"
+                  >
+                    <Share2 className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                   {showShareMenu && (
-                    <div className="absolute bottom-12 right-0 bg-ivory border border-stone-100 p-2 w-44">
-                      <a href={`https://wa.me/?text=${encodeURIComponent(`Check out ${productName} at Riman Fashion: ${window.location.origin}/product/${product.id}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-2.5 text-micro tracking-wider uppercase text-stone-700 hover:bg-pearl transition-colors">
+                    <div
+                      id="product-share-menu"
+                      ref={shareMenuRef}
+                      role="menu"
+                      aria-label={t('product.share')}
+                      className="absolute bottom-12 right-0 bg-ivory border border-stone-100 p-2 w-44"
+                    >
+                      <a role="menuitem" href={`https://wa.me/?text=${encodeURIComponent(`Check out ${productName} at Riman Fashion: ${window.location.origin}/product/${product.id}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-2.5 text-micro tracking-wider uppercase text-stone-700 hover:bg-pearl transition-colors">
                         WhatsApp
                       </a>
-                      <button onClick={() => { navigator.clipboard.writeText(window.location.href); setShowShareMenu(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-micro tracking-wider uppercase text-stone-700 hover:bg-pearl transition-colors">
+                      <button role="menuitem" onClick={() => { navigator.clipboard.writeText(window.location.href); setShowShareMenu(false); shareButtonRef.current?.focus(); }} className="w-full flex items-center gap-3 px-3 py-2.5 text-micro tracking-wider uppercase text-stone-700 hover:bg-pearl transition-colors">
                         {t('product.copy_link')}
                       </button>
                     </div>

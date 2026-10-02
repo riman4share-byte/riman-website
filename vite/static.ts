@@ -66,9 +66,7 @@ const PUBLIC_STATIC_ROUTES: { route: string; title: string; description: string 
   { route: '/journal', title: 'The Journal | Riman Fashion', description: 'Stories, styling notes and behind-the-scenes from the Riman Fashion Sharjah atelier.' },
   { route: '/collection/all', title: 'All Designs | Riman Fashion', description: 'Browse the complete Riman Fashion collection — bridal gowns, evening dresses, luxurious rentals, and fine jewelry. Each piece is handcrafted in Sharjah.' },
   { route: '/collection/bridal', title: 'Bridal Collection | Riman Fashion', description: 'Discover exquisite bridal gowns at Riman Fashion in Sharjah. From classic A-line to dramatic ballgowns — each gown is a masterpiece of couture craftsmanship.' },
-  { route: '/collection/evening', title: 'Evening Gowns | Riman Fashion', description: 'Shop luxurious evening gowns and formal wear for galas, red carpets, and special occasions. Exclusive designs available for purchase and premium rental.' },
   { route: '/collection/couture', title: 'Couture Evening Wear | Riman Fashion', description: 'Couture evening silhouettes cut from silk and crystal — hand-finished in our Sharjah atelier for the grandest entrances.' },
-  { route: '/collection/rental', title: 'Premium Rentals | Riman Fashion', description: 'Rent designer bridal and evening gowns from Riman Fashion. 7-day premium rental includes dry cleaning and insurance. Perfect for your special occasion.' },
   { route: '/collection/accessories', title: 'Accessories | Riman Fashion', description: 'Veils, straps and couture finishing details, hand-made in our Sharjah atelier alongside every gown.' },
   { route: '/collection/jewelry', title: 'Fine Jewelry | Riman Fashion', description: 'Discover Riman Fashion\'s fine jewelry collection — handcrafted pieces that complement our bridal and evening couture. Gold, diamonds, and precious gems.' },
   { route: '/faq', title: 'FAQ | Riman Fashion', description: 'Find answers to common questions about Riman Fashion\'s bridal and evening wear, including sizing, rentals, alterations, and ordering.' },
@@ -189,8 +187,8 @@ export function siteSchemas(siteUrl: string): Record<string, unknown>[] {
 const SITE_NAV = [
   { label: 'Collections', href: '/collections' },
   { label: 'Bridal', href: '/collection/bridal' },
-  { label: 'Evening', href: '/collection/evening' },
-  { label: 'Rentals', href: '/collection/rental' },
+  { label: 'Couture', href: '/collection/couture' },
+  { label: 'Rentals', href: '/collection/all' },
   { label: 'Journal', href: '/journal' },
   { label: 'About', href: '/about' },
   { label: 'Book a private viewing', href: '/appointment' },
@@ -214,12 +212,39 @@ function staticBody(title: string, description: string, links: { label: string; 
 
 // ─── Sitemap & robots ────────────────────────────────────────────
 
+/**
+ * Crawl hints per route.
+ *
+ * The previous implementation stamped <lastmod> with the build date on every
+ * run and forced changefreq=weekly for all URLs. A lastmod that changes on
+ * every build tells crawlers every page is modified daily, which is both a lie
+ * and a crawl-budget anti-pattern; it also made the hand-curated changefreq
+ * values in public/sitemap.xml decorative, since the build overwrote the file.
+ *
+ * Gated routes (/product/:id) legitimately change when a gown is edited, so
+ * they keep a real lastmod; static editorial routes do not get one at all.
+ */
+function crawlHint(route: string): { changefreq: string; priority: string; volatile: boolean } {
+  if (route === '/') return { changefreq: 'daily', priority: '1.0', volatile: true };
+  if (route === '/privacy' || route === '/terms') return { changefreq: 'yearly', priority: '0.3', volatile: false };
+  if (['/about', '/contact', '/faq', '/appointment', '/journal', '/wedding-checklist'].includes(route)) {
+    return { changefreq: 'monthly', priority: '0.6', volatile: false };
+  }
+  if (route.startsWith('/collection')) return { changefreq: 'weekly', priority: '0.8', volatile: true };
+  return { changefreq: 'weekly', priority: '0.6', volatile: true };
+}
+
 export function buildSitemapXml(siteUrl: string, pages: PrerenderPage[], lastmod: string): string {
-  const unique = [...new Set(pages.map(p => absoluteUrl(siteUrl, p.route)))].sort();
+  const unique = [...new Set(pages.map((p) => absoluteUrl(siteUrl, p.route)))].sort();
   const today = lastmod.slice(0, 10);
   const urls = unique
-    .filter(u => !isPrivateRoute(new URL(u).pathname))
-    .map(u => `  <url>\n    <loc>${xmlEscape(u)}</loc>\n    <lastmod>${xmlEscape(today)}</lastmod>\n    <changefreq>weekly</changefreq>\n  </url>`)
+    .filter((u) => !isPrivateRoute(new URL(u).pathname))
+    .map((u) => {
+      const route = new URL(u).pathname;
+      const hint = crawlHint(route);
+      const lastmodLine = hint.volatile ? `\n    <lastmod>${xmlEscape(today)}</lastmod>` : '';
+      return `  <url>\n    <loc>${xmlEscape(u)}</loc>${lastmodLine}\n    <changefreq>${hint.changefreq}</changefreq>\n    <priority>${hint.priority}</priority>\n  </url>`;
+    })
     .join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }

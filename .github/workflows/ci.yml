@@ -179,6 +179,44 @@ jobs:
           path: dist/
           retention-days: 7
 
+  build-smoke:
+    name: Production Build Smoke
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - run: npx playwright install --with-deps chromium
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      # Serves dist/ exactly as production does. The rest of the Playwright suite
+      # runs against the dev server, which can hide build-only failures: stale
+      # prerendered HTML, unresolvable lazy chunks, 404ing assets.
+      - name: Smoke-test the built bundle
+        run: |
+          set -euo pipefail
+          npx vite preview --port 4173 --strictPort &
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:4173 >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          curl -fsS http://localhost:4173 >/dev/null
+          npx playwright test --config playwright.smoke.config.ts
+        env:
+          PRODUCTION_SMOKE: '1'
+          SMOKE_BASE_URL: http://localhost:4173
+
   docker:
     name: Docker Image
     needs: [quality, build]

@@ -1,5 +1,5 @@
-import { useParams, Link } from 'react-router-dom';
-import { useState, useMemo } from 'react';
+import { useParams, Link, Navigate } from 'react-router-dom';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
@@ -18,6 +18,16 @@ export default function CollectionPage() {
   const { products, isLoading } = useData();
   const { category } = useParams();
   const { t } = useLanguage();
+
+  // Two of these URLs rendered byte-identical product sets and competed with
+  // each other in search:
+  //   /collection/evening and /collection/couture both filtered
+  //     category === 'Evening Dress';
+  //   /collection/rental returned every gown, because all 36 products are
+  //     productType 'both' - so it duplicated /collection/all.
+  // Merge them onto one canonical URL each instead of serving thin duplicates.
+  if (category === 'evening') return <Navigate to="/collection/couture" replace />;
+  if (category === 'rental') return <Navigate to="/collection/all" replace />;
 
   const filterFields: FilterFieldDef[] = [
     {
@@ -49,6 +59,31 @@ export default function CollectionPage() {
   const [filters, setFilters] = useState<Filter[]>([]);
   const [sortBy, setSortBy] = useState('featured');
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
+  const sortMenuRef = useRef<HTMLDivElement>(null);
+
+  // Dismiss the sort menu the way a menu behaves: Escape returns focus to the
+  // trigger, a pointer press outside closes it. It previously closed on a 200ms
+  // blur timer, which was flaky and announced nothing to assistive tech.
+  useEffect(() => {
+    if (!showSortMenu) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setShowSortMenu(false);
+      sortButtonRef.current?.focus();
+    };
+    const onPointerDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (sortMenuRef.current?.contains(target) || sortButtonRef.current?.contains(target)) return;
+      setShowSortMenu(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onPointerDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onPointerDown);
+    };
+  }, [showSortMenu]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -133,27 +168,35 @@ export default function CollectionPage() {
             <div className="flex items-center gap-4 flex-shrink-0">
               <div className="relative">
                 <button
-                  onClick={() => setShowSortMenu(!showSortMenu)}
-                  onBlur={() => setTimeout(() => setShowSortMenu(false), 200)}
+                  ref={sortButtonRef}
+                  onClick={() => setShowSortMenu(v => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={showSortMenu}
+                  aria-controls="collection-sort-menu"
                   className="flex items-center gap-2 font-body text-xs tracking-[0.2em] uppercase text-stone-800 font-bold cursor-pointer"
                 >
-                  {t('collection.sort')} <ChevronDown className={cn("w-4 h-4 transition-transform", showSortMenu && "rotate-180")} />
+                  {t('collection.sort')} <ChevronDown className={cn("w-4 h-4 transition-transform", showSortMenu && "rotate-180")} aria-hidden="true" />
                 </button>
                 <AnimatePresence>
                   {showSortMenu && (
                     <motion.div
+                      id="collection-sort-menu"
+                      ref={sortMenuRef}
+                      role="menu"
+                      aria-label={t('collection.sort')}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.15 }}
                       className="absolute right-0 top-full pt-2 z-50"
-                      onMouseDown={(e) => e.preventDefault()}
                     >
                       <div className="bg-ivory border border-stone-200 p-2 w-56 flex flex-col gap-1">
                         {[['featured', t('collection.sort_featured')], ['newest', t('collection.sort_newest')], ['price-low', t('collection.sort_price_low')], ['price-high', t('collection.sort_price_high')]].map(([option, label]) => (
                           <button
                             key={option}
-                            onClick={() => { setSortBy(option); setShowSortMenu(false); }}
+                            role="menuitemradio"
+                            aria-checked={sortBy === option}
+                            onClick={() => { setSortBy(option); setShowSortMenu(false); sortButtonRef.current?.focus(); }}
                             className={cn(
                               "text-left px-5 py-3 text-xs tracking-widest uppercase transition-colors font-medium cursor-pointer",
                               sortBy === option ? "bg-terracotta/10 text-terracotta-dark" : "text-stone-600 hover:bg-stone-50 hover:text-stone-800"

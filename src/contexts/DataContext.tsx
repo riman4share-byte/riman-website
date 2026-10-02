@@ -195,10 +195,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         addToast({ type: 'error', title: 'Could not update on server', message: 'Changes saved locally only.' });
       }
     }
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
-    const updatedProduct = products.find(p => p.id === id);
+    // Build the merged product FIRST and push that same object into state.
+    // The previous version updated state with a functional setter and then read
+    // `products` from this render's closure to build its return value, so the
+    // caller received a partial product whenever the id was not in the stale
+    // list - the two paths could disagree about what was saved.
+    const current = products.find(p => p.id === id);
+    const merged = { ...(current as Product), ...updates } as Product;
+    setProducts(prev => prev.map(p => (p.id === id ? merged : p)));
     if (!isSupabaseConfigured) addToast({ type: 'info', title: 'Saved locally', message: 'Backend not connected.' });
-    return { ...updatedProduct, ...updates } as Product;
+    return merged;
   };
 
   const removeProduct = async (id: string): Promise<void> => {

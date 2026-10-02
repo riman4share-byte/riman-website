@@ -460,34 +460,31 @@ test.describe('Mobile Navigation', () => {
     ];
 
     for (const { path, name } of mobileLinks) {
-      // Close any open menu first
+      await goHome(page);
+
+      // Close a drawer left open by the previous iteration.
       const closeBtn = page.locator('button[aria-label="Close menu"]');
-      if (await closeBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+      if (await closeBtn.isVisible().catch(() => false)) {
         await closeBtn.click({ force: true });
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(400);
       }
 
-      // Open menu
+      // isVisible() does not auto-wait, so on a slower engine (WebKit) the
+      // header may not have painted yet and the drawer silently never opens.
       const hamburgerNow = page.locator('button[aria-label="Open navigation menu"]');
-      if (await hamburgerNow.isVisible({ timeout: 2000 }).catch(() => false)) {
-        await hamburgerNow.click();
-        await page.waitForTimeout(500);
-      }
+      await expect(hamburgerNow).toBeVisible({ timeout: 15000 });
+      await hamburgerNow.click();
 
-      // Scope to the open drawer. A bare a[href=...] .first() can resolve to
-      // the desktop nav or footer link sitting behind the drawer's scrim, which
-      // is rendered but not clickable, so the click waits forever.
+      // Scope to the open drawer: a bare a[href=...] .first() can resolve to the
+      // desktop nav or footer link behind the drawer's scrim. Wait for it rather
+      // than sampling, because AnimatePresence keeps the outgoing drawer mounted
+      // while it animates out.
       const drawer = page.locator('[role="dialog"]');
+      await expect(drawer).toBeVisible({ timeout: 10000 });
       const link = drawer.locator(`a[href="${path}"]`).first();
-      if ((await link.count()) > 0 && (await link.isVisible().catch(() => false))) {
-        await link.click();
-        await page.waitForURL(`**${path}`, { timeout: 10000 });
-        expect(page.url()).toContain(path);
-        // Go back home for next iteration
-        await goHome(page);
-      } else {
-        throw new Error(`drawer link ${path} is missing or not visible`);
-      }
+      await link.click();
+      await page.waitForURL(`**${path}`, { timeout: 10000 });
+      expect(page.url()).toContain(path);
     }
   });
 
