@@ -5,8 +5,8 @@
   "planSteps": [
     {
       "type": "action",
-      "step": "Enter site password",
-      "description": "Find the password input field and enter 'My-Drop-Site' to unlock the site."
+      "step": "Navigate to the homepage",
+      "description": "Navigate to the homepage and wait for it to finish loading."
     },
     {
       "type": "assertion",

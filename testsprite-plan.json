@@ -5,13 +5,13 @@
   "planSteps": [
     {
       "type": "action",
-      "step": "Enter site password",
-      "description": "The site is password-protected. Find the password input field on the page and enter 'My-Drop-Site', then submit to unlock the site."
+      "step": "Navigate to the homepage",
+      "description": "Navigate to the homepage and wait for it to finish loading."
     },
     {
       "type": "assertion",
       "step": "Verify homepage loaded",
-      "description": "After entering the password, verify the homepage loads with the main content, navigation, and product sections visible."
+      "description": "verify the homepage loads with the main content, navigation, and product sections visible."
     },
     {
       "type": "action",

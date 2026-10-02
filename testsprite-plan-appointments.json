@@ -5,11 +5,6 @@
   "planSteps": [
     {
       "type": "action",
-      "step": "Enter site password",
-      "description": "Find the password input field and enter 'My-Drop-Site' to unlock the site."
-    },
-    {
-      "type": "action",
       "step": "Navigate to appointment page",
       "description": "Navigate to /appointment. Verify the appointment booking page loads with service selection options."
     },

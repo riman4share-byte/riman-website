@@ -5,11 +5,6 @@
   "planSteps": [
     {
       "type": "action",
-      "step": "Enter site password",
-      "description": "Find the password input field and enter 'My-Drop-Site' to unlock the site."
-    },
-    {
-      "type": "action",
       "step": "Navigate to a product",
       "description": "Go to any product detail page by clicking a product card from the homepage or collection."
     },
