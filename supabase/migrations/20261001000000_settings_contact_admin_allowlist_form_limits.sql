@@ -23,12 +23,11 @@
 
 -- ── 1. Correct the seeded settings ────────────────────────────────
 -- jsonb_set keeps any other key an admin has since added to the block.
+-- Only the two phone numbers are corrected here. The live contact email
+-- (info@riman.ae) is a deliberate business value and is deliberately left
+-- untouched: this migration must not decide which address the atelier wants.
 UPDATE site_settings
    SET value = jsonb_set(value, '{phone}', '"+971 55 373 0792"'::jsonb)
- WHERE key = 'contact';
-
-UPDATE site_settings
-   SET value = jsonb_set(value, '{email}', '"boutique@riman.ae"'::jsonb)
  WHERE key = 'contact';
 
 UPDATE site_settings

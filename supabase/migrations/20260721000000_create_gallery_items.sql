@@ -1,5 +1,9 @@
 -- Gallery items table
-CREATE TABLE gallery_items (
+-- Re-runnable: the production database was created by pasting schema.sql, so
+-- this table already exists there while the migration ledger did not record it.
+-- Plain CREATE TABLE aborted the push with "relation already exists", which
+-- would have left every later security migration unapplied.
+CREATE TABLE IF NOT EXISTS gallery_items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL DEFAULT '',
   description TEXT DEFAULT '',
@@ -13,9 +17,9 @@ CREATE TABLE gallery_items (
 );
 
 -- Indexes
-CREATE INDEX idx_gallery_category ON gallery_items(category);
-CREATE INDEX idx_gallery_featured ON gallery_items(is_featured) WHERE is_featured = true;
-CREATE INDEX idx_gallery_sort ON gallery_items(sort_order);
+CREATE INDEX IF NOT EXISTS idx_gallery_category ON gallery_items(category);
+CREATE INDEX IF NOT EXISTS idx_gallery_featured ON gallery_items(is_featured) WHERE is_featured = true;
+CREATE INDEX IF NOT EXISTS idx_gallery_sort ON gallery_items(sort_order);
 
 -- RLS policies
 ALTER TABLE gallery_items ENABLE ROW LEVEL SECURITY;
