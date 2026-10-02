@@ -81,10 +81,19 @@ describe('extractWebhookOrderRef against real Stripe payloads', () => {
       eventType: 'checkout.session.completed',
       orderId: ORDER_ID,
       sessionId: 'cs_test_a1RimanCheckoutSession00000000000000000000000000',
+      // Captured so a later charge.refunded can be matched back to this order.
+      paymentIntentId: 'pi_3P3Q9kJ2HvKJ7c0dRb8xYz2eVb',
       amountTotalCents: 4200000,
       currency: 'aed',
       paymentStatus: 'paid',
     });
+  });
+
+  it('treats a null payment_intent as unknown, not as a bad value', () => {
+    const result = extractWebhookOrderRef(realCheckoutSessionEvent({}, { payment_intent: null }));
+    expect(result.ok).toBe(true);
+    if (!result.ok || 'ignore' in result) return;
+    expect(result.value.paymentIntentId).toBeNull();
   });
 
   it('treats a null amount_total as unknown, never as zero', () => {

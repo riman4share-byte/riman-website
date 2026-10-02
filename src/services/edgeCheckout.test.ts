@@ -7,6 +7,8 @@ import {
   parseAllowedOrigins,
   rentalPeriodIsFree,
   extractWebhookOrderRef,
+  extractChargeRefundRef,
+  isChargeRefundEvent,
   MAX_QUANTITY,
   MAX_CART_LINES,
   type ProductRow,
@@ -151,6 +153,62 @@ describe('parseCheckoutRequest — strict schema', () => {
         intent: 'rent', rental_start_date: iso(3650), rental_end_date: iso(3657),
       })]));
       expect(far.ok).toBe(false);
+    });
+  });
+
+  describe('webhook event routing', () => {
+    it('ignores non-session events so they cannot reach fulfillment', () => {
+      const r = extractWebhookOrderRef({ id: 'evt_1', type: 'charge.succeeded', data: { object: {} } });
+      expect(r).toEqual({ ok: false, ignore: true });
+    });
+
+    it('captures the payment intent so a later refund can be attributed', () => {
+      const r = extractWebhookOrderRef({
+        id: 'evt_1', type: 'checkout.session.completed',
+        data: { object: { id: 'cs_test_1234567890', metadata: { order_id: 'o1' }, payment_intent: 'pi_abc123' } },
+      });
+      expect(r.ok).toBe(true);
+      expect(r.ok && r.value.paymentIntentId).toBe('pi_abc123');
+    });
+
+    it('drops a malformed payment intent rather than storing junk', () => {
+      const r = extractWebhookOrderRef({
+        id: 'evt_1', type: 'checkout.session.completed',
+        data: { object: { id: 'cs_test_1234567890', metadata: { order_id: 'o1' }, payment_intent: 'not-a-pi' } },
+      });
+      expect(r.ok && r.value.paymentIntentId).toBeNull();
+    });
+
+    it('recognises the refund and dispute event types', () => {
+      for (const t of ['charge.refunded', 'refund.created', 'charge.dispute.created']) {
+        expect(isChargeRefundEvent(t)).toBe(true);
+      }
+      expect(isChargeRefundEvent('checkout.session.completed')).toBe(false);
+    });
+
+    it('sums refunds on the charge to decide a full refund', () => {
+      const r = extractChargeRefundRef({
+        id: 'evt_2', type: 'charge.refunded',
+        data: { object: { id: 'ch_abc123', payment_intent: 'pi_abc123', amount: 50000, currency: 'aed', refunds: { data: [{ amount: 20000 }, { amount: 30000 }] } } },
+      });
+      expect(r.ok).toBe(true);
+      expect(r.ok && r.value.amountRefundedCents).toBe(50000);
+      expect(r.ok && r.value.amountCents).toBe(50000);
+    });
+
+    it('rejects a refund with no payment intent, which cannot be attributed', () => {
+      const r = extractChargeRefundRef({ id: 'evt_3', type: 'charge.refunded', data: { object: { id: 'ch_x' } } });
+      expect(r.ok).toBe(true);
+      expect(r.ok && r.value.paymentIntentId).toBeNull();
+    });
+
+    it('rejects a malformed refund envelope instead of guessing', () => {
+      expect(extractChargeRefundRef({ id: 'evt_4', type: 'charge.refunded', data: { object: 'nope' } }).ok).toBe(false);
+      expect(extractChargeRefundRef({ type: 'charge.refunded' }).ok).toBe(false);
+    });
+
+    it('does not treat a session event as a refund', () => {
+      expect(extractChargeRefundRef({ id: 'e', type: 'checkout.session.completed', data: { object: {} } }).ok).toBe(false);
     });
   });
 

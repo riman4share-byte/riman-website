@@ -331,6 +331,7 @@ export function extractWebhookOrderRef(event: unknown): Validated<{
   eventType: string;
   orderId: string;
   sessionId: string;
+  paymentIntentId: string | null;
   amountTotalCents: number | null;
   currency: string | null;
   paymentStatus: string;
@@ -362,9 +363,82 @@ export function extractWebhookOrderRef(event: unknown): Validated<{
       eventType,
       orderId,
       sessionId,
+      // Persisted on the order so a later charge.refunded can be attributed.
+      paymentIntentId: typeof session.payment_intent === 'string' && /^pi_[A-Za-z0-9_]{5,255}$/.test(session.payment_intent)
+        ? session.payment_intent
+        : null,
       amountTotalCents: typeof session.amount_total === 'number' ? session.amount_total : null,
       currency: typeof session.currency === 'string' ? session.currency : null,
       paymentStatus: typeof session.payment_status === 'string' ? session.payment_status : '',
+    },
+  };
+}
+
+/** Event types that carry money movement away from a completed payment. */
+const CHARGE_REFUND_TYPES = new Set(['charge.refunded', 'refund.created', 'charge.dispute.created']);
+
+/** Does this event need the charge/refund path rather than the session path? */
+export function isChargeRefundEvent(eventType: string): boolean {
+  return CHARGE_REFUND_TYPES.has(eventType);
+}
+
+/**
+ * Extract the refund/dispute facts we act on.
+ *
+ * These events reference a Charge or Refund, which does NOT carry the Checkout
+ * Session's metadata, so the order is resolved later via
+ * orders.stripe_payment_intent_id. Nothing here is trusted for money decisions
+ * beyond deciding *whether* a refund is complete: the comparison is against
+ * the server's own order total, never against a client-supplied figure.
+ */
+export function extractChargeRefundRef(event: unknown): Validated<{
+  eventId: string;
+  eventType: string;
+  chargeId: string | null;
+  paymentIntentId: string | null;
+  amountRefundedCents: number | null;
+  amountCents: number | null;
+  currency: string | null;
+}> {
+  if (!isPlainObject(event)) return fail('Invalid event');
+  const eventId = event.id;
+  const eventType = event.type;
+  if (typeof eventId !== 'string' || !eventId || typeof eventType !== 'string' || !eventType) {
+    return fail('Invalid event envelope');
+  }
+  if (!CHARGE_REFUND_TYPES.has(eventType)) return fail('Not a refund event');
+
+  const data = event.data;
+  const obj = isPlainObject(data) ? data.object : undefined;
+  if (!isPlainObject(obj)) return fail('Invalid charge object');
+
+  // refund.created puts the Refund at data.object; charge.* puts the Charge.
+  const source = eventType === 'refund.created' ? obj : obj;
+  const amountRefunded = eventType === 'refund.created'
+    ? source.amount
+    : (isPlainObject(source.refunds) && Array.isArray(source.refunds.data)
+        ? source.refunds.data.reduce((sum: number, r: unknown) => {
+            const amt = isPlainObject(r) && typeof r.amount === 'number' ? r.amount : 0;
+            return sum + amt;
+          }, 0)
+        : (typeof source.amount_refunded === 'number' ? source.amount_refunded : null));
+
+  const paymentIntentId = typeof source.payment_intent === 'string' && /^pi_[A-Za-z0-9_]{5,255}$/.test(source.payment_intent)
+    ? source.payment_intent
+    : null;
+
+  return {
+    ok: true,
+    value: {
+      eventId,
+      eventType,
+      chargeId: typeof obj.id === 'string' && /^ch_[A-Za-z0-9_]{5,255}$/.test(obj.id) ? obj.id : null,
+      paymentIntentId,
+      amountRefundedCents: typeof amountRefunded === 'number' && Number.isSafeInteger(amountRefunded) && amountRefunded >= 0
+        ? amountRefunded
+        : null,
+      amountCents: typeof source.amount === 'number' && Number.isSafeInteger(source.amount) ? source.amount : null,
+      currency: typeof source.currency === 'string' ? source.currency : null,
     },
   };
 }

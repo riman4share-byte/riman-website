@@ -86,8 +86,22 @@ Use these cards for the failure paths:
   difference.
 - **Double delivery.** Replay a webhook payload with `stripe trigger`. The
   claim gate should make it a no-op.
-- **Refund.** Refund the payment intent. There is no automated refund handling;
-  confirm that is acceptable for a deposit-based bridal business.
+- **Full refund.** Refund the payment intent in full from the Stripe dashboard.
+  `charge.refunded` should flip the order to `payment_status: 'refunded'` and
+  release its rental booking back to `released`, which frees the dates
+  (`blocking_range` goes NULL). An admin alert is queued either way.
+- **Partial refund.** Refund less than the total. The order stays `paid` and the
+  rental booking is deliberately **kept** — the garment is still with the
+  customer, so freeing the dates would let someone else book it.
+- **Dispute.** Open a dispute on the charge. `charge.dispute.created` flags the
+  order `needs_review` and alerts the admin; it does not auto-release the
+  booking, because the customer may physically still have the gown.
+- **Unattributable refund.** A refund whose `payment_intent` matches no order
+  is logged and alerted (`refund_unmatched`) rather than silently dropped.
+
+To exercise these, the Stripe endpoint must subscribe to `charge.refunded`,
+`refund.created` and `charge.dispute.created` in addition to the two
+`checkout.session.*` events.
 
 ## Known limitation
 
