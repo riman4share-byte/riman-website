@@ -28,6 +28,7 @@ export class TryOnError extends Error {
 
 const MESSAGES: Record<TryOnErrorCode, string> = {
   invalid_request: 'That request could not be understood. Please try again.',
+  unauthorized: 'Your session has expired. Please sign in again.',
   consent_required: 'We need your consent before using your photo.',
   not_configured: 'Virtual try-on is being set up. Please try again shortly.',
   rate_limited: 'You have reached the try-on limit for this hour. Please try again later.',
@@ -38,7 +39,7 @@ const MESSAGES: Record<TryOnErrorCode, string> = {
 
 const STATUS_CODES: Record<number, TryOnErrorCode> = {
   400: 'invalid_request',
-  401: 'invalid_request',
+  401: 'unauthorized',
   403: 'consent_required',
   429: 'rate_limited',
   503: 'not_configured',
@@ -50,14 +51,6 @@ export function validatePhotoFile(file: File): TryOnFailure | null {
   }
   if (file.size > MAX_IMAGE_BYTES) {
     return { code: 'invalid_image', message: 'Please choose a photo under 8 MB.' };
-  }
-  const width = (file as File & { width?: number }).width ?? 0;
-  const height = (file as File & { height?: number }).height ?? 0;
-  if (width && (width < MIN_DIMENSION || height < MIN_DIMENSION)) {
-    return { code: 'invalid_image', message: `Please choose a photo at least ${MIN_DIMENSION}x${MIN_DIMENSION} pixels.` };
-  }
-  if (width && (width > MAX_DIMENSION || height > MAX_DIMENSION)) {
-    return { code: 'invalid_image', message: `Please choose a photo smaller than ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.` };
   }
   return null;
 }
@@ -79,6 +72,17 @@ export async function fileToDataUrl(file: File): Promise<string> {
     });
   }
 
+  // Dimensions are enforced here, on the decode path, because this is the first
+  // and only point where they exist: a browser File has neither width nor height.
+  if (bitmap.width < MIN_DIMENSION || bitmap.height < MIN_DIMENSION) {
+    bitmap.close();
+    throw new TryOnError('invalid_image', `Please choose a photo at least ${MIN_DIMENSION}x${MIN_DIMENSION} pixels.`);
+  }
+  if (bitmap.width > MAX_DIMENSION || bitmap.height > MAX_DIMENSION) {
+    bitmap.close();
+    throw new TryOnError('invalid_image', `Please choose a photo smaller than ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.`);
+  }
+
   const scale = Math.min(1, DOWNSCALE_MAX_EDGE / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(bitmap.width * scale));
@@ -90,9 +94,12 @@ export async function fileToDataUrl(file: File): Promise<string> {
   }
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(bitmap as unknown as CanvasImageSource, 0, 0, canvas.width, canvas.height);
-  // Released only after the draw: closing first hands drawImage a dead handle.
-  bitmap.close();
+  try {
+    ctx.drawImage(bitmap as unknown as CanvasImageSource, 0, 0, canvas.width, canvas.height);
+  } finally {
+    // Released only after the draw: closing first hands drawImage a dead handle.
+    bitmap.close();
+  }
   return canvas.toDataURL('image/jpeg', JPEG_QUALITY);
 }
 
@@ -111,6 +118,9 @@ export async function requestTryOn(args: {
   const timer = setTimeout(() => controller.abort(), TRY_ON_TIMEOUT_MS);
   const onOuterAbort = () => controller.abort();
   args.signal?.addEventListener('abort', onOuterAbort);
+  // An 'abort' listener never fires for a signal that was already aborted, so
+  // the request would otherwise run the full timeout.
+  if (args.signal?.aborted) controller.abort();
 
   try {
     const response = await fetch(`${edgeFunctionsBase}/virtual-tryon`, {

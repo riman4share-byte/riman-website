@@ -21,6 +21,7 @@ export interface GarmentProduct {
 
 export type TryOnErrorCode =
   | 'invalid_request'
+  | 'unauthorized'
   | 'consent_required'
   | 'not_configured'
   | 'rate_limited'
