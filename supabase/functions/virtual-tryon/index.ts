@@ -22,6 +22,7 @@
 import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { clientIp } from '../_shared/httpGuards.ts';
+import { isAllowedOrigin } from '../_shared/checkoutValidation.ts';
 import {
   type GarmentProduct,
   isTryOnEligible,
@@ -29,6 +30,7 @@ import {
   parseGeminiResponse,
   parseTryOnRequest,
   resolveGarmentPath,
+  toBase64,
   validateImageDataUrl,
   type TryOnErrorCode,
 } from './tryOnValidation.ts';
@@ -78,7 +80,10 @@ const STATUS_BY_CODE: Record<TryOnErrorCode, number> = {
 
 function corsFor(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') || '';
-  const allowed = SITE_URL && origin.startsWith(SITE_URL) ? origin : SITE_URL;
+  // Exact-origin equality, matching create-checkout's isAllowedOrigin. A prefix
+  // match would echo back any origin that merely starts with SITE_URL, e.g.
+  // https://riman.ae.evil.com.
+  const allowed = isAllowedOrigin(origin, [SITE_URL]) ? origin : SITE_URL;
   return {
     'Access-Control-Allow-Origin': allowed || '*',
     'Access-Control-Allow-Headers': 'authorization, content-type',
@@ -168,17 +173,54 @@ async function fetchGarmentRow(
   return { ok: true, value: row };
 }
 
-async function fetchGarment(path: string): Promise<{ base64: string; mime: string }> {
-  const url = absoluteAssetUrl(path);
-  // Belt and braces: the path is already known to be a local /assets/ path.
-  if (!url.startsWith(SITE_URL || ' ')) {
-    throw new Error('garment url left the deployment origin');
+async function fetchGarment(path: string, signal: AbortSignal): Promise<{ base64: string; mime: string }> {
+  // Defence in depth on this function's own contract: it may only read a
+  // catalogue asset. resolveGarmentPath already enforces this, but pinning it
+  // to the input here means the check can genuinely fail if a future caller
+  // passes something else - unlike a check against the url just built below.
+  if (!path.startsWith('/assets/')) {
+    throw new Error('garment path left the catalogue root');
   }
-  const response = await fetch(url);
+  const url = absoluteAssetUrl(path);
+  const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`garment fetch failed: ${response.status}`);
   const buffer = new Uint8Array(await response.arrayBuffer());
   const mime = response.headers.get('content-type') || 'image/jpeg';
-  return { base64: btoa(String.fromCharCode(...buffer)), mime };
+  return { base64: toBase64(buffer), mime };
+}
+
+/**
+ * Reads the request body as text, refusing to buffer more than MAX_REQUEST_BYTES.
+ *
+ * Content-Length is client-controlled and absent on a chunked/streamed request,
+ * so it is only a fast-path rejection: a missing header must not skip the bound.
+ * The stream is counted as it arrives, which is what actually caps memory.
+ * Returns null when the ceiling is exceeded.
+ */
+async function readBoundedBody(req: Request): Promise<string | null> {
+  const declared = Number(req.headers.get('content-length') || 0);
+  if (declared > MAX_REQUEST_BYTES) return null;
+  if (!req.body) return '';
+
+  const reader = req.body.getReader();
+  const decoder = new TextDecoder();
+  let received = 0;
+  let text = '';
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      if (received > MAX_REQUEST_BYTES) {
+        await reader.cancel().catch(() => {});
+        return null;
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally {
+    reader.releaseLock();
+  }
 }
 
 const PROMPT =
@@ -197,12 +239,24 @@ serve(async (req: Request) => {
     console.error('virtual-tryon: GEMINI_API_KEY is not set');
     return fail(req, 'not_configured', 'Virtual try-on is not configured.');
   }
+  // SITE_URL is required to build the garment asset URL. Without it every
+  // request would fail later at fetch time as a misleading 502; reject up front
+  // as the configuration problem it is.
+  if (!SITE_URL) {
+    console.error('virtual-tryon: SITE_URL is not set');
+    return fail(req, 'not_configured', 'Virtual try-on is not configured.');
+  }
 
   // 1. Authenticate. verify_jwt already ran at the gateway; this resolves the
   //    user id we rate limit on.
   const authHeader = req.headers.get('authorization') || '';
   const token = authHeader.replace(/^Bearer\s+/i, '');
-  if (!token || !SUPABASE_ANON_KEY) return fail(req, 'unauthorized', 'Sign in required.');
+  // A missing anon key is a server misconfiguration, not a rejected caller.
+  if (!SUPABASE_ANON_KEY) {
+    console.error('virtual-tryon: SUPABASE_ANON_KEY is not set');
+    return fail(req, 'not_configured', 'Virtual try-on is not configured.');
+  }
+  if (!token) return fail(req, 'unauthorized', 'Sign in required.');
 
   const { data: userData, error: userError } = await createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -214,16 +268,16 @@ serve(async (req: Request) => {
   }
   const userId = userData.user.id;
 
-  // 2. Reject oversize bodies before reading them into anything.
-  const declaredLength = Number(req.headers.get('content-length') || 0);
-  if (declaredLength > MAX_REQUEST_BYTES) {
-    return fail(req, 'invalid_image', 'Request body too large.');
-  }
+  // 2. Read the body under a hard ceiling. Content-Length is only trusted as a
+  //    fast path; the stream itself is counted so a chunked request cannot slip
+  //    an unbounded body past it.
+  const bodyText = await readBoundedBody(req);
+  if (bodyText === null) return fail(req, 'invalid_image', 'Request body too large.');
 
-  // 3. Parse and validate. Consent is checked before anything else.
+  // 3. Parse and validate. Consent is enforced before the photo is used.
   let raw: unknown;
   try {
-    raw = await req.json();
+    raw = JSON.parse(bodyText);
   } catch {
     return fail(req, 'invalid_request', 'Body must be JSON.');
   }
@@ -250,7 +304,9 @@ serve(async (req: Request) => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
   try {
-    const garment = await fetchGarment(garmentPath);
+    // The same signal covers the garment fetch, so a hung asset download is
+    // bounded by the timeout rather than hanging the request indefinitely.
+    const garmentImage = await fetchGarment(garmentPath, controller.signal);
     const response = await fetch(GEMINI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
@@ -260,7 +316,7 @@ serve(async (req: Request) => {
           {
             parts: [
               { inline_data: { mime_type: image.value.mime, data: image.value.base64 } },
-              { inline_data: { mime_type: garment.mime, data: garment.base64 } },
+              { inline_data: { mime_type: garmentImage.mime, data: garmentImage.base64 } },
               { text: PROMPT },
             ],
           },
@@ -289,7 +345,11 @@ serve(async (req: Request) => {
     }
 
     console.log(`virtual-tryon: ok in ${Date.now() - startedAt}ms ip=${clientIp(req.headers)}`);
-    return json({ image: generated.value.base64, mime: generated.value.mime }, 200, req);
+    // The result is derived from the customer's photo; it must never be stored
+    // by a browser or an intermediary.
+    return json({ image: generated.value.base64, mime: generated.value.mime }, 200, req, {
+      'Cache-Control': 'no-store',
+    });
   } catch (error) {
     const aborted = error instanceof DOMException && error.name === 'AbortError';
     // Log the class, never the message payload.

@@ -185,3 +185,22 @@ export function parseGeminiResponse(json: unknown): ParseResult<{ base64: string
   }
   return fail('upstream_error', 'Generation returned no image.');
 }
+
+/**
+ * Encodes bytes to base64 in bounded chunks.
+ *
+ * `btoa(String.fromCharCode(...bytes))` spreads the whole array into a single
+ * call, which overflows the engine's argument/stack limit well below the size
+ * of a real garment photo (the largest catalogue asset is 709 KB) and surfaces
+ * as a 502 for most products. Walking 32 KB at a time keeps every
+ * `fromCharCode` call far under the limit while producing byte-identical
+ * output.
+ */
+export function toBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunk = 0x8000; // 32 KB - well under the argument/stack limit
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}

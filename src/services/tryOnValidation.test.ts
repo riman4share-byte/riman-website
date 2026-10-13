@@ -10,6 +10,7 @@ import {
   parseTryOnRequest,
   validateImageDataUrl,
   parseGeminiResponse,
+  toBase64,
 } from '../../supabase/functions/virtual-tryon/tryOnValidation';
 
 const gown = {
@@ -169,6 +170,32 @@ describe('dimension constants', () => {
   it('matches the spec', () => {
     expect(MIN_DIMENSION).toBe(400);
     expect(MAX_DIMENSION).toBe(8000);
+  });
+});
+
+describe('toBase64', () => {
+  it('round-trips a small payload', () => {
+    expect(toBase64(new TextEncoder().encode('hello world'))).toBe('aGVsbG8gd29ybGQ=');
+  });
+
+  it('round-trips a payload larger than 200 KB without throwing', () => {
+    // Regression for the Critical review finding: the previous
+    // `btoa(String.fromCharCode(...bytes))` encoder overflowed the engine's
+    // argument/stack limit (bare Node throws around 125 KB; the vitest/jsdom
+    // worker here throws between 300 KB and 500 KB), so this test fails against
+    // the spread implementation. 1 MB is comfortably above both and above the
+    // real largest catalogue asset (709 KB).
+    const bytes = new Uint8Array(1024 * 1024 + 1);
+    for (let i = 0; i < bytes.length; i++) bytes[i] = i % 256;
+
+    const encoded = toBase64(bytes);
+    expect(encoded.length).toBe(Math.ceil(bytes.length / 3) * 4);
+
+    const decoded = atob(encoded);
+    expect(decoded.length).toBe(bytes.length);
+    expect(decoded.charCodeAt(0)).toBe(bytes[0]);
+    expect(decoded.charCodeAt(12_345)).toBe(bytes[12_345]);
+    expect(decoded.charCodeAt(bytes.length - 1)).toBe(bytes[bytes.length - 1]);
   });
 });
 
