@@ -80,3 +80,11 @@ Deliberate decisions:
 
 Consider switching to CSP nonces for scripts once the GA loader is the only
 external need, and to a `report-to`/`Report-URI` endpoint for monitoring.
+
+## Virtual try-on
+
+The browser calls only `<SUPABASE_URL>/functions/v1/virtual-tryon`. The Gemini
+endpoint (`generativelanguage.googleapis.com`) is contacted **server-side only**,
+from the Edge Function, so `connect-src` needs no change. The result is returned
+to the browser as a base64 data URL, which the existing `img-src ... data:` entry
+already permits.
