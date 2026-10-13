@@ -35,9 +35,11 @@ export default function ProductDetail() {
   const { settings } = useSettings();
   const navigate = useNavigate();
   const threeDViewerEnabled = useFeature('threeDViewer');
-  const { addToast } = useToast();
-  const [selectedSize, setSelectedSize] = useState('');
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+ const { addToast } = useToast();
+  const tryOnEnabled = useFeature('virtualTryOn');
+  const [showTryOn, setShowTryOn] = useState(false);
+ const [selectedSize, setSelectedSize] = useState('');
+ const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
   const [bookingDate, setBookingDate] = useState<Date | null>(null);
@@ -89,6 +91,11 @@ export default function ProductDetail() {
 
   const { name: productName, description: productDescription } = localizedContent(product ?? { name: '', description: '' }, language);
 
+  const tryOnEligible = tryOnEnabled
+    && !!product
+    && (product.category === 'Bridal Gown' || product.category === 'Evening Dress')
+    && product.images.length > 0;
+
   const { pullQuote, bodyCopy } = useMemo(() => {
     const d = productDescription || '';
     const cut = d.indexOf('. ');
@@ -96,6 +103,11 @@ export default function ProductDetail() {
     return { pullQuote: d.slice(0, cut + 1), bodyCopy: d.slice(cut + 2).trim() };
   }, [product?.description]);
 
+  useEffect(() => {
+    if (showTryOn && product) {
+      analytics.tryOnOpened({ id: product.id, name: product.name, category: product.category });
+    }
+  }, [showTryOn, product]);
   useEffect(() => {
     if (!id) return;
     fetchApprovedReviews(id).then(setReviews).catch(() => setReviews([]));
@@ -518,13 +530,18 @@ export default function ProductDetail() {
                     })}
                   </div>
                 </div>
-
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1 flex flex-col gap-2">
                     <button onClick={reserveViewing} className="w-full btn-luxury flex items-center justify-center gap-3">
                       <Sparkles className="w-4 h-4" />
                       {t('product.reserve_viewing')}
                     </button>
+                    {tryOnEligible && (
+                      <button onClick={() => setShowTryOn(true)} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
+                        <Sparkles className="w-4 h-4" />
+                        {t('tryon.button')}
+                      </button>
+                    )}
                     {(!isSale || purchaseMode === 'sale' || (isRent && purchaseMode === 'rent')) && (
                       <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
                         {isAddingToCart ? (
@@ -898,6 +915,12 @@ export default function ProductDetail() {
             <p className="font-heading text-sm text-terracotta-dark"><span className="text-micro font-body text-stone-600 uppercase tracking-wider me-1">{t('pricing.from')}</span>{formatPrice(isSale ? (product.salePrice || 0) : (isRent ? (product.rentalPrice || 0) : 0))}</p>
           </div>
           <div className="flex flex-col gap-1.5 shrink-0">
+            {tryOnEligible && (
+              <button onClick={() => setShowTryOn(true)} className="btn-luxury-outline !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t('tryon.button')}
+              </button>
+            )}
             <button onClick={reserveViewing} className="btn-luxury !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
               <Sparkles className="w-3.5 h-3.5" />
               {t('product.reserve_viewing')}
@@ -913,11 +936,14 @@ export default function ProductDetail() {
         </div>
 
         {/* Reservation Confirmation Modal */}
-        <AnimatePresence>
-          {showConfirmation && bookingDate && (
-            <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
+       <AnimatePresence>
+         {showConfirmation && bookingDate && (
+           <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
+         )}
+          {showTryOn && tryOnEligible && (
+            <VirtualTryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
           )}
-        </AnimatePresence>
+       </AnimatePresence>
       </div>
 
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
@@ -997,3 +1023,5 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
     </motion.div>
   );
 }
+import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
+

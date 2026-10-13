@@ -90,6 +90,8 @@ export const analytics = {
     trackEvent({ event: 'request_viewing', selectionSize: items.length, intent: items[0]?.intent }),
   beginCheckout: (value: number, currency = 'AED', itemCount: number) =>
     trackEvent({ event: 'begin_checkout', value, currency, selectionSize: itemCount }),
-  orderComplete: (orderId: string, value: number, currency = 'AED', itemCount: number) =>
-    trackEvent({ event: 'order_complete', orderId, value, currency, selectionSize: itemCount }),
+ orderComplete: (orderId: string, value: number, currency = 'AED', itemCount: number) =>
+   trackEvent({ event: 'order_complete', orderId, value, currency, selectionSize: itemCount }),
+  tryOnOpened: (product: { id: string; name: string; category?: string }) =>
+    trackEvent({ event: 'tryon_opened', productId: product.id, productName: product.name, category: product.category }),
 };
