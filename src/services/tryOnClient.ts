@@ -11,6 +11,7 @@ import {
 export const TRY_ON_TIMEOUT_MS = 60_000;
 const DOWNSCALE_MAX_EDGE = 1600;
 const JPEG_QUALITY = 0.85;
+const DIMENSION_PROBE_TIMEOUT_MS = 1_500;
 
 export interface TryOnFailure {
   code: TryOnErrorCode;
@@ -55,6 +56,46 @@ export function validatePhotoFile(file: File): TryOnFailure | null {
   return null;
 }
 
+/**
+ * Reads a File's dimensions through a detached <img> probe, for the browsers
+ * and payloads where createImageBitmap is missing or throws. Returns null when
+ * the environment cannot produce dimensions at all (no object URLs, bytes that
+ * will not decode, or a probe that never settles) - unknown dimensions are not
+ * the same as bad ones, so the caller falls back to the original data URL
+ * rather than inventing a rejection the canvas path would not produce.
+ */
+async function probePhotoSize(file: File): Promise<{ width: number; height: number } | null> {
+  if (typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') return null;
+  let url: string;
+  try {
+    url = URL.createObjectURL(file);
+  } catch {
+    return null;
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await new Promise<{ width: number; height: number } | null>((resolve) => {
+      // Never appended: a probe must not leak a node into the document.
+      const image = new Image();
+      const settle = (size: { width: number; height: number } | null) => {
+        clearTimeout(timer);
+        resolve(size);
+      };
+      // A local blob decodes in milliseconds in a real browser; an environment
+      // that never fires load or error must degrade to "unknown" rather than
+      // hang the customer's upload forever.
+      timer = setTimeout(() => settle(null), DIMENSION_PROBE_TIMEOUT_MS);
+      image.onload = () => settle({ width: image.naturalWidth, height: image.naturalHeight });
+      image.onerror = () => settle(null);
+      image.src = url;
+    });
+  } finally {
+    // The object URL pins the whole File in memory, so it is released on the
+    // reject path exactly as on the resolve path.
+    URL.revokeObjectURL(url);
+  }
+}
+
 export async function fileToDataUrl(file: File): Promise<string> {
   let bitmap: ImageBitmap | null = null;
   try {
@@ -64,6 +105,17 @@ export async function fileToDataUrl(file: File): Promise<string> {
   }
 
   if (!bitmap) {
+    // The file-reader path must enforce the same bound as the canvas path, or
+    // an oversized photo bypasses the limits and the customer pays to upload it.
+    const size = await probePhotoSize(file);
+    if (size) {
+      if (size.width < MIN_DIMENSION || size.height < MIN_DIMENSION) {
+        throw new TryOnError('invalid_image', `Please choose a photo at least ${MIN_DIMENSION}x${MIN_DIMENSION} pixels.`);
+      }
+      if (size.width > MAX_DIMENSION || size.height > MAX_DIMENSION) {
+        throw new TryOnError('invalid_image', `Please choose a photo smaller than ${MAX_DIMENSION}x${MAX_DIMENSION} pixels.`);
+      }
+    }
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);

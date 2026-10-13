@@ -122,6 +122,84 @@ describe('fileToDataUrl', () => {
     // only come from the FileReader fallback.
     expect(out.startsWith('data:image/png;base64,')).toBe(true);
   });
+
+  // jsdom implements neither URL.createObjectURL nor image decoding, so the
+  // <img> probe the fallback path relies on is injected here.
+  function stubProbe(width: number, height: number, opts: { decodes?: boolean } = {}) {
+    const createObjectURL = vi.fn(() => 'blob:probe');
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL });
+    vi.stubGlobal('Image', class {
+      naturalWidth = width;
+      naturalHeight = height;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      set src(_value: string) {
+        (opts.decodes === false ? this.onerror : this.onload)?.();
+      }
+    });
+    return { createObjectURL, revokeObjectURL };
+  }
+
+  it('rejects a fallback photo below 400px', async () => {
+    vi.stubGlobal('createImageBitmap', undefined);
+    const { revokeObjectURL } = stubProbe(399, 900);
+
+    await expect(fileToDataUrl(png())).rejects.toMatchObject({
+      code: 'invalid_image',
+      message: expect.stringContaining('400x400'),
+    });
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:probe');
+  });
+
+  it('rejects a fallback photo above 8000px', async () => {
+    vi.stubGlobal('createImageBitmap', undefined);
+    const { revokeObjectURL } = stubProbe(900, 8001);
+
+    await expect(fileToDataUrl(png())).rejects.toMatchObject({
+      code: 'invalid_image',
+      message: expect.stringContaining('8000x8000'),
+    });
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:probe');
+  });
+
+  it('returns the original mime for a legal fallback photo', async () => {
+    vi.stubGlobal('createImageBitmap', undefined);
+    const { revokeObjectURL } = stubProbe(1000, 2000);
+
+    await expect(fileToDataUrl(png())).resolves.toMatch(/^data:image\/png;base64,/);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:probe');
+  });
+
+  it('revokes the probe URL when the bytes will not decode', async () => {
+    vi.stubGlobal('createImageBitmap', undefined);
+    const { revokeObjectURL } = stubProbe(1000, 2000, { decodes: false });
+
+    // Undecodable bytes are unknown dimensions, not a dimension rejection.
+    await expect(fileToDataUrl(png())).resolves.toMatch(/^data:image\/png;base64,/);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:probe');
+  });
+
+  it('revokes the probe URL when the probe never settles', async () => {
+    vi.stubGlobal('createImageBitmap', undefined);
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal('URL', { createObjectURL: vi.fn(() => 'blob:probe'), revokeObjectURL });
+    vi.stubGlobal('Image', class {
+      naturalWidth = 0;
+      naturalHeight = 0;
+      onload: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      // Never fires, like an environment that will not decode a blob URL.
+      set src(_value: string) {}
+    });
+
+    const started = Date.now();
+    const out = await fileToDataUrl(png());
+    // A probe that never answers must degrade to the original read, not hang.
+    expect(out.startsWith('data:image/png;base64,')).toBe(true);
+    expect(Date.now() - started).toBeLessThan(4_500);
+    expect(revokeObjectURL).toHaveBeenCalledWith('blob:probe');
+  });
 });
 
 describe('requestTryOn', () => {
