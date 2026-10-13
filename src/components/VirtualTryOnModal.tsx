@@ -36,6 +36,17 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
 
+// Everything a keyboard can land on inside the dialog, in document order.
+// visibility/display are checked so a hidden control is not a tab stop; jsdom
+// returns no layout, so offsetParent/getClientRects are deliberately not used
+// (they would silently empty the list).
+function getFocusable(dialog: HTMLElement): HTMLElement[] {
+  return Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((el) => {
+    const style = window.getComputedStyle(el);
+    return style.visibility !== 'hidden' && style.display !== 'none';
+  });
+}
+
 export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   useScrollLock(isOpen);
   const { t } = useLanguage();
@@ -94,6 +105,19 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     };
   }, [isOpen]);
 
+  // A screen transition unmounts the control the customer was using (Continue,
+  // Generate, ...), so the browser drops the focused area back to <body>. Reclaim
+  // it into the dialog on every transition, so the keyboard is never stranded
+  // behind the overlay. Guarded with contains(): on the initial open the effect
+  // above has already focused Close, so this is a no-op there.
+  useEffect(() => {
+    if (!isOpen) return;
+    const dialog = dialogRef.current;
+    if (!dialog || dialog.contains(document.activeElement)) return;
+    const focusable = getFocusable(dialog);
+    (focusable[0] ?? dialog).focus();
+  }, [isOpen, screen]);
+
   // The chosen photo and the result exist only as component state. Nothing is
   // written to storage, and there is no object URL to revoke here - the service
   // owns (and releases) the one it uses to probe dimensions.
@@ -132,37 +156,42 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   }, [isOpen, handleClose]);
 
   // Tab cycles inside the dialog instead of escaping to the page behind the
-  // overlay. Only the wrap-around boundaries are intercepted, so ordinary Tab
-  // order inside the dialog is left alone.
-  const handleDialogKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'Tab') return;
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((el) => {
-      const style = window.getComputedStyle(el);
-      return style.visibility !== 'hidden' && style.display !== 'none';
-    });
-    if (focusable.length === 0) {
-      event.preventDefault();
-      dialog.focus();
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const active = document.activeElement;
-    if (!active || !dialog.contains(active)) {
-      event.preventDefault();
-      (event.shiftKey ? last : first).focus();
-      return;
-    }
-    if (event.shiftKey && active === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && active === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }, []);
+  // overlay. Bound at the document level, like the Escape listener above, so a
+  // Tab that arrives while focus has fallen outside the dialog is reclaimed
+  // rather than walking the page. Only the wrap-around boundaries and the
+  // out-of-dialog case are intercepted, so ordinary Tab order inside the dialog
+  // is left alone.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = getFocusable(dialog);
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (!active || !dialog.contains(active)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen]);
 
   const handleFile = useCallback(async (file: File) => {
     const invalid = validatePhotoFile(file);
@@ -231,10 +260,10 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
       const message = error instanceof TryOnError ? error.message : t('tryon.error_heading');
       setErrorMessage(message);
       setScreen('error');
-      // A generation the customer cancelled by closing is not a failure.
-      if (!controller.signal.aborted) {
-        trackEvent({ event: 'tryon_error', productId: product.id, productName: product.name, category: product.category });
-      }
+      // A cancelled run never reaches here: closing or unmounting bumps runIdRef,
+      // so the run-id check above returns first. Recording the error is therefore
+      // safe from the customer-cancelled path.
+      trackEvent({ event: 'tryon_error', productId: product.id, productName: product.name, category: product.category });
     } finally {
       if (runIdRef.current !== runId) return;
       abortRef.current = null;
@@ -261,7 +290,6 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
             aria-modal="true"
             aria-label={t('tryon.heading')}
             tabIndex={-1}
-            onKeyDown={handleDialogKeyDown}
             className="relative w-full max-w-lg bg-ivory max-h-[90vh] overflow-y-auto p-6 md:p-10 outline-none"
           >
             <button

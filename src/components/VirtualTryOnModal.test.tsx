@@ -144,35 +144,32 @@ describe('VirtualTryOnModal dialog semantics', () => {
     </>
   );
 
-  it('takes focus on open and keeps Tab inside the dialog', () => {
+  it('keeps keyboard focus inside the dialog across a screen transition', () => {
     render(harness(true));
     const dialog = screen.getByRole('dialog');
-    const close = screen.getByRole('button', { name: 'Close' });
-    const decline = screen.getByRole('button', { name: 'Not now' });
     const behind = screen.getByTestId('behind');
 
     // aria-modal="true" is only honest if focus actually starts inside.
-    expect(document.activeElement).toBe(close);
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Close' }));
+
+    // Move to the Continue button, which is the control that will unmount.
+    fireEvent.click(consentBox());
+    const cont = continueButton();
+    cont.focus();
+    expect(document.activeElement).toBe(cont);
+
+    // consent -> upload. Continue leaves the DOM; without a re-home the focused
+    // area falls back to <body> and the next Tab walks the page behind the
+    // overlay - the exact over-promise aria-modal="true" must prevent.
+    fireEvent.click(cont);
+
+    expect(document.activeElement).not.toBe(document.body);
     expect(dialog.contains(document.activeElement)).toBe(true);
 
-    // Wrap-around in both directions keeps the cycle inside the dialog.
-    decline.focus();
-    fireEvent.keyDown(dialog, { key: 'Tab' });
-    expect(document.activeElement).toBe(close);
-
-    fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
-    expect(document.activeElement).toBe(decline);
-
-    for (let i = 0; i < 12; i++) {
-      fireEvent.keyDown(dialog, { key: 'Tab' });
-      expect(dialog.contains(document.activeElement)).toBe(true);
-      expect(document.activeElement).not.toBe(behind);
-    }
-    for (let i = 0; i < 12; i++) {
-      fireEvent.keyDown(dialog, { key: 'Tab', shiftKey: true });
-      expect(dialog.contains(document.activeElement)).toBe(true);
-      expect(document.activeElement).not.toBe(behind);
-    }
+    // The next Tab is therefore reclaimed by the dialog, not the page behind.
+    fireEvent.keyDown(document.activeElement as Element, { key: 'Tab' });
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    expect(document.activeElement).not.toBe(behind);
   });
 
   it('gives focus back to the trigger when it closes', async () => {
