@@ -40,10 +40,25 @@ describe('isSafeGarmentPath', () => {
     expect(isSafeGarmentPath('/assets/nested/dress.jpg')).toBe(true);
   });
 
+  it('accepts unencoded spaces and non-ascii in a filename', () => {
+    // Neither of these needs percent-encoding in the catalogue value, so the
+    // blanket `%` rejection below cannot collide with a legitimate path.
+    expect(isSafeGarmentPath('/assets/summer dress.jpg')).toBe(true);
+    expect(isSafeGarmentPath('/assets/piñata-de-noche.jpg')).toBe(true);
+  });
+
   it('rejects percent-encoded traversal segments', () => {
     expect(isSafeGarmentPath('/assets/%2e%2e/%2e%2e/.env')).toBe(false);
     expect(isSafeGarmentPath('/assets/%2E%2E/.env')).toBe(false);
     expect(isSafeGarmentPath('/assets/.%2e/.env')).toBe(false);
+  });
+
+  it('rejects percent-encoded separators and double-encoding', () => {
+    // WHATWG normalisation decodes %2e but not %2f / %5c / %25, so these three
+    // survive normalisation unchanged and need the blanket `%` rejection.
+    expect(isSafeGarmentPath('/assets/%2e%2e%2f%2e%2e%2f.env')).toBe(false);
+    expect(isSafeGarmentPath('/assets/%2e%2e%5c.env')).toBe(false);
+    expect(isSafeGarmentPath('/assets/%252e%252e%252f.env')).toBe(false);
   });
 
   it('rejects absolute urls and backslash paths', () => {
@@ -70,6 +85,16 @@ describe('resolveGarmentPath', () => {
     expect(resolveGarmentPath(evil, 0)).toBeNull();
     const traversal = { id: 'y', category: 'Bridal Gown', images: ['/assets/../../.env'] };
     expect(resolveGarmentPath(traversal, 0)).toBeNull();
+  });
+
+  it('refuses percent-encoded separators and double-encoding', () => {
+    for (const image of [
+      '/assets/%2e%2e%2f%2e%2e%2f.env',
+      '/assets/%2e%2e%5c.env',
+      '/assets/%252e%252e%252f.env',
+    ]) {
+      expect(resolveGarmentPath({ id: 'z', category: 'Bridal Gown', images: [image] }, 0)).toBeNull();
+    }
   });
 });
 
@@ -152,6 +177,17 @@ describe('parseGeminiResponse', () => {
     const json = {
       candidates: [
         { content: { parts: [{ inlineData: { mimeType: 'image/png', data: 'AAAA' } }] } },
+      ],
+    };
+    const r = parseGeminiResponse(json);
+    expect(r).toMatchObject({ ok: true });
+    if (r.ok) expect(r.value).toEqual({ base64: 'AAAA', mime: 'image/png' });
+  });
+
+  it('accepts a mixed-case mime type and normalises it', () => {
+    const json = {
+      candidates: [
+        { content: { parts: [{ inlineData: { mimeType: 'IMAGE/PNG', data: 'AAAA' } }] } },
       ],
     };
     const r = parseGeminiResponse(json);

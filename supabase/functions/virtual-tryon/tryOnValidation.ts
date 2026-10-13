@@ -55,6 +55,14 @@ export function isSafeGarmentPath(path: unknown): path is string {
   if (!path.startsWith('/assets/')) return false;
   if (path.includes('..') || path.includes('\\')) return false;
 
+  // A legitimate catalogue asset path is a plain, already-encoded filesystem
+  // path. Any percent-encoding here is either redundant or an attempt to smuggle
+  // an encoded separator (%2f / %5c) or dot segment past the checks below -
+  // WHATWG normalisation decodes %2e but leaves %2f, %5c and %25 intact, so a
+  // single later decode by nginx or a static server turns them back into
+  // separators and dot segments.
+  if (path.includes('%')) return false;
+
   let normalised: string;
   try {
     normalised = new URL(path, 'https://guard.invalid').pathname;
@@ -168,9 +176,9 @@ export function parseGeminiResponse(json: unknown): ParseResult<{ base64: string
         typeof inline.data === 'string' &&
         inline.data.length > 0 &&
         typeof inline.mimeType === 'string' &&
-        (ALLOWED_IMAGE_MIME as ReadonlyArray<string>).includes(inline.mimeType)
+        (ALLOWED_IMAGE_MIME as ReadonlyArray<string>).includes(inline.mimeType.toLowerCase())
       ) {
-        return { ok: true, value: { base64: inline.data, mime: inline.mimeType } };
+        return { ok: true, value: { base64: inline.data, mime: inline.mimeType.toLowerCase() } };
       }
     }
   }
