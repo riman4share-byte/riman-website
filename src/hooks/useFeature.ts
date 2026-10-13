@@ -1,14 +1,14 @@
 import { useSettings } from '../contexts/SettingsContext';
 
 const DEFAULT_FEATURES: Record<string, boolean> = {
- newsletter: true,
- whatsappBtn: true,
- preloader: true,
- instagramFeed: true,
- cookieBanner: true,
- scrollReveal: true,
- threeDViewer: true,
- customCursor: true,
+  newsletter: true,
+  whatsappBtn: true,
+  preloader: true,
+  instagramFeed: true,
+  cookieBanner: true,
+  scrollReveal: true,
+  threeDViewer: true,
+  customCursor: true,
   virtualTryOn: false,
 };
 

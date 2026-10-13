@@ -22,6 +22,7 @@ import ProductCard from '../components/ProductCard';
 import AvailabilityCalendar from '../components/AvailabilityCalendar';
 import SizeGuide from '../components/SizeGuide';
 import { ProductDetailSkeleton } from '../components/Skeleton';
+import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
 import { analytics } from '../services/analytics';
 
 const ThreeDViewer = lazyWithRetry(() => import('../components/ThreeDViewer'));
@@ -35,11 +36,11 @@ export default function ProductDetail() {
   const { settings } = useSettings();
   const navigate = useNavigate();
   const threeDViewerEnabled = useFeature('threeDViewer');
- const { addToast } = useToast();
+  const { addToast } = useToast();
   const tryOnEnabled = useFeature('virtualTryOn');
   const [showTryOn, setShowTryOn] = useState(false);
- const [selectedSize, setSelectedSize] = useState('');
- const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
   const [bookingDate, setBookingDate] = useState<Date | null>(null);
@@ -530,6 +531,7 @@ export default function ProductDetail() {
                     })}
                   </div>
                 </div>
+
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1 flex flex-col gap-2">
                     <button onClick={reserveViewing} className="w-full btn-luxury flex items-center justify-center gap-3">
@@ -936,14 +938,14 @@ export default function ProductDetail() {
         </div>
 
         {/* Reservation Confirmation Modal */}
-       <AnimatePresence>
-         {showConfirmation && bookingDate && (
-           <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
-         )}
+        <AnimatePresence>
+          {showConfirmation && bookingDate && (
+            <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
+          )}
           {showTryOn && tryOnEligible && (
             <VirtualTryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
           )}
-       </AnimatePresence>
+        </AnimatePresence>
       </div>
 
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
@@ -1023,5 +1025,3 @@ function BookingConfirmationModal({ product, date, onClose }: { product: Product
     </motion.div>
   );
 }
-import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
-
