@@ -24,6 +24,18 @@ interface Props {
   onClose: () => void;
 }
 
+// Same selector set as the house dialog: anything a keyboard can land on.
+// Every alternative excludes tabindex="-1", so the sr-only file input - which
+// the visible Upload button drives programmatically - stays out of the cycle.
+const FOCUSABLE = [
+  'a[href]:not([tabindex="-1"])',
+  'button:not([disabled]):not([tabindex="-1"])',
+  'input:not([disabled]):not([type="hidden"]):not([tabindex="-1"])',
+  'select:not([disabled]):not([tabindex="-1"])',
+  'textarea:not([disabled]):not([tabindex="-1"])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
 export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   useScrollLock(isOpen);
   const { t } = useLanguage();
@@ -39,10 +51,19 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   const [resultUrl, setResultUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [inputError, setInputError] = useState('');
+  const [missingToken, setMissingToken] = useState(false);
   const [busy, setBusy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const inFlightRef = useRef(false);
+  // Monotonic generation id. An abandoned run's cleanup must never null out the
+  // refs belonging to a newer run, so every continuation re-checks its own id.
+  const runIdRef = useRef(0);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+
+  const hasGarments = product.images.length > 0;
 
   // Every visit re-asks. Consent is deliberately never persisted: a stored
   // "yes" is not consent, it only hides the question.
@@ -52,8 +73,25 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     setConsented(false);
     setErrorMessage('');
     setInputError('');
+    setMissingToken(false);
     setGarmentIndex(0);
     setPhotoDataUrl('');
+    setResultUrl('');
+    setBusy(false);
+  }, [isOpen]);
+
+  // aria-modal="true" is only honest if modality is actually enforced: focus
+  // moves in on open, cannot walk out while open, and returns to the trigger on
+  // close. House pattern from SizeGuide (focus the close button).
+  useEffect(() => {
+    if (!isOpen) return;
+    restoreFocusRef.current = (document.activeElement as HTMLElement) ?? null;
+    closeRef.current?.focus();
+    return () => {
+      const target = restoreFocusRef.current;
+      restoreFocusRef.current = null;
+      if (target && document.contains(target)) target.focus();
+    };
   }, [isOpen]);
 
   // The chosen photo and the result exist only as component state. Nothing is
@@ -61,12 +99,14 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   // owns (and releases) the one it uses to probe dimensions.
   useEffect(() => {
     return () => {
+      runIdRef.current += 1;
       abortRef.current?.abort();
       abortRef.current = null;
     };
   }, []);
 
   const handleClose = useCallback(() => {
+    runIdRef.current += 1;
     abortRef.current?.abort();
     abortRef.current = null;
     inFlightRef.current = false;
@@ -74,6 +114,7 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     setPhotoDataUrl('');
     setInputError('');
     setErrorMessage('');
+    setMissingToken(false);
     setResultUrl('');
     setGarmentIndex(0);
     setConsented(false);
@@ -89,6 +130,39 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, handleClose]);
+
+  // Tab cycles inside the dialog instead of escaping to the page behind the
+  // overlay. Only the wrap-around boundaries are intercepted, so ordinary Tab
+  // order inside the dialog is left alone.
+  const handleDialogKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'Tab') return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((el) => {
+      const style = window.getComputedStyle(el);
+      return style.visibility !== 'hidden' && style.display !== 'none';
+    });
+    if (focusable.length === 0) {
+      event.preventDefault();
+      dialog.focus();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (!active || !dialog.contains(active)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first).focus();
+      return;
+    }
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }, []);
 
   const handleFile = useCallback(async (file: File) => {
     const invalid = validatePhotoFile(file);
@@ -112,18 +186,29 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     // still open, must not become a second paid generation.
     if (inFlightRef.current) return;
     inFlightRef.current = true;
+    const runId = ++runIdRef.current;
+    // Busy is raised before the first await so the button is already disabled
+    // in this commit - otherwise the token read leaves a window where the
+    // button looks live and the tap is silently swallowed.
+    setBusy(true);
+    setErrorMessage('');
+    setMissingToken(false);
 
     const session = await getSession().catch(() => null);
+    // A newer run (or a close) owns the state now; this run must not touch it.
+    if (runIdRef.current !== runId) return;
     if (!session?.access_token) {
       inFlightRef.current = false;
-      setErrorMessage(t('tryon.sign_in_required'));
+      setBusy(false);
+      // A user who IS signed in but has no bearer token is a configuration gap,
+      // not a missing sign-in. Telling them to sign in again would loop forever.
+      setMissingToken(true);
+      setErrorMessage(user ? t('tryon.not_configured') : t('tryon.sign_in_required'));
       setScreen('error');
       return;
     }
 
     setScreen('generating');
-    setBusy(true);
-    setErrorMessage('');
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -135,22 +220,28 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
         accessToken: session.access_token,
         signal: controller.signal,
       });
+      if (runIdRef.current !== runId) return;
       setResultUrl(`data:${result.mime};base64,${result.base64}`);
       setScreen('result');
       trackEvent({ event: 'tryon_generated', productId: product.id, productName: product.name, category: product.category });
     } catch (error) {
+      if (runIdRef.current !== runId) return;
       // No placeholder result: a failed generation shows the error and nothing
       // else, so a customer never mistakes a spinner for a finished try-on.
       const message = error instanceof TryOnError ? error.message : t('tryon.error_heading');
       setErrorMessage(message);
       setScreen('error');
-      trackEvent({ event: 'tryon_error', productId: product.id, productName: product.name, category: product.category });
+      // A generation the customer cancelled by closing is not a failure.
+      if (!controller.signal.aborted) {
+        trackEvent({ event: 'tryon_error', productId: product.id, productName: product.name, category: product.category });
+      }
     } finally {
+      if (runIdRef.current !== runId) return;
       abortRef.current = null;
       inFlightRef.current = false;
       setBusy(false);
     }
-  }, [garmentIndex, photoDataUrl, product.category, product.id, product.name, t]);
+  }, [garmentIndex, photoDataUrl, product.category, product.id, product.name, t, user]);
 
   return (
     <AnimatePresence>
@@ -165,15 +256,19 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95 }}
+            ref={dialogRef}
             role="dialog"
             aria-modal="true"
             aria-label={t('tryon.heading')}
-            className="relative w-full max-w-lg bg-ivory max-h-[90vh] overflow-y-auto p-6 md:p-10"
+            tabIndex={-1}
+            onKeyDown={handleDialogKeyDown}
+            className="relative w-full max-w-lg bg-ivory max-h-[90vh] overflow-y-auto p-6 md:p-10 outline-none"
           >
             <button
+              ref={closeRef}
               onClick={handleClose}
               aria-label={t('tryon.close')}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center border border-stone-200 text-stone-500 hover:text-terracotta-dark transition-colors"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center border border-stone-200 text-stone-500 hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none"
             >
               <X className="w-4 h-4" />
             </button>
@@ -202,10 +297,17 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
                   <span className="text-micro leading-relaxed text-stone-700">{t('tryon.consent_checkbox')}</span>
                 </label>
 
+                {!user && (
+                  <p className="text-micro leading-relaxed text-stone-600">
+                    {t('tryon.sign_in_gate_hint')}{' '}
+                    <a href="/auth" className="underline underline-offset-2">{t('tryon.sign_in_action')}</a>
+                  </p>
+                )}
+
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button
                     onClick={() => setScreen('upload')}
-                    disabled={!consented}
+                    disabled={!consented || !user}
                     className="btn-luxury flex-1 !py-3 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {t('tryon.consent_continue')}
@@ -221,21 +323,9 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
               <div className="mt-6 space-y-5">
                 <p className="text-micro text-stone-600">{t('tryon.upload_hint')}</p>
 
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="sr-only"
-                  data-testid="tryon-file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void handleFile(file);
-                  }}
-                />
-
                 {photoDataUrl ? (
                   <div className="space-y-3">
-                    <img src={photoDataUrl} alt={t('tryon.upload_heading')} className="w-full max-h-64 object-contain bg-stone-50" />
+                    <img src={photoDataUrl} alt={t('tryon.preview_alt')} className="w-full max-h-64 object-contain bg-stone-50" />
                     <div className="flex gap-3">
                       <button onClick={() => fileInputRef.current?.click()} className="btn-luxury-outline flex-1 !py-2.5 text-micro">
                         {t('tryon.replace_photo')}
@@ -257,28 +347,48 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
                   </button>
                 )}
 
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  // Kept out of the tab order: it is sr-only, so a keyboard user
+                  // would otherwise hit an invisible focus stop before the
+                  // visible Upload button. The button drives it via .click().
+                  tabIndex={-1}
+                  className="sr-only"
+                  data-testid="tryon-file"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void handleFile(file);
+                  }}
+                />
+
                 {inputError && <p className="text-micro text-rose-600">{inputError}</p>}
 
                 <div>
                   <p className="text-micro uppercase tracking-widest text-stone-500 mb-2">{t('tryon.garment_heading')}</p>
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {product.images.map((image, index) => (
-                      <button
-                        key={image}
-                        onClick={() => setGarmentIndex(index)}
-                        aria-label={`${t('tryon.garment_heading')} ${index + 1}`}
-                        aria-pressed={garmentIndex === index}
-                        className={`w-16 h-20 shrink-0 border transition-colors ${garmentIndex === index ? 'border-terracotta' : 'border-stone-200'}`}
-                      >
-                        <img src={resolveMediaUrl(image)} alt="" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
+                  {hasGarments ? (
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {product.images.map((image, index) => (
+                        <button
+                          key={`${image}-${index}`}
+                          onClick={() => setGarmentIndex(index)}
+                          aria-label={`${t('tryon.garment_heading')} ${index + 1}`}
+                          aria-pressed={garmentIndex === index}
+                          className={`w-16 h-20 shrink-0 border transition-colors ${garmentIndex === index ? 'border-terracotta' : 'border-stone-200'}`}
+                        >
+                          <img src={resolveMediaUrl(image)} alt="" className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-micro text-stone-500">{t('tryon.no_images')}</p>
+                  )}
                 </div>
 
                 <button
                   onClick={() => void handleGenerate()}
-                  disabled={!photoDataUrl || busy}
+                  disabled={!photoDataUrl || !hasGarments || busy}
                   className="btn-luxury w-full !py-3 flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Sparkles className="w-4 h-4" />
@@ -327,15 +437,17 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
               <div className="mt-6 space-y-4">
                 <p className="text-micro uppercase tracking-widest text-stone-500">{t('tryon.error_heading')}</p>
                 <p className="text-micro leading-relaxed text-stone-700">{errorMessage}</p>
-                {user ? (
+                {/* A missing token is not retryable: Retry would loop forever for
+                    a locally-authenticated user and be a lie for a signed-out one. */}
+                {!missingToken ? (
                   <button onClick={() => setScreen('upload')} className="btn-luxury w-full !py-3">
                     {t('tryon.error_retry')}
                   </button>
-                ) : (
+                ) : !user ? (
                   <a href="/auth" className="btn-luxury w-full !py-3 block text-center">
                     {t('tryon.sign_in_action')}
                   </a>
-                )}
+                ) : null}
                 <button onClick={handleClose} className="btn-luxury-outline w-full !py-3 text-micro">
                   {t('tryon.close')}
                 </button>
