@@ -271,7 +271,14 @@ serve(async (req: Request) => {
   // 2. Read the body under a hard ceiling. Content-Length is only trusted as a
   //    fast path; the stream itself is counted so a chunked request cannot slip
   //    an unbounded body past it.
-  const bodyText = await readBoundedBody(req);
+  //    A mid-stream failure (client disconnect, stream error) must surface as a
+  //    4xx, not as an unhandled 500 from the runtime.
+  let bodyText: string | null;
+  try {
+    bodyText = await readBoundedBody(req);
+  } catch {
+    return fail(req, 'invalid_request', 'Request body could not be read.');
+  }
   if (bodyText === null) return fail(req, 'invalid_image', 'Request body too large.');
 
   // 3. Parse and validate. Consent is enforced before the photo is used.

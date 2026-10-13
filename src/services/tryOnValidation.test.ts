@@ -178,7 +178,7 @@ describe('toBase64', () => {
     expect(toBase64(new TextEncoder().encode('hello world'))).toBe('aGVsbG8gd29ybGQ=');
   });
 
-  it('round-trips a payload larger than 200 KB without throwing', () => {
+  it('round-trips a 1 MB payload without throwing', () => {
     // Regression for the Critical review finding: the previous
     // `btoa(String.fromCharCode(...bytes))` encoder overflowed the engine's
     // argument/stack limit (bare Node throws around 125 KB; the vitest/jsdom
