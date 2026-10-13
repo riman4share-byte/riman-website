@@ -5,6 +5,7 @@ import {
   MIN_DIMENSION,
   MAX_DIMENSION,
   isTryOnEligible,
+  isSafeGarmentPath,
   resolveGarmentPath,
   parseTryOnRequest,
   validateImageDataUrl,
@@ -30,6 +31,25 @@ describe('isTryOnEligible', () => {
     expect(isTryOnEligible(ring)).toBe(false);
     expect(isTryOnEligible({ id: '1', category: 'Accessory', images: ['/x.jpg'] })).toBe(false);
     expect(isTryOnEligible(noImages)).toBe(false);
+  });
+});
+
+describe('isSafeGarmentPath', () => {
+  it('accepts a plain local asset path', () => {
+    expect(isSafeGarmentPath('/assets/a.jpg')).toBe(true);
+    expect(isSafeGarmentPath('/assets/nested/dress.jpg')).toBe(true);
+  });
+
+  it('rejects percent-encoded traversal segments', () => {
+    expect(isSafeGarmentPath('/assets/%2e%2e/%2e%2e/.env')).toBe(false);
+    expect(isSafeGarmentPath('/assets/%2E%2E/.env')).toBe(false);
+    expect(isSafeGarmentPath('/assets/.%2e/.env')).toBe(false);
+  });
+
+  it('rejects absolute urls and backslash paths', () => {
+    expect(isSafeGarmentPath('https://evil.example.com/x.jpg')).toBe(false);
+    expect(isSafeGarmentPath('//evil.example.com/x.jpg')).toBe(false);
+    expect(isSafeGarmentPath('/assets/..\\.env')).toBe(false);
   });
 });
 
@@ -111,6 +131,13 @@ describe('validateImageDataUrl', () => {
   it('rejects base64 that is not actually base64', () => {
     expect(validateImageDataUrl('data:image/jpeg;base64,!!!!not base64!!!!').ok).toBe(false);
   });
+
+  it('rejects a payload that decodes to zero bytes', () => {
+    expect(validateImageDataUrl('data:image/jpeg;base64,A')).toMatchObject({
+      ok: false,
+      code: 'invalid_image',
+    });
+  });
 });
 
 describe('dimension constants', () => {
@@ -130,6 +157,24 @@ describe('parseGeminiResponse', () => {
     const r = parseGeminiResponse(json);
     expect(r).toMatchObject({ ok: true });
     if (r.ok) expect(r.value).toEqual({ base64: 'AAAA', mime: 'image/png' });
+  });
+
+  it('rejects inline data that is not a supported image type', () => {
+    const json = {
+      candidates: [
+        { content: { parts: [{ inlineData: { mimeType: 'text/plain', data: 'AAAA' } }] } },
+      ],
+    };
+    expect(parseGeminiResponse(json)).toMatchObject({ ok: false, code: 'upstream_error' });
+  });
+
+  it('rejects inline data with no bytes', () => {
+    const json = {
+      candidates: [
+        { content: { parts: [{ inlineData: { mimeType: 'image/png', data: '' } }] } },
+      ],
+    };
+    expect(parseGeminiResponse(json)).toMatchObject({ ok: false, code: 'upstream_error' });
   });
 
   it('treats a text-only or blocked response as an upstream error', () => {

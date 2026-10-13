@@ -46,13 +46,23 @@ function fail(code: TryOnErrorCode, message: string): ParseResult<never> {
 /**
  * A garment path is only usable if it is a local, forward-slashed path under
  * /assets/. This rejects absolute URLs (which would let a poisoned catalogue
- * row make the server fetch an arbitrary host), and any traversal sequence.
+ * row make the server fetch an arbitrary host), and any traversal sequence -
+ * including percent-encoded dot segments such as %2e%2e, which only surface as
+ * dot-segments after WHATWG URL normalisation.
  */
 export function isSafeGarmentPath(path: unknown): path is string {
   if (typeof path !== 'string') return false;
   if (!path.startsWith('/assets/')) return false;
   if (path.includes('..') || path.includes('\\')) return false;
-  if (/^[/\\]{2}/.test(path)) return false;
+
+  let normalised: string;
+  try {
+    normalised = new URL(path, 'https://guard.invalid').pathname;
+  } catch {
+    return false;
+  }
+  if (!normalised.startsWith('/assets/')) return false;
+  if (normalised.split('/').some((segment) => segment === '..' || segment === '.')) return false;
   return true;
 }
 
@@ -153,7 +163,13 @@ export function parseGeminiResponse(json: unknown): ParseResult<{ base64: string
     if (!Array.isArray(parts)) continue;
     for (const part of parts) {
       const inline = (part as { inlineData?: { mimeType?: unknown; data?: unknown } })?.inlineData;
-      if (inline && typeof inline.data === 'string' && typeof inline.mimeType === 'string') {
+      if (
+        inline &&
+        typeof inline.data === 'string' &&
+        inline.data.length > 0 &&
+        typeof inline.mimeType === 'string' &&
+        (ALLOWED_IMAGE_MIME as ReadonlyArray<string>).includes(inline.mimeType)
+      ) {
         return { ok: true, value: { base64: inline.data, mime: inline.mimeType } };
       }
     }
