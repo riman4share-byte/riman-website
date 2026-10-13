@@ -39,8 +39,8 @@ import {
  * Product rows come from the DATABASE, not from src/data/products.ts.
  *
  * Two reasons. First, Deno requires explicit file extensions and does no
- * directory-index resolution, so importing the browser catalogue (which does
- * `import { Product } from '../types'`) would not resolve in the edge runtime.
+ * directory-index resolution, so the browser catalogue's own extension-less
+ * internal imports would not resolve in the edge runtime.
  * Second - and more importantly - create-checkout already establishes that
  * authoritative product data is read from the database with the service-role
  * client, never trusted from a client or a bundled copy. Same rule here.

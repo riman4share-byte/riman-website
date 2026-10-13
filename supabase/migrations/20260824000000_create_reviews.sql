@@ -13,6 +13,16 @@ CREATE TABLE IF NOT EXISTS reviews (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- The CREATE TABLE above is a no-op on databases where 00001_initial_schema.sql
+-- already created `reviews` - and that older table has `is_approved` but neither
+-- `status` nor `photo_url`. Without these, the index and the RLS policies below
+-- fail with "column status does not exist" (SQLSTATE 42703) on a fresh database,
+-- because 20260824100000_repair_reviews_columns.sql (which adds them) has not
+-- run yet. Adding them here makes this migration self-sufficient. Same
+-- idempotent technique the repair migration uses.
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS photo_url TEXT;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved'));
+
 CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews (product_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_status ON reviews (status);
 
