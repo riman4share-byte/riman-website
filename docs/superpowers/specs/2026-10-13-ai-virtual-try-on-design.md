@@ -4,6 +4,24 @@
 **Status:** Approved
 **Author:** AI Studio
 
+> **Implementation status (2026-10-13, added after build).** Everything in this
+> spec was built and reviewed. **Real AI inference has not been verified.** The
+> free-tier claims in "Model selection" below are **not** reproducible with the
+> API key used during implementation: the key authenticates and lists all six
+> Gemini image models, but every one returns
+> `HTTP 429 ... generate_content_free_tier_requests, limit: 0` — the free tier
+> grants **no** image-generation quota for that project. The request shape is
+> correct (the exact body this feature builds reaches the quota layer before
+> being rejected), but **no try-on image has ever been produced by this code**.
+>
+> The pipeline around the model call *was* verified end to end with a real
+> signed-in user: auth, consent enforcement, rate limiting, database product
+> lookup and server-side garment resolution all pass.
+>
+> Before enabling the `virtualTryOn` flag in production, a funded/keyed image
+> model must be confirmed and one real generation verified. The "free to run"
+> goal below should be read as *intended*, not *established*.
+
 ## Overview
 
 Add a real AI-powered virtual try-on to eligible gown product pages. A signed-in customer opens the try-on

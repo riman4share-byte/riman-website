@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Loader2, Sparkles, X, ShoppingBag, CheckCircle2 } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
@@ -15,6 +15,7 @@ import {
   requestTryOn,
   validatePhotoFile,
 } from '../services/tryOnClient';
+import { isSafeGarmentPath } from '../../supabase/functions/virtual-tryon/tryOnValidation';
 
 type Screen = 'consent' | 'upload' | 'generating' | 'result' | 'error';
 
@@ -74,7 +75,26 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
   const runIdRef = useRef(0);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
 
-  const hasGarments = product.images.length > 0;
+  // Only images the SERVER will accept may be offered. The server resolves the
+  // garment from its own /assets/ allowlist, so an admin-uploaded image hosted
+  // on a Supabase Storage URL can never be tried on. Offering it here would show
+  // a button that always fails after the customer uploads a photo, so we filter
+  // to the same rule - the exact predicate the server applies.
+  const garmentOptions = useMemo(
+    () => product.images
+      .map((image, index) => ({ image, index }))
+      .filter(({ image }) => isSafeGarmentPath(image)),
+    [product.images],
+  );
+  const hasGarments = garmentOptions.length > 0;
+
+  // Derived, never stored: if the selected index is not one the server accepts
+  // (e.g. it defaulted to 0 while image 0 is a storage URL), fall back to the
+  // first eligible image. Deriving avoids a state-syncing effect whose
+  // dependency on the images array could reset consent on every parent render.
+  const effectiveGarmentIndex = garmentOptions.some((option) => option.index === garmentIndex)
+    ? garmentIndex
+    : (garmentOptions[0]?.index ?? 0);
 
   // Every visit re-asks. Consent is deliberately never persisted: a stored
   // "yes" is not consent, it only hides the question.
@@ -244,7 +264,7 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     try {
       const result = await requestTryOn({
         productId: product.id,
-        imageIndex: garmentIndex,
+        imageIndex: effectiveGarmentIndex,
         image: photoDataUrl,
         accessToken: session.access_token,
         signal: controller.signal,
@@ -270,7 +290,7 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
       inFlightRef.current = false;
       setBusy(false);
     }
-  }, [garmentIndex, photoDataUrl, product.category, product.id, product.name, t, user]);
+  }, [effectiveGarmentIndex, photoDataUrl, product.category, product.id, product.name, t, user]);
 
   return (
     <AnimatePresence>
@@ -397,13 +417,13 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
                   <p className="text-micro uppercase tracking-widest text-stone-500 mb-2">{t('tryon.garment_heading')}</p>
                   {hasGarments ? (
                     <div className="flex gap-2 overflow-x-auto pb-1">
-                      {product.images.map((image, index) => (
+                      {garmentOptions.map(({ image, index }, position) => (
                         <button
                           key={`${image}-${index}`}
                           onClick={() => setGarmentIndex(index)}
-                          aria-label={`${t('tryon.garment_heading')} ${index + 1}`}
-                          aria-pressed={garmentIndex === index}
-                          className={`w-16 h-20 shrink-0 border transition-colors ${garmentIndex === index ? 'border-terracotta' : 'border-stone-200'}`}
+                          aria-label={`${t('tryon.garment_heading')} ${position + 1}`}
+                          aria-pressed={effectiveGarmentIndex === index}
+                          className={`w-16 h-20 shrink-0 border transition-colors ${effectiveGarmentIndex === index ? 'border-terracotta' : 'border-stone-200'}`}
                         >
                           <img src={resolveMediaUrl(image)} alt="" className="w-full h-full object-cover" />
                         </button>

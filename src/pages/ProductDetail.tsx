@@ -23,6 +23,7 @@ import AvailabilityCalendar from '../components/AvailabilityCalendar';
 import SizeGuide from '../components/SizeGuide';
 import { ProductDetailSkeleton } from '../components/Skeleton';
 import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
+import { isSafeGarmentPath } from '../../supabase/functions/virtual-tryon/tryOnValidation';
 import { analytics } from '../services/analytics';
 
 const ThreeDViewer = lazyWithRetry(() => import('../components/ThreeDViewer'));
@@ -95,7 +96,11 @@ export default function ProductDetail() {
   const tryOnEligible = tryOnEnabled
     && !!product
     && (product.category === 'Bridal Gown' || product.category === 'Evening Dress')
-    && product.images.length > 0;
+    // Must agree with the server, which only resolves garment images from its
+    // own /assets/ allowlist. Admin-uploaded images live on Supabase Storage
+    // URLs, which the server rejects - offering the button for those would show
+    // the customer a control that cannot succeed.
+    && product.images.some((image) => isSafeGarmentPath(image));
 
   const { pullQuote, bodyCopy } = useMemo(() => {
     const d = productDescription || '';

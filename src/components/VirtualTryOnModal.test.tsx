@@ -273,4 +273,51 @@ describe('VirtualTryOnModal generation', () => {
     expect(screen.queryAllByRole('button', { name: /Which view of the gown/i }).length).toBe(0);
     expect(generateButton().hasAttribute('disabled')).toBe(true);
   });
+
+  // The server resolves garment images only from its own /assets/ allowlist.
+  // Admin-uploaded images live on Supabase Storage URLs, which it rejects, so
+  // offering them would present a control that always fails after the customer
+  // uploads a photo. Only server-acceptable images may be selectable.
+  it('offers only server-eligible garment images and never sends an ineligible index', async () => {
+    const mixed = {
+      ...product,
+      images: [
+        'https://project.supabase.co/storage/v1/object/public/product-images/admin-upload.jpg',
+        '/assets/eligible.jpg',
+      ],
+    };
+    (requestTryOn as unknown as ReturnType<typeof vi.fn>).mockClear();
+    render(<VirtualTryOnModal product={mixed} isOpen onClose={() => {}} />);
+    fireEvent.click(consentBox());
+    fireEvent.click(continueButton());
+
+    // Exactly one thumbnail, and it is the /assets/ one.
+    const thumbs = screen.getAllByRole('button', { name: /Which view of the gown/i });
+    expect(thumbs.length).toBe(1);
+
+    await choosePhoto();
+    fireEvent.click(generateButton());
+
+    await waitFor(() => expect(requestTryOn).toHaveBeenCalled());
+    const arg = (requestTryOn as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(arg.imageIndex).toBe(1);
+  });
+
+  it('blocks generation entirely when no image is server-eligible', () => {
+    render(
+      <VirtualTryOnModal
+        product={{
+          ...product,
+          images: ['https://project.supabase.co/storage/v1/object/public/product-images/admin-upload.jpg'],
+        }}
+        isOpen
+        onClose={() => {}}
+      />,
+    );
+    fireEvent.click(consentBox());
+    fireEvent.click(continueButton());
+
+    expect(screen.queryAllByRole('button', { name: /Which view of the gown/i }).length).toBe(0);
+    expect(generateButton().hasAttribute('disabled')).toBe(true);
+  });
 });
