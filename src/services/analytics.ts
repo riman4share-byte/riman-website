@@ -6,7 +6,10 @@ export type AnalyticsEvent =
   | 'remove_from_cart'
   | 'request_viewing'
   | 'begin_checkout'
-  | 'order_complete';
+  | 'order_complete'
+  | 'tryon_opened'
+  | 'tryon_generated'
+  | 'tryon_error';
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent;
