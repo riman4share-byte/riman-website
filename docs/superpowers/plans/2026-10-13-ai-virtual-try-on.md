@@ -928,19 +928,26 @@ git commit -m "feat(tryon): EN/AR strings and analytics event names"
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/components/VirtualTryOnModal.test.tsx`. Read `src/components/SizeGuide.tsx` before writing this — the modal follows its structure. Mock the service and the auth context; assert on the consent contract, which is the part that must not regress.
+Create `src/components/VirtualTryOnModal.test.tsx`. Read `src/components/SizeGuide.tsx` before writing this — the modal follows its structure.
+
+Two harness facts that are easy to get wrong here, both verified in the repo:
+
+- `LanguageContext` is **not** exported. Do not try to wrap the component in a provider. `useLanguage()` works with no provider at all and falls back to `fallbackValue` (src/contexts/LanguageContext.tsx:1854), whose `t` returns the real English string for a known key and the key itself for an unknown one. So assert on the **English copy**, not on key names.
+- `useAuth()` **throws** if there is no `AuthProvider` (src/contexts/AuthContext.tsx:266). Mock the module, as shown below.
+
+Mock the service and the auth context; assert on the consent contract, which is the part that must not regress.
 
 ```tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { VirtualTryOnModal } from './VirtualTryOnModal';
 import { useAuth } from '../contexts/AuthContext';
-import { LanguageContext } from '../contexts/LanguageContext';
 
 vi.mock('../services/tryOnClient', () => ({
   validatePhotoFile: vi.fn(() => null),
   fileToDataUrl: vi.fn(async () => 'data:image/jpeg;base64,AAAA'),
   requestTryOn: vi.fn(async () => ({ base64: 'AAAA', mime: 'image/png' })),
+  assertSendableDataUrl: vi.fn(),
   TryOnError: class extends Error {
     code: string;
     constructor(code: string, message: string) {
@@ -948,7 +955,6 @@ vi.mock('../services/tryOnClient', () => ({
       this.code = code;
     }
   },
-  assertSendableDataUrl: vi.fn(),
 }));
 
 vi.mock('../contexts/AuthContext', () => ({ useAuth: vi.fn() }));
@@ -965,16 +971,12 @@ const product = {
   sizes: ['S'],
 };
 
-function renderModal() {
-  return render(
-    <LanguageContext.Provider value={{ language: 'en', setLanguage: () => {}, isRtl: false, t: (k: string) => k }}>
-      <VirtualTryOnModal product={product} isOpen onClose={() => {}} />
-    </LanguageContext.Provider>
-  );
-}
+const renderModal = () =>
+  render(<VirtualTryOnModal product={product} isOpen onClose={() => {}} />);
 
 const consentBox = () => screen.getByRole('checkbox') as HTMLInputElement;
-const continueButton = () => screen.getByRole('button', { name: 'tryon.consent_continue' });
+const continueButton = () => screen.getByRole('button', { name: 'Continue' });
+const jpegFile = () => new File([new Uint8Array([1, 2, 3])], 'me.jpg', { type: 'image/jpeg' });
 
 describe('VirtualTryOnModal consent gate', () => {
   beforeEach(() => {
@@ -986,7 +988,7 @@ describe('VirtualTryOnModal consent gate', () => {
 
   it('shows consent first and keeps Continue disabled until the box is ticked', () => {
     renderModal();
-    expect(consentBox()).toBeTruthy();
+    expect(screen.getByText('See Yourself in This Dress')).toBeTruthy();
     expect(continueButton().hasAttribute('disabled')).toBe(true);
 
     fireEvent.click(consentBox());
@@ -995,14 +997,22 @@ describe('VirtualTryOnModal consent gate', () => {
 
   it('does not render the upload screen before consent', () => {
     renderModal();
-    expect(screen.queryByRole('button', { name: 'tryon.generate' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Generate My Try-On' })).toBeNull();
   });
 
   it('reveals one thumbnail per product image after consent', () => {
     renderModal();
     fireEvent.click(consentBox());
     fireEvent.click(continueButton());
-    expect(screen.getAllByRole('button', { name: /view of the gown/i }).length).toBeGreaterThan(1);
+    expect(screen.getAllByRole('button', { name: /Which view of the gown/i }).length).toBe(2);
+  });
+
+  it('re-asks for consent every time the modal is reopened', () => {
+    const { unmount } = render(<VirtualTryOnModal product={product} isOpen onClose={() => {}} />);
+    fireEvent.click(consentBox());
+    unmount();
+    renderModal();
+    expect(continueButton().hasAttribute('disabled')).toBe(true);
   });
 });
 
@@ -1020,10 +1030,9 @@ describe('VirtualTryOnModal generation', () => {
     fireEvent.click(continueButton());
 
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-    const file = new File([new Uint8Array([1, 2, 3])], 'me.jpg', { type: 'image/jpeg' });
-    fireEvent.change(input, { target: { files: [file] } });
+    fireEvent.change(input, { target: { files: [jpegFile()] } });
 
-    fireEvent.click(screen.getByRole('button', { name: 'tryon.generate' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Generate My Try-On' }));
     await waitFor(() => expect(screen.getByTestId('tryon-result')).toBeTruthy());
   });
 
@@ -1034,17 +1043,15 @@ describe('VirtualTryOnModal generation', () => {
     fireEvent.click(continueButton());
 
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-    fireEvent.change(input, {
-      target: { files: [new File([new Uint8Array([1])], 'me.jpg', { type: 'image/jpeg' })] },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'tryon.generate' }));
+    fireEvent.change(input, { target: { files: [jpegFile()] } });
+    fireEvent.click(screen.getByRole('button', { name: 'Generate My Try-On' }));
 
-    await waitFor(() => expect(screen.getByText('tryon.sign_in_required')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('Please sign in to create your try-on.')).toBeTruthy());
   });
 });
 ```
 
-If `LanguageContext` does not export a `LanguageContext.Provider` with that shape, wrap the component in the app's existing test helper instead — `src/components/GalleryLightbox.test.tsx` and `src/components/SizeGuide.tsx` already show how modals are tested here. Check `src/test/setup.ts` for any global providers before adjusting.
+The English strings asserted above (`See Yourself in This Dress`, `Continue`, `Generate My Try-On`, `Which view of the gown`, `Please sign in to create your try-on.`) are added by Task 3. Task 4 therefore depends on Task 3 being complete.
 
 - [ ] **Step 2: Run the test to verify it fails**
 
@@ -1126,7 +1133,6 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
     setGarmentIndex(0);
     setConsented(false);
     setScreen('consent');
-    trackEvent({ event: 'tryon_error', productId: product.id, productName: product.name });
     onClose();
   }, [onClose, product.id, product.name, releaseResult]);
 
