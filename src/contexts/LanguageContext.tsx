@@ -1165,7 +1165,7 @@ const translations: Record<Language, Record<string, string>> = {
     'tryon.consent_processor': 'لإنشاء التجربة، تُرسَل صورتكِ إلى Gemini AI من Google، الذي يعالجها ويعيد الصورة النهائية إلينا. نستخدمها لإنشاء تجربتكِ فقط.',
     'tryon.consent_not_saved': 'لا تُحفظ صورتكِ على خوادمنا أبداً — لا الصورة المرفوعة ولا النتيجة. توجد فقط طوال فترة فتح هذه النافذة.',
     'tryon.consent_not_shared': 'لا تتم مشاركة صورتكِ مع أي شخص آخر.',
-    'tryon.consent_checkbox': 'أوافق على معالجة صورتيِ بواسطة Google من أجل هذه التجربة.',
+    'tryon.consent_checkbox': 'أوافق على معالجة صورتي بواسطة Google من أجل هذه التجربة.',
     'tryon.consent_continue': 'متابعة',
     'tryon.consent_decline': 'ليس الآن',
     'tryon.fit_disclaimer': 'هذه معاينة رقمية وليست ضماناً للمقاس. سيؤكد أتيليهنا المقاس معكِ شخصياً.',
