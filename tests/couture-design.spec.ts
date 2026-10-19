@@ -168,7 +168,7 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const href = await page.locator('a[href^="/product/"]').first().getAttribute('href');
   expect(href).toBeTruthy();
-  await page.goto('http://localhost:3001' + href!, { waitUntil: 'domcontentloaded' });
+  await page.goto(href!, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('main', { timeout: 45000 });
   await page.locator('button:has(h3)').first().click(); // expand "Client Reflections" accordion
   await page.waitForSelector('main .field-couture', { timeout: 10000 });
@@ -226,14 +226,14 @@ test('phase 3: hero headline letter-splits EN, stays plain AR + reduced-motion',
 
   const arPage = await page.context().newPage();
   await arPage.addInitScript(() => localStorage.setItem('riman_lang', 'ar'));
-  await arPage.goto('http://localhost:3001/', { waitUntil: 'domcontentloaded' });
+  await arPage.goto('/', { waitUntil: 'domcontentloaded' });
   await arPage.waitForSelector('#hero h1', { timeout: 45000 });
   expect(await arPage.locator('#hero h1 .kin-letter').count()).toBe(0);
 
   const rctx = await page.context().browser()!.newContext({ reducedMotion: 'reduce' });
   const rpage = await rctx.newPage();
   await rpage.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
-  await rpage.goto('http://localhost:3001/', { waitUntil: 'domcontentloaded' });
+  await rpage.goto('/', { waitUntil: 'domcontentloaded' });
   await rpage.waitForSelector('#hero h1', { timeout: 45000 });
   expect(await rpage.locator('#hero h1 .kin-letter').count()).toBe(0);
   await rctx.close();

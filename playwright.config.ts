@@ -26,7 +26,10 @@ export default defineConfig({
   workers: 1,
   reporter: 'line',
   use: {
-    baseURL: 'http://localhost:3002',
+    // Must match the port `npm run dev` binds (vite --port=3001). This was
+    // 3002 while the specs hardcoded 3001, so webServer polled a port the dev
+    // script never opened and every origin-absolute goto hit a dead server.
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -38,7 +41,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3002',
+    url: 'http://localhost:3001',
     reuseExistingServer: true,
     timeout: 120000,
   },
