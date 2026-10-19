@@ -39,10 +39,25 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3001',
-    reuseExistingServer: true,
-    timeout: 120000,
-  },
+  // Two servers: the stub Stripe gateway the payment spec drives, and the app
+  // pointed at it. Without the stub the two happy-path checkout tests can never
+  // redirect, so they must start together (this pairing was dropped in 4cb0680
+  // and the payment suite has been unrunnable since).
+  webServer: [
+    {
+      command: 'node scripts/stub-stripe-server.mjs',
+      url: 'http://localhost:3199/hosted-checkout',
+      reuseExistingServer: !process.env.CI,
+      timeout: 60000,
+    },
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3001',
+      reuseExistingServer: true,
+      timeout: 120000,
+      env: {
+        VITE_STRIPE_CHECKOUT_ENDPOINT: 'http://localhost:3199/create-checkout',
+      },
+    },
+  ],
 });

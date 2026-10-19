@@ -45,6 +45,7 @@ const DRAWER_GROUPS: { titleKey: string; links: NavItem[] }[] = [
     links: [
       { path: '/gallery', key: 'nav.gallery' },
       { path: '/style-quiz', key: 'nav.style_quiz', icon: Sparkles },
+      { path: '/about', key: 'nav.about' },
     ],
   },
   {
