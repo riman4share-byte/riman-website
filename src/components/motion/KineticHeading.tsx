@@ -72,19 +72,13 @@ export default function KineticHeading({
       {words.map((word, wi) => (
         <span key={`w-${wi}`} className="inline-block whitespace-nowrap">
           {Array.from(word).map((char, ci) => (
+            // No per-character whileHover: a heading is often swept across by
+            // the pointer, which fired a spring + colour animation on every
+            // letter under it. The heading as a whole still has the
+            // pointer-gated glow from `data-heading` in index.css.
             <motion.span
               key={`${char}-${ci}`}
               variants={letter}
-              whileHover={
-                char.trim() !== ''
-                  ? {
-                      y: -3,
-                      scale: 1.06,
-                      color: '#D4AF37',
-                      transition: { type: 'spring', stiffness: 500, damping: 20 },
-                    }
-                  : undefined
-              }
               className={
                 emphasisChars.includes(char)
                   ? `${emphasisClassName} inline-block whitespace-pre select-none transition-colors duration-300`

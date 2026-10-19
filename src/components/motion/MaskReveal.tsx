@@ -5,7 +5,7 @@ export default function MaskReveal({ children, delay = 0, className = '' }: { ch
   const reduced = useReducedMotion();
   if (reduced) return <div className={className}>{children}</div>;
   return (
-    <span className={`inline-block overflow-hidden ${className}`} aria-hidden="true">
+    <span className={`inline-block overflow-hidden ${className}`}>
       <motion.span
         className="inline-block"
         initial={{ y: '100%' }}

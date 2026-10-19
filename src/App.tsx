@@ -259,21 +259,15 @@ function AnimatedRoutes() {
 }
 
 export function PageWrapper({ children }: { children: React.ReactNode }) {
+  // Route changes are frequent, so this is a short opacity-only crossfade. The
+  // old 500ms opacity+translate made every navigation feel like it paused, and
+  // moving the whole page 8px on entry read as a jump rather than a fade.
   return (
     <motion.div
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={{
-        initial: { opacity: 0, y: 8 },
-        animate: { opacity: 1, y: 0 },
-        exit: { opacity: 0, y: -8 }
-      }}
-      transition={{ 
-        duration: 0.5, 
-        ease: [0.16, 1, 0.3, 1],
-        staggerChildren: 0.1
-      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
