@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   validatePhotoFile,
   fileToDataUrl,
-  requestTryOn,
   assertSendableDataUrl,
   TryOnError,
   TRY_ON_TIMEOUT_MS,
@@ -204,11 +203,22 @@ describe('fileToDataUrl', () => {
 
 describe('requestTryOn', () => {
   const base64 = 'data:image/jpeg;base64,AAAA';
-  beforeEach(() => {
+  let requestTryOn: typeof import('./tryOnClient').requestTryOn;
+  let tryOnErrorCtor: typeof import('./tryOnClient').TryOnError;
+
+  beforeEach(async () => {
+    // The module reads VITE_SUPABASE_URL at import time, so a static import
+    // inherited the runner's env: configured locally via .env, empty in CI,
+    // where every call threw not_configured before reaching fetch.
+    vi.resetModules();
+    vi.stubEnv('VITE_SUPABASE_URL', 'https://ref.supabase.co');
+    vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'anon-test-key');
+    ({ requestTryOn, TryOnError: tryOnErrorCtor } = await import('./tryOnClient'));
     globalThis.fetch = vi.fn();
   });
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
 
@@ -282,7 +292,7 @@ describe('requestTryOn', () => {
     });
     await expect(
       requestTryOn({ productId: '17', imageIndex: 0, image: base64, accessToken: 'tok' }),
-    ).rejects.toBeInstanceOf(TryOnError);
+    ).rejects.toBeInstanceOf(tryOnErrorCtor);
   });
 
   it('exposes a 60 second timeout constant', () => {
