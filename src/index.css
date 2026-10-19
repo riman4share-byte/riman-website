@@ -86,6 +86,8 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply font-body bg-ivory text-stone-800 overflow-x-hidden leading-relaxed;
@@ -103,6 +105,21 @@
     outline-offset: 2px;
     border-radius: 1px;
   }
+
+  /* Mobile baseline: touch-action and press-target text selection.
+     `a` is deliberately excluded from user-select:none — links here wrap
+     product names and legal copy that a user may legitimately select. */
+  button, [role="button"], .chip, .tab {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  a { touch-action: manipulation; }
+  @media (pointer: coarse) {
+    input, textarea, select { font-size: 16px; }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
@@ -585,15 +602,31 @@
 @keyframes marquee-rtl {
   to { transform: translateX(50%); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
-  .instagram-marquee { animation: none; }
-}
 
 /* Instagram marquee — CSS-only for GPU efficiency */
 .instagram-marquee {
   animation: marquee 40s linear infinite;
   will-change: transform;
+}
+/* Same RTL flip .marquee-track already has. Without this the strip runs
+   left-to-right in Arabic, contradicting the salon rebrand safety rail
+   "RTL: marquee flips direction". Must out-specify the reduced-motion kill
+   below, hence the attribute selector. */
+[dir="rtl"] .marquee-track,
+[dir="rtl"] .instagram-marquee {
+  animation-name: marquee-rtl;
+}
+/* Declared after both animation definitions on purpose: at equal specificity
+   the later rule wins, and these selectors must cancel the RTL
+   animation-name above as well as the base animation. Without the RTL
+   selectors here, `marquee-rtl` survives reduced-motion and leaves the strip
+   parked at translateX(50%) — a visible seam instead of the seamless
+   translateX(-50%) rest position. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  [dir="rtl"] .marquee-track,
+  .instagram-marquee,
+  [dir="rtl"] .instagram-marquee { animation: none; }
 }
 
 /* Arabic display type takes over headings under RTL */

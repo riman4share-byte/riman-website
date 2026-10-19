@@ -12,7 +12,7 @@ function Panel({ item, offset }: { item: GalleryItem; offset?: boolean }) {
           src={item.thumbnail_url || item.media_url}
           alt={item.title}
           loading="lazy"
-          className="h-[52vh] md:h-[62vh] w-full md:w-[32vw] object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
+          className="h-[52vh] md:h-[62vh] w-full md:w-[32vw] object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
         />
       </div>
       <figcaption className="flex justify-between mt-4 text-micro uppercase tracking-[0.3em] text-ivory">

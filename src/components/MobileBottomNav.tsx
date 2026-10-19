@@ -18,7 +18,7 @@ export default function MobileBottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 w-full bg-onyx border-t border-terracotta/20 z-[100] grid grid-cols-5 md:hidden h-16 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 w-full bg-onyx border-t border-terracotta/20 z-[100] grid grid-cols-5 md:hidden min-h-16 pb-[env(safe-area-inset-bottom,0px)]">
       {navItems.map((item) => {
         const isActive = location.pathname === item.path;
         const Icon = item.icon;

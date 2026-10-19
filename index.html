@@ -7,8 +7,13 @@
          (JS-capable browser). Inline so it applies before first paint. */
       @media (scripting: enabled) { .prerender-shell { display: none } }
     </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Riman Fashion | Sharjah's Premier Bridal &amp; Evening Couture</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#0f0d0a" />
+    <!-- This site has no dark theme: it is an ivory/onyx couture brand. Declaring
+         "light dark" would let native controls and scrollbars render dark for a
+         user whose OS is in dark mode, which the page never styles for. -->
+    <meta name="color-scheme" content="light" />
+    <title>Riman Fashion | Sharjah's Premier Bridal & Evening Couture</title>
     <meta name="description" content="Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, and premium rentals.">
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="%SITE_URL%/" />
@@ -19,7 +24,6 @@
          there, the SPA rewrite served index.html as text/html for the icon. -->
     <link rel="shortcut icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0f0d0a" />
 
     <!-- Perf: the hero poster is the LCP image and is now the only thing the
          hero paints. Preload + preconnect so it is fetched in parallel with

@@ -46,7 +46,11 @@ export default function KineticHeading({
     const Tag = HTML_TAGS[as];
     return (
       <Tag
-        className={`${className} transition-all duration-500 hover:[text-shadow:0_0_28px_rgba(212,175,55,0.35)] cursor-default`}
+        // No Tailwind hover utilities here: `data-heading` below already
+        // picks up the single pointer-gated rule in index.css (which uses the
+        // couture easing token). Declaring both meant two competing hover
+        // glows with different radii on this one element.
+        className={`${className} cursor-default`}
         data-heading
       >
         {text}

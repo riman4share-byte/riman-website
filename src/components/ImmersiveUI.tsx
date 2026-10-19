@@ -41,6 +41,24 @@ export default function ImmersiveUI() {
     restDelta: 0.001
   });
 
+  /**
+   * The custom cursor is a pointer affordance, so it only exists where a
+   * precise pointer exists. `customCursor` defaults to on, which previously
+   * meant every phone and tablet paid for two window listeners plus a React
+   * state update per mousemove frame for a cursor that can never be seen.
+   * The CSS side of this was already gated behind `(hover: hover)`; this
+   * closes the JS side so the two halves agree.
+   */
+  const [hasFinePointer, setHasFinePointer] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setHasFinePointer(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  const cursorActive = customCursorEnabled && hasFinePointer;
+
   useEffect(() => {
     if (!loading) return;
     const controls = animate(0, 100, {
@@ -64,7 +82,7 @@ export default function ImmersiveUI() {
 
   // Throttled mouse tracking for custom cursor
   useEffect(() => {
-    if (!customCursorEnabled) return;
+    if (!cursorActive) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (mouseTrackingRef.current) {
@@ -96,17 +114,17 @@ export default function ImmersiveUI() {
       window.removeEventListener('mouseover', handleMouseOver);
       if (mouseTrackingRef.current) cancelAnimationFrame(mouseTrackingRef.current);
     };
-  }, [customCursorEnabled]);
+  }, [cursorActive]);
 
   // Toggle custom cursor class on <html>
   useEffect(() => {
     const html = document.documentElement;
-    if (customCursorEnabled) {
+    if (cursorActive) {
       html.classList.add('custom-cursor-active');
       return () => html.classList.remove('custom-cursor-active');
     }
     html.classList.remove('custom-cursor-active');
-  }, [customCursorEnabled]);
+  }, [cursorActive]);
 
   return (
     <>
@@ -155,7 +173,7 @@ export default function ImmersiveUI() {
       </AnimatePresence>
 
       {/* Custom Global Cursor */}
-      {customCursorEnabled && (
+      {cursorActive && (
         <>
           {/* Trail ring — follows with lag (skipped if reduced motion) */}
           {!prefersReducedMotion && (
