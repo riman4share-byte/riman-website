@@ -137,7 +137,7 @@ export default function CollectionsPage() {
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/10 to-transparent" />
                       <div className="absolute bottom-0 start-0 w-full p-6">
                         <p className="text-micro tracking-[0.25em] uppercase text-terracotta-dark mb-2">
-                          {matching.length} {t('collections.count')}
+                          {matching.length} {t(matching.length === 1 ? 'collections.count_singular' : 'collections.count')}
                         </p>
                         <h2 className="font-heading text-2xl text-white tracking-wider uppercase mb-2">
                           {t(def.nameKey)}

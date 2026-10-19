@@ -237,7 +237,7 @@ export default function AppointmentPage() {
           <div className="flex items-center justify-center gap-4 mb-12">
             {[1, 2, 3].map(s => (
               <button key={s} onClick={() => { if (s < step) setStep(s); }} className="flex items-center gap-3">
-                <div className={step >= s ? "w-10 h-10 bg-terracotta text-white flex items-center justify-center text-xs font-bold transition-all" : "w-10 h-10 border border-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold"}>
+                <div className={step >= s ? "w-10 h-10 bg-terracotta text-white flex items-center justify-center text-xs font-bold transition" : "w-10 h-10 border border-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold"}>
                   {step > s ? <CheckCircle2 className="w-4 h-4" /> : s}
                 </div>
                 <span className={step >= s ? "text-xs tracking-widest uppercase font-bold text-stone-800 hidden md:block" : "text-xs tracking-widest uppercase text-stone-600 hidden md:block"}>
@@ -346,7 +346,7 @@ export default function AppointmentPage() {
                           aria-checked={form.time === formatSlot(slot)}
                           onClick={() => updateForm('time', formatSlot(slot))}
                           className={cn(
-                            "py-3 text-xs tracking-widest border transition-all relative",
+                            "py-3 text-xs tracking-widest border transition relative",
                             form.time === formatSlot(slot)
                               ? "font-bold bg-terracotta text-white border-terracotta"
                               : isPeakSlot(slot)

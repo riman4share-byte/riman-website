@@ -128,7 +128,7 @@ export default function WishlistPage() {
                   {!isSharedView && (
                     <button
                       onClick={() => removeFromWishlist(product.id)}
-                      className="absolute top-4 right-4 z-10 w-8 h-8 bg-ivory/80 backdrop-blur-sm flex items-center justify-center text-stone-600 hover:text-rose-500 transition-all opacity-0 group-hover:opacity-100"
+                      className="absolute top-4 right-4 z-10 w-8 h-8 bg-ivory/80 backdrop-blur-sm flex items-center justify-center text-stone-600 hover:text-terracotta-dark transition opacity-0 group-hover:opacity-100"
                       aria-label={t('wishlist.remove_aria')}
                     >
                       <X className="w-4 h-4" />

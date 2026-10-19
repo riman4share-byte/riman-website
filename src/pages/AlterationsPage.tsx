@@ -108,7 +108,7 @@ export default function AlterationsPage() {
                  <Ruler className="w-4 h-4 text-terracotta-dark" /> {t('alt.guarantee')}
               </div>
             </div>
-            <Link to="/contact" className="mt-12 group flex items-center gap-4 text-micro uppercase tracking-[0.4em] text-terracotta-dark font-black transition-all hover:gap-6">
+            <Link to="/contact" className="mt-12 group flex items-center gap-4 text-micro uppercase tracking-[0.4em] text-terracotta-dark font-black transition-[gap] hover:gap-6">
               {t('alt.inquire')} <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -125,7 +125,7 @@ export default function AlterationsPage() {
 
 function ServiceCard({ icon: Icon, title, desc }: any) {
   return (
-    <div className="bg-ivory p-12 border border-stone-100 hover:border-terracotta/30 transition-all duration-500 group">
+    <div className="bg-ivory p-12 border border-stone-100 hover:border-terracotta/30 transition duration-500 group">
       <div className="w-12 h-12 bg-ivory text-terracotta-dark flex items-center justify-center mb-8 rounded-sm group-hover:bg-terracotta group-hover:text-white transition-colors">
         <Icon className="w-5 h-5" />
       </div>

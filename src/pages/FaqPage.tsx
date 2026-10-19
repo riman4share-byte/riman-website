@@ -17,6 +17,7 @@ const faqs = [
   {
     categoryKey: "faq.category_bespoke",
     questions: [
+      { qKey: "faq.q_bespoke_lead", aKey: "faq.a_bespoke_lead" },
       { qKey: "faq.q_bespoke_1", aKey: "faq.a_bespoke_1" },
       { qKey: "faq.q_bespoke_2", aKey: "faq.a_bespoke_2" }
     ]
@@ -68,7 +69,7 @@ export default function FaqPage() {
                   if (searchTerm && !t(faq.qKey).toLowerCase().includes(searchTerm.toLowerCase())) return null;
 
                   return (
-                     <div key={id} className="bg-ivory border-b border-stone-200 transition-all">
+                     <div key={id} className="bg-ivory border-b border-stone-200 transition">
                       <button 
                         onClick={() => setActiveIdx(isOpen ? null : id)}
                         className="w-full p-6 flex justify-between items-center text-start"

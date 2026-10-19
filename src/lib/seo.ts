@@ -30,7 +30,7 @@ export interface RouteMeta {
 export const ROUTE_META: Record<string, RouteMeta> = {
   '/': {
     title: 'Riman Fashion | Sharjah Bridal & Evening Couture',
-    description: 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, premium rentals, and fine jewelry at our flagship atelier.',
+    description: 'Sharjah\'s premier bridal and evening couture house. Bespoke gowns, premium rentals and fine jewelry — hand-finished at our Al Zahra St atelier.',
     ogType: 'website',
   },
   '/collection/all': {

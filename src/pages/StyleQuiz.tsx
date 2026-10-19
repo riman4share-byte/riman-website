@@ -180,9 +180,9 @@ export default function StyleQuiz() {
                     <button
                       key={option}
                       onClick={() => handleAnswer(option)}
-                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 text-left"
+                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta hover:shadow-xl hover:shadow-gold/5 transition duration-300 text-left"
                     >
-                      <span className="font-body text-sm text-stone-700 group-hover:text-stone-900 group-hover:pl-2 transition-all duration-300">{option}</span>
+                      <span className="inline-block font-body text-sm text-stone-700 group-hover:text-stone-900 transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">{option}</span>
                       <ChevronRight className="w-4 h-4 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
                     </button>
                   ))}
@@ -274,7 +274,7 @@ export default function StyleQuiz() {
             <div 
               key={i} 
               className={cn(
-                "h-0.5 transition-all duration-500", 
+                "h-0.5 transition-[width,background-color] duration-500", 
                 i <= step ? "w-8 bg-terracotta" : "w-4 bg-stone-200"
               )} 
             />

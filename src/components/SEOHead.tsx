@@ -24,7 +24,7 @@ import {
 } from '../lib/seo';
 
 const SITE_NAME = 'Riman Fashion | Sharjah Bridal & Evening Couture';
-const DEFAULT_DESCRIPTION = 'Discover the zenith of Sharjah couture. Riman Fashion offers bespoke bridal gowns, evening wear, and premium rentals.';
+const DEFAULT_DESCRIPTION = 'Sharjah\'s premier bridal and evening couture house. Bespoke gowns, premium rentals and fine jewelry — hand-finished at our Al Zahra St atelier.';
 const DEFAULT_OG_IMAGE = '/og-cover.png';
 
 interface SEOProps {

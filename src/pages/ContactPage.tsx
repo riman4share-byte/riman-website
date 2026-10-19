@@ -141,7 +141,7 @@ export default function ContactPage() {
                           {...register('name')}
                           disabled={isSubmitted}
                           className={cn(
-                            "field-couture p-4 text-sm transition-all",
+                            "field-couture p-4 text-sm transition",
                             errors.name && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )} 
@@ -157,7 +157,7 @@ export default function ContactPage() {
                           type="email" 
                           disabled={isSubmitted}
                           className={cn(
-                            "field-couture p-4 text-sm transition-all",
+                            "field-couture p-4 text-sm transition",
                             errors.email && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
@@ -174,7 +174,7 @@ export default function ContactPage() {
                         type="tel" 
                         disabled={isSubmitted}
                         className={cn(
-                          "field-couture p-4 text-sm transition-all",
+                          "field-couture p-4 text-sm transition",
                           errors.phone && "border-red-300",
                           isSubmitted && "opacity-50 cursor-not-allowed"
                         )}
@@ -190,7 +190,7 @@ export default function ContactPage() {
                           {...register('type')}
                           disabled={isSubmitted}
                           className={cn(
-                            "w-full bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-terracotta outline-none p-4 text-sm transition-all appearance-none cursor-pointer",
+                            "w-full bg-stone-50 border border-stone-100 focus:bg-ivory focus:border-terracotta outline-none p-4 text-sm transition appearance-none cursor-pointer",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
                         >
@@ -210,7 +210,7 @@ export default function ContactPage() {
                         rows={4} 
                         disabled={isSubmitted}
                         className={cn(
-                          "field-couture p-4 text-sm transition-all resize-none",
+                          "field-couture p-4 text-sm transition resize-none",
                           errors.message && "border-red-300",
                           isSubmitted && "opacity-50 cursor-not-allowed"
                         )}
@@ -294,7 +294,7 @@ export default function ContactPage() {
           allowFullScreen={true}
           loading="lazy" 
           referrerPolicy="no-referrer-when-downgrade"
-          className="grayscale hover:grayscale-0 transition-all duration-1000 contrast-[1.1] brightness-[0.95]"
+          className="grayscale hover:grayscale-0 transition duration-1000 contrast-[1.1] brightness-[0.95]"
           title="Riman Fashion — Sharjah"
         />
         <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_150px_rgba(0,0,0,0.15)] border-y border-stone-200/50" />
@@ -306,7 +306,7 @@ export default function ContactPage() {
 function ContactInfoItem({ icon, title, content }: { icon: React.ReactNode, title: string, content: React.ReactNode }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition-all duration-500 shrink-0">
+      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition duration-500 shrink-0">
         {icon}
       </div>
       <div>

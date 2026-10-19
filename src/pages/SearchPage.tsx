@@ -65,7 +65,7 @@ export default function SearchPage() {
                     key={cat}
                     onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                     className={cn(
-                      "px-6 py-2 text-micro tracking-[0.2em] uppercase transition-all border",
+                      "px-6 py-2 text-micro tracking-[0.2em] uppercase transition border",
                       activeCategory === cat ? "bg-onyx text-white border-onyx" : "bg-ivory text-stone-600 border-stone-100 hover:border-terracotta"
                     )}
                   >

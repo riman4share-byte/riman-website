@@ -24,8 +24,8 @@ export default function Index() {
   const { products, content } = useData();
   const { t, language } = useLanguage();
 
-  const featured = products.filter((p) => p.isFeatured).slice(0, 6);
-  const plates = featured.length >= 2 ? featured : products.slice(0, 6);
+  const featured = products.filter((p) => p.isFeatured).slice(0, 4);
+  const plates = featured.length >= 2 ? featured : products.slice(0, 4);
 
   return (
     <div className="film-grain">
@@ -79,10 +79,10 @@ export default function Index() {
 
       <InvitationRule className="bg-bone border-t border-terracotta/15" />
 
-      <section className="bg-champagne py-24 md:py-36 px-6 md:px-12 lg:px-20">
+      <section className="bg-champagne py-20 md:py-24 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
           <ChapterLabel numeral="II" titleKey="chapter.silhouettes" />
-          <div className="mt-16 md:mt-24 flex flex-col gap-24 md:gap-36">
+          <div className="mt-16 md:mt-24 flex flex-col gap-16 md:gap-24">
             {plates.map((product, i) => (
               <div key={product.id}>
                 <ScrollReveal>
@@ -101,12 +101,12 @@ export default function Index() {
         captions={
           language === 'ar'
             ? [
-                { text: 'نحن ننسج الأحلام في الحرير', at: 0.15 },
+                { text: 'كل فستان يبدأ باليد', at: 0.15 },
                 { text: 'كل خيط حكاية', at: 0.5 },
                 { text: 'من الشارقة — منذ ٢٠١١', at: 0.82 },
               ]
             : [
-                { text: 'We weave dreams into silk', at: 0.15 },
+                { text: 'Each gown begins by hand', at: 0.15 },
                 { text: 'Every thread, a story', at: 0.5 },
                 { text: 'Sharjah — since 2011', at: 0.82 },
               ]
@@ -170,12 +170,17 @@ export default function Index() {
 
       <TestimonialWall21st />
 
-      {/* Single contextual sticky CTA replaces 4 repeated strips */}
-      <section className="sticky bottom-0 z-30 bg-onyx/95 border-t border-terracotta/20 backdrop-blur-sm">
+      {/* Single contextual CTA band. Was `sticky bottom-0`: it pinned to the
+          bottom of the viewport for the whole scroll and covered the last ~77px
+          of every section. In flow it no longer hides content. */}
+      <section className="bg-onyx border-t border-terracotta/20">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
-          <p className="font-label text-[11px] tracking-[0.2em] uppercase text-bone/80 text-center sm:text-start">
-            {language === 'ar' ? 'معاينة خاصة في الأتيليه — الشارقة' : 'Private viewing at the atelier — Sharjah'}
-          </p>
+          <div className="text-center sm:text-start">
+            <p className="font-label text-[11px] tracking-[0.2em] uppercase text-bone/80">
+              {language === 'ar' ? 'معاينة خاصة في الأتيليه — الشارقة' : 'Private viewing at the atelier — Sharjah'}
+            </p>
+            <p className="font-body text-micro text-bone/60 mt-1">{t('home.leadtime')}</p>
+          </div>
           <Link to="/appointment" className="btn-couture-ghost !text-bone whitespace-nowrap min-h-[44px]">
             {t('cta.viewing')}
           </Link>
