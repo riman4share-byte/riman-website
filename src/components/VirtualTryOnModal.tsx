@@ -411,7 +411,7 @@ export function VirtualTryOnModal({ product, isOpen, onClose }: Props) {
                   }}
                 />
 
-                {inputError && <p className="text-micro text-rose-600">{inputError}</p>}
+                {inputError && <p className="text-micro text-terracotta-dark">{inputError}</p>}
 
                 <div>
                   <p className="text-micro uppercase tracking-widest text-stone-500 mb-2">{t('tryon.garment_heading')}</p>

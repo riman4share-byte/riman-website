@@ -288,7 +288,7 @@ export default function AdminProducts() {
                         <button
                           onClick={() => moveProduct(p.id, -1)}
                           disabled={hasActiveFilters || position === 0}
-                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
+                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
                           aria-label={`Move ${p.name} up`}
                           title={hasActiveFilters ? 'Clear filters to reorder' : 'Move up'}
                         >
@@ -297,7 +297,7 @@ export default function AdminProducts() {
                         <button
                           onClick={() => moveProduct(p.id, 1)}
                           disabled={hasActiveFilters || position === products.length - 1}
-                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
+                          className="p-1 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition disabled:opacity-30 disabled:hover:text-stone-400 disabled:hover:border-stone-200"
                           aria-label={`Move ${p.name} down`}
                           title={hasActiveFilters ? 'Clear filters to reorder' : 'Move down'}
                         >
@@ -345,14 +345,14 @@ export default function AdminProducts() {
                           setIsFormOpen(true);
                           loadBookings(p.id);
                         }}
-                        className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all"
+                        className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition"
                         aria-label="Edit product"
                       >
                         <Edit2 className="w-3 h-3" />
                       </button>
                       <button
                         onClick={() => deleteProduct(p.id)}
-                        className="p-2 border border-stone-200 text-stone-400 hover:text-rose-500 hover:border-rose-200 transition-all"
+                        className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta/30 transition"
                         aria-label="Delete product"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -482,7 +482,7 @@ export default function AdminProducts() {
                         <button
                           type="button"
                           onClick={() => setProductImages(prev => prev.filter((_, idx) => idx !== i))}
-                          className="absolute top-0.5 right-0.5 w-5 h-5 bg-rose-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-0.5 right-0.5 w-5 h-5 bg-terracotta/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Remove image"
                         >
                           <X className="w-3 h-3" />
@@ -552,7 +552,7 @@ export default function AdminProducts() {
                           <label className="text-micro uppercase tracking-widest text-stone-600 font-bold">Block End</label>
                           <input type="date" value={blockEnd} onChange={e => setBlockEnd(e.target.value)} className="w-full bg-stone-50 border border-stone-100 p-4 text-micro tracking-widest outline-none focus:border-terracotta transition-colors" />
                         </div>
-                        <button onClick={addBlock} disabled={!blockStart || !blockEnd || isLoadingBookings} className="px-6 py-4 bg-terracotta text-white text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2 self-end" >
+                        <button onClick={addBlock} disabled={!blockStart || !blockEnd || isLoadingBookings} className="px-6 py-4 bg-terracotta text-white text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition flex items-center gap-2 self-end" >
                           <CalendarPlus className="w-4 h-4" /> Add Block
                         </button>
                       </div>
@@ -578,7 +578,7 @@ export default function AdminProducts() {
                               <button
                                 onClick={() => b.id && removeBooking(b.id)}
                                 disabled={isLoadingBookings || !b.id}
-                                className="p-2 border border-stone-200 text-rose-500 hover:bg-rose-50 hover:border-rose-200 transition-all disabled:opacity-40"
+                                className="p-2 border border-stone-200 text-terracotta-dark hover:bg-terracotta/5 hover:border-terracotta/30 transition disabled:opacity-40"
                                 aria-label={b.status === 'blocked' ? 'Remove hold' : 'Cancel booking'}
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -601,7 +601,7 @@ export default function AdminProducts() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2"
+                    className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition flex items-center gap-2"
                   >
                     {isUploading ? (
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -644,7 +644,7 @@ export default function AdminProducts() {
                     {importFiles.map((file, i) => (
                       <div key={i} className="relative group w-20 h-24 bg-stone-100 border border-stone-200 overflow-hidden">
                         <img src={URL.createObjectURL(file)} alt={`Import ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
-                        <button type="button" onClick={() => setImportFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-rose-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Remove file">
+                        <button type="button" onClick={() => setImportFiles(prev => prev.filter((_, idx) => idx !== i))} className="absolute top-0.5 right-0.5 w-5 h-5 bg-terracotta/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Remove file">
                           <X className="w-3 h-3" />
                         </button>
                       </div>
@@ -670,7 +670,7 @@ export default function AdminProducts() {
               </div>
               <div className="p-8 bg-onyx border-t border-stone-100 flex justify-end gap-4 -mx-8 -mb-8 mt-12">
                 <button type="button" onClick={() => setIsImportOpen(false)} className="px-8 py-3 text-micro tracking-widest uppercase text-stone-400 hover:text-white transition-colors">Cancel</button>
-                <button type="button" onClick={handleBulkImport} disabled={isImporting} className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition-all flex items-center gap-2">
+                <button type="button" onClick={handleBulkImport} disabled={isImporting} className="bg-terracotta text-white px-10 py-3 text-micro tracking-[0.2em] font-bold uppercase hover:bg-terracotta-dark transition flex items-center gap-2">
                   {isImporting ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Save className="w-4 h-4" />} Import {importInput.split('\n').filter(Boolean).length + importFiles.length} Products
                 </button>
               </div>
@@ -723,7 +723,7 @@ function Checkbox({ label, name, defaultChecked }: CheckboxProps) {
           defaultChecked={defaultChecked}
           className="peer sr-only"
         />
-        <div className="w-5 h-5 border border-stone-300 bg-white group-hover:border-terracotta transition-all peer-checked:bg-terracotta peer-checked:border-terracotta" />
+        <div className="w-5 h-5 border border-stone-300 bg-white group-hover:border-terracotta transition peer-checked:bg-terracotta peer-checked:border-terracotta" />
         <Plus className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
       </div>
       <span className="text-micro uppercase tracking-widest text-stone-600 font-bold">{label}</span>

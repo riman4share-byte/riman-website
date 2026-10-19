@@ -144,8 +144,8 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
                   className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-stone-50 p-8"
                 >
                   <div className="relative flex flex-col items-center text-center max-w-xs">
-                    <div className="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center mb-4">
-                      <AlertTriangle className="w-6 h-6 text-rose-400" />
+                    <div className="w-14 h-14 rounded-full bg-terracotta/10 flex items-center justify-center mb-4">
+                      <AlertTriangle className="w-6 h-6 text-terracotta" />
                     </div>
                     <p className="text-sm font-semibold text-stone-700 mb-2">{t('threed.unavailable')}</p>
                     <p className="text-micro text-stone-600 leading-relaxed mb-4">
@@ -176,14 +176,14 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
           <div className="absolute bottom-6 right-6 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={handleReset}
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition rounded-full"
               title={t('threed.reset_view')}
               aria-label={t('threed.reset_view')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button 
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition rounded-full"
               title="View in AR"
               aria-label="View in augmented reality"
               onClick={() => modelRef.current?.activateAR()}

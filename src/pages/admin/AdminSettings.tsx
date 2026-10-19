@@ -236,7 +236,7 @@ export default function AdminSettings() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 text-emerald-600 text-micro tracking-widest uppercase font-bold"
+              className="flex items-center gap-2 text-brass-ink text-micro tracking-widest uppercase font-bold"
             >
               <CheckCircle2 className="w-4 h-4" /> Saved
             </motion.div>
@@ -796,7 +796,7 @@ export default function AdminSettings() {
                   className={cn(
                     "relative w-11 h-5 transition-colors duration-300",
                     settings.advanced.maintenanceMode
-                      ? "bg-rose-500"
+                      ? "bg-terracotta"
                       : "bg-stone-200",
                   )}
                   aria-label="Toggle maintenance mode"
@@ -896,8 +896,8 @@ export default function AdminSettings() {
                   Supabase
                 </p>
                 {isSupabaseConfigured ? (
-                  <span className="inline-flex items-center gap-2 text-micro text-emerald-600 font-bold">
-                    <div className="w-2 h-2 bg-emerald-500" /> Connected
+                  <span className="inline-flex items-center gap-2 text-micro text-brass-ink font-bold">
+                    <div className="w-2 h-2 bg-brass" /> Connected
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-2 text-micro text-stone-600 font-bold">
@@ -907,10 +907,10 @@ export default function AdminSettings() {
               </div>{" "}
               <button
                 onClick={handleReset}
-                className="flex items-center gap-3 px-6 py-5 border border-rose-200 bg-rose-50/50 hover:bg-rose-50 transition-colors text-left"
+                className="flex items-center gap-3 px-6 py-5 border border-terracotta/30 bg-terracotta/5 hover:bg-terracotta/10 transition-colors text-left"
               >
                 {" "}
-                <AlertTriangle className="w-5 h-5 text-rose-500" />{" "}
+                <AlertTriangle className="w-5 h-5 text-terracotta" />{" "}
                 <div>
                   <p className="text-xs font-bold text-stone-800 uppercase tracking-widest">
                     Factory Reset

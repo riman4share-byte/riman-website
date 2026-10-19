@@ -26,7 +26,7 @@ export default function InstagramSection() {
             href="https://www.instagram.com/rimanfashion/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-white hover:text-terracotta-dark transition-all duration-500"
+            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-white hover:text-terracotta-dark transition duration-500"
           >
             <Instagram className="w-4 h-4" />
             <span className="text-micro tracking-[0.3em] uppercase font-bold transition-colors">

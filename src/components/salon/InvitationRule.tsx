@@ -9,7 +9,7 @@ interface InvitationRuleProps {
 export default function InvitationRule({ className }: InvitationRuleProps) {
   const { t } = useLanguage();
   return (
-    <div className={`flex flex-col items-center gap-4 py-16 text-center ${className ?? ''}`}>
+    <div className={`flex flex-col items-center gap-4 py-8 text-center ${className ?? ''}`}>
       <span className="h-px w-24 bg-terracotta/40" aria-hidden="true" />
       <p className="font-editorial italic text-lg text-stone-600">{t('invitation.line')}</p>
       <Link
