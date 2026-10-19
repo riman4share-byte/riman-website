@@ -189,7 +189,7 @@ test('phase 2: product detail has no plate borders and hairline review fields', 
   expect(probe.plates).toBe(0);
 });
 
-test('phase 3: btn-luxury stays flat — no gradient sheen', async ({ page }) => {
+test('phase 3: btn-luxury stays flat, sheen rides on ::after', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   // btn-luxury lives on the booking/checkout surfaces, not the homepage hero
   // (the hero uses the unfilled ghost CTA).
@@ -199,17 +199,28 @@ test('phase 3: btn-luxury stays flat — no gradient sheen', async ({ page }) =>
   const styles = await btn.evaluate((el) => {
     const cs = getComputedStyle(el);
     const pre = getComputedStyle(el, '::before');
+    const post = getComputedStyle(el, '::after');
     return {
       bgImage: cs.backgroundImage,
       preBg: pre.backgroundImage,
+      postBg: post.backgroundImage,
+      postTransform: post.transform,
+      postTransition: post.transitionDuration,
       boxShadow: cs.boxShadow,
     };
   });
-  // The editorial flat direction dropped the champagne sheen: no gradient fills,
-  // no shadow. Hover is carried by the border and text colour instead.
+  // The editorial flat direction: the button itself and its hover fill carry no
+  // gradient and no shadow. Emphasis comes from the rule and the type.
   expect(styles.bgImage).toBe('none');
   expect(styles.preBg === 'none' || !styles.preBg.includes('gradient')).toBe(true);
   expect(styles.boxShadow).toBe('none');
+  // The micro-motion sheen is on ::after so it can sweep over the scaleX fill
+  // rather than replace it — ::before is what makes the ivory hover label
+  // legible, and one pseudo-element cannot hold both transforms.
+  expect(styles.postBg).toContain('gradient');
+  expect(styles.postTransition).toContain('0.9s');
+  // Rests off the inline-start edge; must not be parked mid-button.
+  expect(styles.postTransform).not.toBe('none');
 });
 
 test('phase 3: hero headline letter-splits EN, stays plain AR + reduced-motion', async ({ page }) => {

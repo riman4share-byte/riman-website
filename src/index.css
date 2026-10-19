@@ -380,6 +380,41 @@
     outline-offset: 4px;
   }
 
+  /* Champagne sheen, per the 2026-09-16 micro-motion spec: a 60%-wide skewed
+     3-stop gradient sweeping -160% -> 260% over 900ms on hover/focus.
+
+     The spec puts this on ::before, but ::before already carries the scaleX
+     fill that .btn-luxury:hover's ivory label depends on for contrast. One
+     pseudo-element cannot hold both transforms, and a 60%-wide sheen there
+     would leave the hovered label ivory-on-ivory. ::after is unused on this
+     class, so the sheen runs over the fill instead of replacing it.
+
+     Declared after the focus-ring block above deliberately: coutureButtons
+     .test.ts locates `.btn-luxury:focus-visible` by first match, and this
+     block shares that prefix. */
+  .btn-luxury::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    z-index: -1;
+    background: linear-gradient(105deg,
+      transparent 0%,
+      rgba(201, 169, 111, 0.28) 45%,
+      rgba(246, 240, 230, 0.35) 50%,
+      rgba(201, 169, 111, 0.28) 55%,
+      transparent 100%);
+    transform: translateX(-160%) skewX(-14deg);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .btn-luxury:hover::after,
+  .btn-luxury:focus-visible::after {
+    transform: translateX(260%) skewX(-14deg);
+  }
+
   .link-couture {
     position: relative;
     letter-spacing: 0.25em;
@@ -424,6 +459,12 @@
     }
     .btn-luxury::before,
     .btn-luxury-outline::before {
+      transition-duration: 0.01ms !important;
+    }
+    /* The sheen rests off the inline-start edge at -160% and ends off the far
+       edge at 260%, so collapsing its duration parks it fully out of frame
+       rather than mid-button. No travel, no stray highlight. */
+    .btn-luxury::after {
       transition-duration: 0.01ms !important;
     }
     .btn-luxury:hover::before,
