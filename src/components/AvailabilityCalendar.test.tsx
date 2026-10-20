@@ -92,6 +92,10 @@ describe('AvailabilityCalendar', () => {
   it('jumps to the next open day via the shortcut button', async () => {
     const onDateSelect = renderCalendar({ selectedDate: null });
     await waitFor(() => expect(mockedFetch).toHaveBeenCalled());
+    // toHaveBeenCalled fires when the fetch is issued, not when it resolves.
+    // Clicking before bookedSet arrives makes "next available" today itself,
+    // which is a race this test lost on CI at 00:01 UTC.
+    await waitFor(() => expect(dayButton(0)?.getAttribute('aria-disabled')).toBe('true'));
     fireEvent.click(screen.getByRole('button', { name: /next available date/i }));
     expect(onDateSelect).toHaveBeenCalledWith(addDays(new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()), 1));
     expect(screen.getByRole('status').textContent?.length ?? 0).toBeGreaterThan(0);

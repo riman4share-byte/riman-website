@@ -230,7 +230,9 @@ test.describe('Riman Fashion — Global Features', () => {
         e.includes('React') || e.includes('Uncaught') || e.includes('TypeError') || e.includes('ReferenceError')
       );
 
-      expect(reactErrors.length).toBe(0);
+      // Attach the messages: a bare count on CI tells you nothing about which
+      // page or which error caused it.
+      expect(reactErrors, `console errors:\n${errors.join('\n') || '(none)'}`).toHaveLength(0);
     });
   });
 });

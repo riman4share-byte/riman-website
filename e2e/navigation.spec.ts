@@ -190,9 +190,11 @@ test.describe('Riman Fashion — Navigation & Routing', () => {
       const scrollBtn = page.locator('#footer').getByRole('button', { name: /ascend|top/i });
       if (await scrollBtn.isVisible()) {
         await scrollBtn.click();
-        await page.waitForTimeout(1000);
-        const scrollY = await page.evaluate(() => window.scrollY);
-        expect(scrollY).toBeLessThan(100);
+        // Smooth scrolling to the top of a long page takes longer than a fixed
+        // 1s wait on a loaded CI runner.
+        await expect
+          .poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 })
+          .toBeLessThan(100);
       }
     });
   });
