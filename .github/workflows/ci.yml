@@ -183,7 +183,8 @@ jobs:
           assert all(l.startswith('https://') for l in locs), 'non-absolute URL in sitemap'
           assert not any('localhost' in l for l in locs), 'localhost leaked into sitemap'
           banned = ('/admin', '/auth', '/checkout', '/payment/', '/profile', '/wishlist', '/search')
-          assert not any(bad in l for l in locs), 'private route in sitemap'
+          hits = [l for l in locs if any(bad in l for bad in banned)]
+          assert not hits, f'private route in sitemap: {hits}'
           print(f'sitemap OK ({len(locs)} urls)')
           PY
           grep -q "Sitemap: $SITE/sitemap.xml" dist/robots.txt
