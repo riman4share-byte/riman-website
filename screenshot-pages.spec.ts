@@ -3,7 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const DESKTOP_PATH = path.join(process.env.USERPROFILE || '', 'Desktop', 'riman-fashion-screenshots');
-const BASE_URL = 'http://localhost:3002';
+// Relative to the Playwright baseURL rather than a hardcoded origin, so this
+// follows the port instead of drifting from it.
+const BASE_URL = '';
 
 const routes = [
   { path: '/', name: 'home' },

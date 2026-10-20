@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useGallery, GalleryItem } from '../hooks/useGallery';
+import { FALLBACK_GALLERY } from '../data/galleryFallback';
 import GalleryFilters from '../components/GalleryFilters';
 import GalleryGrid from '../components/GalleryGrid';
 import GalleryLightbox from '../components/GalleryLightbox';
@@ -14,9 +15,18 @@ export default function GalleryPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const { items, isLoading, error, hasMore, loadMore } = useGallery({
+  const { items, isLoading, hasMore, loadMore } = useGallery({
     category: activeCategory === 'all' ? undefined : activeCategory,
   });
+
+  // The live feed is the only source of gallery content, so a failed or empty
+  // fetch would otherwise put a bare error string in the middle of the page.
+  // Fall back to the curated house set (honouring the active tab) and never
+  // surface the raw error to a visitor.
+  const usingFallback = !isLoading && items.length === 0;
+  const visibleItems = usingFallback
+    ? FALLBACK_GALLERY.filter((i) => activeCategory === 'all' || i.category === activeCategory)
+    : items;
 
   const handleItemClick = useCallback((_item: GalleryItem, index: number) => {
     setLightboxIndex(index);
@@ -64,19 +74,15 @@ export default function GalleryPage() {
               <div key={i} className="break-inside-avoid mb-4 bg-stone-100 animate-pulse" style={{ height: `${200 + (i % 3) * 100}px` }} />
             ))}
           </div>
-        ) : error ? (
-          <div className="text-center py-20">
-            <p className="text-stone-600 text-sm">{error}</p>
-          </div>
-        ) : items.length === 0 ? (
+        ) : visibleItems.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-stone-600 text-sm">{t('gallery.no_items')}</p>
           </div>
         ) : (
           <>
-            <GalleryGrid items={items} onItemClick={handleItemClick} />
+            <GalleryGrid items={visibleItems} onItemClick={handleItemClick} />
 
-            {hasMore && (
+            {hasMore && !usingFallback && (
               <div className="text-center mt-16">
                 <button
                   onClick={loadMore}
@@ -113,7 +119,7 @@ export default function GalleryPage() {
           </div>
 
           <div className="text-center mt-10">
-            <Link to="/" className="inline-flex items-center gap-2 text-terracotta-dark text-xs tracking-widest uppercase hover:gap-4 transition-all pb-1 border-b border-terracotta/30 font-medium">
+            <Link to="/" className="inline-flex items-center gap-2 text-terracotta-dark text-xs tracking-widest uppercase hover:gap-4 transition-[gap] pb-1 border-b border-terracotta/30 font-medium">
               {t('gallery.back_home')} <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
@@ -121,7 +127,7 @@ export default function GalleryPage() {
       </div>
 
       <GalleryLightbox
-        items={items}
+        items={visibleItems}
         currentIndex={lightboxIndex}
         isOpen={lightboxOpen}
         onClose={() => setLightboxOpen(false)}

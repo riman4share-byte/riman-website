@@ -171,7 +171,7 @@ export default function Auth() {
                 />
               </div>
 
-              {displayError && <p className="text-micro text-rose-500 uppercase tracking-widest text-center">{displayError}</p>}
+              {displayError && <p className="text-micro text-terracotta-dark uppercase tracking-widest text-center">{displayError}</p>}
 
               <TurnstileCaptcha onToken={setCaptchaToken} />
 
@@ -197,7 +197,7 @@ export default function Auth() {
                     navigate('/auth', { replace: true });
                     window.location.reload();
                   }}
-                  className="text-micro text-stone-500 uppercase tracking-[0.3em] hover:text-rose-400 transition-colors"
+                  className="text-micro text-stone-500 uppercase tracking-[0.3em] hover:text-terracotta-dark transition-colors"
                 >
                   {t('auth.clear_session')}
                 </button>

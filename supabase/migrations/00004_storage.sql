@@ -3,6 +3,26 @@
 -- (idempotent: safe to re-run)
 -- ============================================
 
+-- public.is_admin() is otherwise first defined in
+-- 20260728010000_fix_profiles_rls_recursion.sql - 24 migrations AFTER this file,
+-- which is why a from-scratch `supabase start` failed here with
+-- "function public.is_admin() does not exist (SQLSTATE 42883)".
+--
+-- The predicate is defined here too, so this file is self-contained. It is the
+-- same definition, and the later migration still CREATE OR REPLACEs it, so the
+-- end state is identical. `supabase migration up` orders by version, so a new
+-- file cannot be inserted before this one; defining it here is the only way to
+-- make fresh databases build. Already-migrated databases are unaffected - this
+-- version is recorded as applied and will not re-run.
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin');
+$$;
+
 -- Buckets: product imagery + gallery + customer review photos
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('product-images', 'product-images', true),

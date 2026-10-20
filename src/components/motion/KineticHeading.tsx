@@ -46,7 +46,11 @@ export default function KineticHeading({
     const Tag = HTML_TAGS[as];
     return (
       <Tag
-        className={`${className} transition-all duration-500 hover:[text-shadow:0_0_28px_rgba(212,175,55,0.35)] cursor-default`}
+        // No Tailwind hover utilities here: `data-heading` below already
+        // picks up the single pointer-gated rule in index.css (which uses the
+        // couture easing token). Declaring both meant two competing hover
+        // glows with different radii on this one element.
+        className={`${className} cursor-default`}
         data-heading
       >
         {text}
@@ -68,19 +72,13 @@ export default function KineticHeading({
       {words.map((word, wi) => (
         <span key={`w-${wi}`} className="inline-block whitespace-nowrap">
           {Array.from(word).map((char, ci) => (
+            // No per-character whileHover: a heading is often swept across by
+            // the pointer, which fired a spring + colour animation on every
+            // letter under it. The heading as a whole still has the
+            // pointer-gated glow from `data-heading` in index.css.
             <motion.span
               key={`${char}-${ci}`}
               variants={letter}
-              whileHover={
-                char.trim() !== ''
-                  ? {
-                      y: -3,
-                      scale: 1.06,
-                      color: '#D4AF37',
-                      transition: { type: 'spring', stiffness: 500, damping: 20 },
-                    }
-                  : undefined
-              }
               className={
                 emphasisChars.includes(char)
                   ? `${emphasisClassName} inline-block whitespace-pre select-none transition-colors duration-300`

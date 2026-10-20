@@ -103,7 +103,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             referrerPolicy="no-referrer"
             onLoad={() => setImageLoaded(true)}
             className={cn(
-              "w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.05]",
+              "w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]",
               !imageLoaded && "opacity-0"
             )}
           />
@@ -137,7 +137,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             setShowMobileActions(!showMobileActions);
           }}
           className={cn(
-            "md:hidden absolute bottom-0 left-0 right-0 z-20 py-3 text-micro tracking-[0.2em] uppercase font-body flex items-center justify-center gap-2 transition-all duration-300",
+            "md:hidden absolute bottom-0 left-0 right-0 z-20 py-3 text-micro tracking-[0.2em] uppercase font-body flex items-center justify-center gap-2 transition-colors duration-300",
             showMobileActions 
               ? "bg-onyx text-white" 
               : "bg-terracotta text-white"
@@ -150,7 +150,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
         {/* Quick Actions — slim slide-up bar on hover */}
         <div className={cn(
-          "absolute bottom-0 left-0 right-0 z-10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]",
+          "absolute bottom-0 left-0 right-0 z-10 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           showMobileActions
             ? "translate-y-0 opacity-100"
             : "translate-y-full md:translate-y-full md:group-hover:translate-y-0 md:opacity-0 md:group-hover:opacity-100"
@@ -174,7 +174,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                     key={size}
                     onClick={(e) => handleSizeSelect(size, e)}
                     className={cn(
-                      "min-w-[2.5rem] h-9 px-2 flex items-center justify-center border text-micro tracking-wider transition-all",
+                      "min-w-[2.5rem] h-9 px-2 flex items-center justify-center border text-micro tracking-wider transition-colors",
                       selectedSize === size
                         ? "border-terracotta bg-terracotta text-white"
                         : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
@@ -189,16 +189,16 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           {/* Slim bar with two actions */}
           <div className={cn(
-            "flex bg-onyx border-t border-terracotta/20 transition-all duration-500",
+            "flex bg-onyx border-t border-terracotta/20 transition-[transform,opacity] duration-500",
             showMobileActions ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
             "md:group-hover:opacity-100 md:group-hover:translate-y-0"
           )}>
             <button
               onClick={handleQuickAdd}
               className={cn(
-                "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-all duration-300 flex items-center justify-center gap-1.5",
+                "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-colors duration-300 flex items-center justify-center gap-1.5",
                 isAdded
-                  ? "text-emerald-400"
+                  ? "text-brass-light"
                   : "text-white hover:text-terracotta-dark"
               )}
             >
@@ -220,8 +220,8 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
               className={cn(
                 "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-colors duration-300 flex items-center justify-center gap-1.5",
                 saved
-                  ? "text-rose-400"
-                  : "text-white/70 hover:text-rose-400"
+                  ? "text-terracotta-light"
+                  : "text-white/70 hover:text-terracotta-light"
               )}
             >
               <Heart className={cn("w-3.5 h-3.5", saved && "fill-current")} />
@@ -266,7 +266,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                   </p>
                 )}
                 {!isAvailable && (
-                  <p className="flex items-center gap-1 text-micro text-rose-500/80 tracking-wider">
+                  <p className="flex items-center gap-1 text-micro text-terracotta-dark/80 tracking-wider">
                     <X className="w-3 h-3" />
                     <span className="tracking-widest uppercase font-medium">{t('product.fully_booked')}</span>
                   </p>

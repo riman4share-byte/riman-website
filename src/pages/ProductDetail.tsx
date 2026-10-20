@@ -22,6 +22,8 @@ import ProductCard from '../components/ProductCard';
 import AvailabilityCalendar from '../components/AvailabilityCalendar';
 import SizeGuide from '../components/SizeGuide';
 import { ProductDetailSkeleton } from '../components/Skeleton';
+import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
+import { isSafeGarmentPath } from '../../supabase/functions/virtual-tryon/tryOnValidation';
 import { analytics } from '../services/analytics';
 
 const ThreeDViewer = lazyWithRetry(() => import('../components/ThreeDViewer'));
@@ -36,6 +38,8 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const threeDViewerEnabled = useFeature('threeDViewer');
   const { addToast } = useToast();
+  const tryOnEnabled = useFeature('virtualTryOn');
+  const [showTryOn, setShowTryOn] = useState(false);
   const [selectedSize, setSelectedSize] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
@@ -75,7 +79,7 @@ export default function ProductDetail() {
   const [showDetails, setShowDetails] = useState(false);
   const [showArtistry, setShowArtistry] = useState(false);
   const [showCare, setShowCare] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
+  const [showReviews, setShowReviews] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewSuccess, setReviewSuccess] = useState(false);
   const [reviewNotice, setReviewNotice] = useState<'local' | 'failed' | null>(null);
@@ -89,6 +93,15 @@ export default function ProductDetail() {
 
   const { name: productName, description: productDescription } = localizedContent(product ?? { name: '', description: '' }, language);
 
+  const tryOnEligible = tryOnEnabled
+    && !!product
+    && (product.category === 'Bridal Gown' || product.category === 'Evening Dress')
+    // Must agree with the server, which only resolves garment images from its
+    // own /assets/ allowlist. Admin-uploaded images live on Supabase Storage
+    // URLs, which the server rejects - offering the button for those would show
+    // the customer a control that cannot succeed.
+    && product.images.some((image) => isSafeGarmentPath(image));
+
   const { pullQuote, bodyCopy } = useMemo(() => {
     const d = productDescription || '';
     const cut = d.indexOf('. ');
@@ -96,6 +109,11 @@ export default function ProductDetail() {
     return { pullQuote: d.slice(0, cut + 1), bodyCopy: d.slice(cut + 2).trim() };
   }, [product?.description]);
 
+  useEffect(() => {
+    if (showTryOn && product) {
+      analytics.tryOnOpened({ id: product.id, name: product.name, category: product.category });
+    }
+  }, [showTryOn, product]);
   useEffect(() => {
     if (!id) return;
     fetchApprovedReviews(id).then(setReviews).catch(() => setReviews([]));
@@ -139,6 +157,8 @@ export default function ProductDetail() {
   const averageRating = reviews.length > 0
     ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
     : 0;
+
+  const reviewCountLabel = reviews.length === 1 ? t('product.review_count_singular') : t('product.review_count');
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
@@ -284,10 +304,10 @@ export default function ProductDetail() {
                 {/* Nav Arrows */}
                 {totalAssets > 1 && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Previous image">
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition z-20" aria-label="Previous image">
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Next image">
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition z-20" aria-label="Next image">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </>
@@ -296,11 +316,11 @@ export default function ProductDetail() {
                 {/* Perspective Toggle */}
                 {product.glbUrl && (
                   <div className="absolute top-5 right-5 z-30 flex gap-2">
-                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-terracotta text-white border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
+                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition backdrop-blur border", !is3DMode ? "bg-terracotta text-white border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
                       <Search className="w-3.5 h-3.5" />
                     </button>
                     {threeDViewerEnabled && (
-                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition-all backdrop-blur border", is3DMode ? "bg-terracotta text-white border-terracotta scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
+                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition backdrop-blur border", is3DMode ? "bg-terracotta text-white border-terracotta scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
                         <Box className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -312,7 +332,7 @@ export default function ProductDetail() {
                   <button
                     ref={shareButtonRef}
                     onClick={() => setShowShareMenu(v => !v)}
-                    className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition-all"
+                    className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition"
                     aria-label={t('product.share')}
                     aria-haspopup="menu"
                     aria-expanded={showShareMenu}
@@ -342,7 +362,7 @@ export default function ProductDetail() {
               {/* Thumbnails */}
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 {product.videoUrl && (
-                  <button onClick={() => setCurrentImageIndex(0)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-900 overflow-hidden border-2 transition-all flex items-center justify-center relative", currentImageIndex === 0 ? "border-terracotta" : "border-transparent")}>
+                  <button onClick={() => setCurrentImageIndex(0)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-900 overflow-hidden border-2 transition flex items-center justify-center relative", currentImageIndex === 0 ? "border-terracotta" : "border-transparent")}>
                     <video src={product.videoUrl} poster={product.images[0]} preload="metadata" muted className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <RotateCcw className="w-4 h-4 text-white/80" />
@@ -352,7 +372,7 @@ export default function ProductDetail() {
                 {product.images.map((img, i) => {
                   const index = product.videoUrl ? i + 1 : i;
                   return (
-                    <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition-all", currentImageIndex === index ? "border-terracotta" : "border-transparent")}>
+                    <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition", currentImageIndex === index ? "border-terracotta" : "border-transparent")}>
                       <img src={img} className="w-full h-full object-cover" loading="lazy" alt={`${productName} thumbnail ${i + 1}`} />
                     </button>
                   );
@@ -384,6 +404,22 @@ export default function ProductDetail() {
               <header className="mb-8">
                 <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-2 font-bold">{product.designer || 'Riman Fashion'}</span>
                 <h1 className="font-heading text-3xl md:text-4xl text-stone-800 tracking-wider mb-3 leading-tight">{productName}</h1>
+                {reviews.length > 0 && (
+                  <div
+                    className="flex items-center gap-2 mb-3"
+                    role="img"
+                    aria-label={`${averageRating.toFixed(1)} / 5 — ${reviews.length} ${reviewCountLabel}`}
+                  >
+                    <span className="flex items-center gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} className={cn('w-3.5 h-3.5', star <= Math.round(averageRating) ? 'text-terracotta-dark fill-terracotta' : 'text-stone-200')} />
+                      ))}
+                    </span>
+                    <span className="text-micro text-stone-600 uppercase tracking-widest">
+                      {averageRating.toFixed(1)} · {reviews.length} {reviewCountLabel}
+                    </span>
+                  </div>
+                )}
                 <div className="flex gap-3">
                   {product.isNew && (
                   <div className="flex flex-col gap-1">
@@ -511,7 +547,7 @@ export default function ProductDetail() {
                     {['XS', 'S', 'M', 'L', 'XL'].map((size) => {
                       const isAvailable = product.sizes.includes(size);
                       return (
-                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition-all", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-terracotta bg-terracotta text-white" : "border-stone-200 text-stone-600 hover:border-terracotta")}>
+                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-terracotta bg-terracotta text-white" : "border-stone-200 text-stone-600 hover:border-terracotta")}>
                           {size}
                         </button>
                       );
@@ -525,6 +561,12 @@ export default function ProductDetail() {
                       <Sparkles className="w-4 h-4" />
                       {t('product.reserve_viewing')}
                     </button>
+                    {tryOnEligible && (
+                      <button onClick={() => setShowTryOn(true)} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
+                        <Sparkles className="w-4 h-4" />
+                        {t('tryon.button')}
+                      </button>
+                    )}
                     {(!isSale || purchaseMode === 'sale' || (isRent && purchaseMode === 'rent')) && (
                       <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
                         {isAddingToCart ? (
@@ -538,12 +580,12 @@ export default function ProductDetail() {
                       </button>
                     )}
                     {errorMsg && (
-                      <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-micro text-rose-500 uppercase tracking-widest text-center font-bold">
+                      <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-micro text-terracotta-dark uppercase tracking-widest text-center font-bold">
                         {errorMsg}
                       </motion.p>
                     )}
                   </div>
-                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition-all relative overflow-hidden group", saved ? "border-terracotta/40 text-terracotta-dark bg-terracotta/[0.06]" : "border-stone-200 text-stone-600 hover:text-terracotta-dark hover:border-terracotta/40")} aria-label={saved ? (language === 'ar' ? 'إزالة من قائمة القياسات' : 'Remove from fitting list') : (language === 'ar' ? 'أضف إلى قائمة القياسات' : 'Add to fitting list')}>
+                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition relative overflow-hidden group", saved ? "border-terracotta/40 text-terracotta-dark bg-terracotta/[0.06]" : "border-stone-200 text-stone-600 hover:text-terracotta-dark hover:border-terracotta/40")} aria-label={saved ? (language === 'ar' ? 'إزالة من قائمة القياسات' : 'Remove from fitting list') : (language === 'ar' ? 'أضف إلى قائمة القياسات' : 'Add to fitting list')}>
                     {/* gold thread fill on wishlist */}
                     <motion.span
                       aria-hidden="true"
@@ -656,7 +698,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Ask a Stylist CTA */}
-              <Link to="/appointment" className="block p-5 bg-terracotta/5 transition-all mb-4 group">
+              <Link to="/appointment" className="block p-5 bg-terracotta/5 transition mb-4 group">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-terracotta/10 flex items-center justify-center shrink-0">
                     <MessageCircle className="w-5 h-5 text-terracotta-dark" />
@@ -714,7 +756,7 @@ export default function ProductDetail() {
                       ))}
                     </div>
                     <span className="text-xs text-stone-600 font-bold tracking-widest">
-                      {averageRating.toFixed(1)} · {reviews.length} {t('product.review_count')}
+                      {averageRating.toFixed(1)} · {reviews.length} {reviewCountLabel}
                     </span>
                   </div>
                 )}
@@ -770,7 +812,7 @@ export default function ProductDetail() {
                       <AnimatePresence mode="wait">
                         {reviewSuccess ? (
                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
-                            <CheckCircle2 className="w-12 h-12 text-green-500" />
+                            <CheckCircle2 className="w-12 h-12 text-brass" />
                             <p className="text-micro tracking-widest text-stone-600 uppercase font-bold">{t('product.reflection_curated')}</p>
                             <button onClick={() => setReviewSuccess(false)} className="text-micro text-terracotta-dark uppercase tracking-widest border-b border-terracotta/30 pb-1">{t('product.write_another')}</button>
                           </motion.div>
@@ -822,7 +864,7 @@ export default function ProductDetail() {
                               {newReview.photoUrl ? (
                                 <div className="flex items-center gap-3">
                                   <img src={newReview.photoUrl} alt="Review attachment" loading="lazy" className="w-14 h-14 object-cover" />
-                                  <button type="button" onClick={() => setNewReview({ ...newReview, photoUrl: undefined })} className="text-micro text-rose-500 uppercase tracking-widest">{t('product.cancel')}</button>
+                                  <button type="button" onClick={() => setNewReview({ ...newReview, photoUrl: undefined })} className="text-micro text-terracotta-dark uppercase tracking-widest">{t('product.cancel')}</button>
                                 </div>
                               ) : (
                                 <button type="button" onClick={() => document.getElementById('review-photo-upload')?.click()} className="btn-couture-ghost !text-stone-800">
@@ -898,6 +940,12 @@ export default function ProductDetail() {
             <p className="font-heading text-sm text-terracotta-dark"><span className="text-micro font-body text-stone-600 uppercase tracking-wider me-1">{t('pricing.from')}</span>{formatPrice(isSale ? (product.salePrice || 0) : (isRent ? (product.rentalPrice || 0) : 0))}</p>
           </div>
           <div className="flex flex-col gap-1.5 shrink-0">
+            {tryOnEligible && (
+              <button onClick={() => setShowTryOn(true)} className="btn-luxury-outline !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t('tryon.button')}
+              </button>
+            )}
             <button onClick={reserveViewing} className="btn-luxury !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
               <Sparkles className="w-3.5 h-3.5" />
               {t('product.reserve_viewing')}
@@ -907,7 +955,7 @@ export default function ProductDetail() {
               {isRent ? t('product.book_rental') : t('product.add_to_collection')}
             </button>
           </div>
-          <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-10 h-10 flex items-center justify-center border transition-all shrink-0", saved ? "border-rose-200 text-rose-500 bg-rose-50" : "border-stone-200 text-stone-600")} aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}>
+          <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-10 h-10 flex items-center justify-center border transition shrink-0", saved ? "border-terracotta/30 text-terracotta-dark bg-terracotta/5" : "border-stone-200 text-stone-600")} aria-label={saved ? 'Remove from wishlist' : 'Add to wishlist'}>
             <Heart className={cn("w-4 h-4", saved && "fill-current")} />
           </button>
         </div>
@@ -916,6 +964,9 @@ export default function ProductDetail() {
         <AnimatePresence>
           {showConfirmation && bookingDate && (
             <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
+          )}
+          {showTryOn && tryOnEligible && (
+            <VirtualTryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
           )}
         </AnimatePresence>
       </div>

@@ -161,7 +161,7 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
             <p className="font-mono text-sm bg-stone-100 border border-stone-200 px-4 py-3 mb-4 break-all select-all">{secret}</p>
             <p className="font-body text-stone-500 text-xs mb-6">Account: Riman Fashion (owner)</p>
             <CodeInput code={code} setCode={setCode} />
-            {error && <p className="text-micro text-rose-500 uppercase tracking-widest mt-4">{error}</p>}
+            {error && <p className="text-micro text-terracotta-dark uppercase tracking-widest mt-4">{error}</p>}
             <button onClick={confirmEnroll} className="btn-luxury w-full mt-6">Verify &amp; finish</button>
           </>
         )}
@@ -171,7 +171,7 @@ export default function AdminMfaGate({ children }: { children: ReactNode }) {
               Enter the current 6-digit code from your authenticator app.
             </p>
             <CodeInput code={code} setCode={setCode} />
-            {error && <p className="text-micro text-rose-500 uppercase tracking-widest mt-4">{error}</p>}
+            {error && <p className="text-micro text-terracotta-dark uppercase tracking-widest mt-4">{error}</p>}
             <button onClick={verifySession} className="btn-luxury w-full mt-6">Verify</button>
           </>
         )}

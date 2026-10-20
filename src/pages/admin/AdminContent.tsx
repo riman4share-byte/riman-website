@@ -112,7 +112,7 @@ export default function AdminContent() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 border border-green-100"
+                className="flex items-center gap-2 text-brass-ink bg-brass/5 px-4 py-2 border border-brass/20"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span className="text-micro uppercase tracking-widest font-bold">Changes Published</span>
@@ -123,7 +123,7 @@ export default function AdminContent() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="flex items-center gap-2 text-rose-600 bg-rose-50 px-4 py-2 border border-rose-100"
+                className="flex items-center gap-2 text-terracotta-dark bg-terracotta/5 px-4 py-2 border border-terracotta/20"
               >
                 <span className="text-micro uppercase tracking-widest font-bold">{saveError}</span>
               </motion.div>
@@ -222,7 +222,7 @@ function CMSNavLink({ label, active, onClick, icon: Icon }: CMSNavLinkProps) {
     <button 
       onClick={onClick}
       className={cn(
-        "w-full flex items-center justify-between px-4 py-3 text-micro tracking-widest uppercase transition-all group",
+        "w-full flex items-center justify-between px-4 py-3 text-micro tracking-widest uppercase transition group",
         active ? "bg-stone-900 text-white font-bold" : "text-stone-600 hover:text-stone-800 hover:bg-stone-50"
       )}
     >
@@ -317,7 +317,7 @@ function ImageUploader({ label, value, isUploading, uploadError, onUpload, onCle
           <button
             type="button"
             onClick={onClear}
-            className="absolute top-2 right-2 w-7 h-7 bg-stone-900/80 text-white flex items-center justify-center hover:bg-rose-600 transition-colors"
+            className="absolute top-2 right-2 w-7 h-7 bg-stone-900/80 text-white flex items-center justify-center hover:bg-terracotta-dark transition-colors"
             aria-label="Remove image"
           >
             <X className="w-3.5 h-3.5" />
@@ -350,7 +350,7 @@ function ImageUploader({ label, value, isUploading, uploadError, onUpload, onCle
           <button
             type="button"
             onClick={onClear}
-            className="text-micro uppercase tracking-widest text-stone-500 hover:text-rose-600 transition-colors"
+            className="text-micro uppercase tracking-widest text-stone-500 hover:text-terracotta-dark transition-colors"
           >
             Reset to default
           </button>
@@ -369,7 +369,7 @@ function ImageUploader({ label, value, isUploading, uploadError, onUpload, onCle
       </div>
 
       {uploadError && (
-        <p className="text-xs text-rose-600">{uploadError}</p>
+        <p className="text-xs text-terracotta-dark">{uploadError}</p>
       )}
     </div>
   );

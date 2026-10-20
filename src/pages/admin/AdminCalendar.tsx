@@ -68,7 +68,7 @@ export default function AdminCalendar() {
                   key={i}
                   onClick={() => setSelectedDate(day)}
                   className={cn(
-                    "min-h-[120px] bg-ivory p-2 transition-all cursor-pointer w-full text-left group",
+                    "min-h-[120px] bg-ivory p-2 transition cursor-pointer w-full text-left group",
                     isSelected ? "ring-2 ring-inset ring-gold z-10" : "hover:bg-ivory",
                     !isCurrentMonth && "opacity-30"
                   )}
@@ -115,7 +115,7 @@ export default function AdminCalendar() {
                   <div className="flex items-center gap-2 text-micro text-stone-600 uppercase tracking-widest">
                     <Package className="w-3 h-3" /> {res.item}
                   </div>
-                  <button onClick={() => setSelectedDate(null)} className="w-full mt-2 py-2 text-micro tracking-[0.2em] font-bold uppercase border border-terracotta/20 text-terracotta-dark hover:bg-terracotta hover:text-white transition-all">
+                  <button onClick={() => setSelectedDate(null)} className="w-full mt-2 py-2 text-micro tracking-[0.2em] font-bold uppercase border border-terracotta/20 text-terracotta-dark hover:bg-terracotta hover:text-white transition">
                     View Dossier
                   </button>
                 </div>

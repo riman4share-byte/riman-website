@@ -1,10 +1,16 @@
 import { motion } from 'motion/react';
 import { Sparkles, Heart, Anchor } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import ScrollReveal from '../components/ScrollReveal';
 
 export default function AboutPage() {
   const { t } = useLanguage();
+
+  // Emphasis is marked per language rather than by word index: `.split(' ')[2]`
+  // silently dropped the italic in Arabic (a two-word title) and would
+  // italicise an arbitrary word wherever word order differs.
+  const heroTitle = t('about.hero_title');
+  const heroEmphasis = t('about.hero_title_italic');
+  const emphasisAt = heroEmphasis ? heroTitle.indexOf(heroEmphasis) : -1;
   
   return (
     <div className="pt-24 bg-ivory min-h-screen">
@@ -39,7 +45,13 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="font-heading text-6xl md:text-8xl text-white tracking-tighter mb-8"
           >
-            {t('about.hero_title').split(' ').map((word, i) => i === 2 ? <span key={i} className="italic font-serif">{word}</span> : word + ' ')}
+            {emphasisAt === -1 ? heroTitle : (
+              <>
+                {heroTitle.slice(0, emphasisAt)}
+                <span className="italic font-serif">{heroEmphasis}</span>
+                {heroTitle.slice(emphasisAt + heroEmphasis.length)}
+              </>
+            )}
           </motion.h1>
           <div className="w-px h-24 bg-terracotta/50 mx-auto" />
         </div>
@@ -119,49 +131,18 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* The Design Team Section */}
-      <section className="section-padding bg-ivory">
-        <ScrollReveal>
-          <div className="container mx-auto">
-            <div className="flex flex-col items-center text-center mb-16">
-              <h2 className="heading-editorial text-stone-600 text-sm mb-4">{t('about.visionaries')}</h2>
-              <h3 className="font-heading text-4xl text-stone-800 tracking-wide">{t('about.collective')}</h3>
-              <div className="divider-gold mt-6" />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              <TeamMember
-                name="Sarah Mansour"
-                role={t('about.role_founder')}
-                image="/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg"
-              />
-              <TeamMember
-                name="Layla Al-Farsi"
-                role={t('about.role_embroidery')}
-                image="/assets/rimanfashion_3638158883472325906_1739454936_1_2025-05-22.jpg"
-              />
-              <TeamMember
-                name="Mona Qureshi"
-                role={t('about.role_jewelry')}
-                image="/assets/rimanfashion_3717964372695289282_4048704816_2_2025-09-09.jpg"
-              />
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
       {/* Aesthetic Mosaic */}
       <section className="py-32 bg-ivory">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             <img src="/assets/rimanfashion_3542687554351211237_227867687_2_2025-01-10.jpg" className="w-full aspect-square object-cover" alt="Riman atelier beadwork detail" loading="lazy" />
             <div className="bg-ivory flex flex-col justify-center p-8 text-center border border-stone-50">
-               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">10k+</h4>
+               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">{t('about.stat_beads_label')}</h4>
                 <p className="text-micro text-stone-600 uppercase tracking-widest">{t('about.stat_beads')}</p>
             </div>
             <img src="/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg" className="w-full aspect-square object-cover" alt="Riman couture runway collection" loading="lazy" />
             <div className="bg-stone-900 text-ivory flex flex-col justify-center p-8 text-center">
-               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">120</h4>
+               <h4 className="font-heading text-3xl text-terracotta-dark mb-2">{t('about.stat_runways_label')}</h4>
                 <p className="text-micro text-ivory/40 uppercase tracking-widest">{t('about.stat_runways')}</p>
             </div>
           </div>
@@ -171,30 +152,10 @@ export default function AboutPage() {
   );
 }
 
-function TeamMember({ name, role, image }: { name: string, role: string, image: string }) {
-  return (
-    <div className="group text-center">
-      <div className="relative overflow-hidden mb-8 aspect-[3/4] bg-stone-100">
-        <img 
-          src={image} 
-          alt={name} 
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 filter grayscale group-hover:grayscale-0" 
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-onyx/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <span className="w-12 h-px bg-terracotta" />
-        </div>
-      </div>
-      <h4 className="font-heading text-lg text-stone-800 mb-1">{name}</h4>
-      <p className="text-micro tracking-widest text-terracotta-dark uppercase">{role}</p>
-    </div>
-  );
-}
-
 function Pillar({ icon: Icon, title, desc }: any) {
   return (
     <div className="text-center group">
-      <div className="w-16 h-16 rounded-full border border-stone-700 flex items-center justify-center mx-auto mb-8 group-hover:border-terracotta group-hover:bg-terracotta/5 transition-all duration-500">
+      <div className="w-16 h-16 rounded-full border border-stone-700 flex items-center justify-center mx-auto mb-8 group-hover:border-terracotta group-hover:bg-terracotta/5 transition duration-500">
         <Icon className="w-6 h-6 text-terracotta-dark" />
       </div>
       <h3 className="font-heading text-xl mb-4 tracking-widest uppercase">{title}</h3>

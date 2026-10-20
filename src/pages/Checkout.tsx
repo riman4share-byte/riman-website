@@ -315,8 +315,8 @@ export default function Checkout() {
                 {i < 2 && (
                   <div className="flex-1 mx-3 h-px bg-stone-200 relative">
                     <div
-                      className={cn("absolute inset-y-0 left-0 bg-terracotta transition-all duration-500", step > s && "right-0")}
-                      style={{ width: step > s ? '100%' : step === s + 1 ? '50%' : '0%' }}
+                      className="absolute inset-y-0 start-0 w-full origin-left rtl:origin-right bg-terracotta transition-transform duration-500"
+                      style={{ transform: `scaleX(${step > s ? 1 : step === s + 1 ? 0.5 : 0})` }}
                     />
                   </div>
                 )}
@@ -546,7 +546,7 @@ id="co-country"
                           type="button"
                           onClick={() => setPaymentMethod('card')}
                           className={cn(
-                            "flex items-center gap-4 p-4 border text-start transition-all",
+                            "flex items-center gap-4 p-4 border text-start transition",
                             paymentMethod === 'card'
                               ? "bg-terracotta/5 border-terracotta/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
@@ -562,7 +562,7 @@ id="co-country"
                           type="button"
                           onClick={() => setPaymentMethod('atelier')}
                           className={cn(
-                            "flex items-center gap-4 p-4 border text-start transition-all",
+                            "flex items-center gap-4 p-4 border text-start transition",
                             paymentMethod === 'atelier'
                               ? "bg-terracotta/5 border-terracotta/30 text-stone-800"
                               : "bg-ivory border-stone-100 text-stone-600 hover:border-stone-300"
@@ -578,8 +578,8 @@ id="co-country"
                     </div>
 
                     {/* Payment info box */}
-                    <div className={cn("p-4 border flex items-start gap-3", paymentMethod === 'card' ? 'bg-emerald-50/50 border-emerald-200/50' : 'bg-terracotta/5 border-terracotta/10')}>
-                      {paymentMethod === 'card' ? <CreditCard className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <Truck className="w-5 h-5 text-terracotta-dark shrink-0 mt-0.5" />}
+                    <div className={cn("p-4 border flex items-start gap-3", paymentMethod === 'card' ? 'bg-brass/5 border-brass/20' : 'bg-terracotta/5 border-terracotta/10')}>
+                      {paymentMethod === 'card' ? <CreditCard className="w-5 h-5 text-brass-ink shrink-0 mt-0.5" /> : <Truck className="w-5 h-5 text-terracotta-dark shrink-0 mt-0.5" />}
                       <div>
                         <p className="text-micro tracking-widest text-stone-600 uppercase font-bold">
                           {paymentMethod === 'card' ? t('checkout.secure_online') : t('checkout.instore_payment')}
@@ -639,8 +639,8 @@ id="co-country"
                       </button>
                     </div>
                     {submitError && (
-                      <div className="p-4 border border-rose-200 bg-rose-50/50 text-center">
-                        <p className="text-rose-600 text-micro tracking-widest uppercase font-bold mb-2">{submitError}</p>
+                      <div className="p-4 border border-terracotta/30 bg-terracotta/5 text-center">
+                        <p className="text-terracotta-dark text-micro tracking-widest uppercase font-bold mb-2">{submitError}</p>
                         <a
                           href={`https://wa.me/${WHATSAPP_NUMBER}`}
                           target="_blank"
@@ -748,7 +748,7 @@ function StepStep({ num, label, active, completed }: { num: number; label: strin
   return (
     <div className="flex items-center gap-2.5">
       <div className={cn(
-        "w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs transition-all duration-300 font-bold shrink-0",
+        "w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs transition duration-300 font-bold shrink-0",
         completed ? "bg-terracotta border-terracotta text-white" : active ? "bg-terracotta/10 border-terracotta text-terracotta-dark" : "border-stone-200 text-stone-500"
       )}>
         {completed ? <Check className="w-4 h-4" /> : num}
@@ -819,7 +819,7 @@ function OrderSidebar({ items, subtotal, paymentMethod, removeItem, t, language 
               </div>
               <button
                 onClick={() => removeItem(item.id, item.selectedSize, item.intent)}
-                className="absolute -top-2 -right-2 w-5 h-5 bg-stone-800 text-stone-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:text-rose-400 transition-all"
+                className="absolute -top-2 -right-2 w-5 h-5 bg-stone-800 text-stone-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:text-terracotta-light transition"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -876,7 +876,7 @@ function Input({ id, label, value, onChange, onBlur, placeholder, className, dis
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex justify-between items-center">
         <label htmlFor={id} className="text-micro tracking-widest uppercase font-bold text-stone-600 block">{label}</label>
-        {error && <span id={errId} className="text-micro text-rose-600 uppercase tracking-widest font-bold">{error}</span>}
+        {error && <span id={errId} className="text-micro text-terracotta-dark uppercase tracking-widest font-bold">{error}</span>}
       </div>
       <input
         id={id}
@@ -893,8 +893,8 @@ function Input({ id, label, value, onChange, onBlur, placeholder, className, dis
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errId : undefined}
         className={cn(
-          "w-full bg-ivory border p-4 text-sm tracking-wide outline-none focus:border-terracotta transition-all disabled:opacity-50 font-medium min-h-[48px]",
-          error ? "border-rose-400" : "border-stone-300"
+          "w-full bg-ivory border p-4 text-sm tracking-wide outline-none focus:border-terracotta transition disabled:opacity-50 font-medium min-h-[48px]",
+          error ? "border-terracotta" : "border-stone-300"
         )}
       />
     </div>

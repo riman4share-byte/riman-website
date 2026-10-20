@@ -8,7 +8,11 @@ const DEFAULT_FEATURES: Record<string, boolean> = {
   cookieBanner: true,
   scrollReveal: true,
   threeDViewer: true,
-  customCursor: true,
+  // Off by default: a 40px pointer that replaces the OS cursor is a strong
+  // opinion to ship to everyone on first load. Sites that want it can turn it
+  // on in settings; the code path and the `customCursor` toggle remain.
+  customCursor: false,
+  virtualTryOn: false,
 };
 
 export function useFeature(key: string): boolean {

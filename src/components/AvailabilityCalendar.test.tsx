@@ -72,7 +72,11 @@ describe('AvailabilityCalendar', () => {
     mockedFetch.mockResolvedValue([format(TODAY, 'yyyy-MM-dd')]);
     renderCalendar();
     const grid = screen.getByTestId('availability-grid');
-    const todayCell = await waitFor(() => document.querySelector(`[data-date="${format(TODAY, 'yyyy-MM-dd')}"]`) as HTMLButtonElement);
+    // Waiting for the cell to exist is not enough: it renders before the booked
+    // dates arrive, and pressing Enter on a not-yet-blocked day selects it
+    // instead of announcing "booked".
+    await waitFor(() => expect(dayButton(0)?.getAttribute('aria-disabled')).toBe('true'));
+    const todayCell = dayButton(0);
     todayCell.focus();
     fireEvent.keyDown(grid, { key: 'Enter' });
     expect(screen.getByRole('status').textContent).toMatch(/, booked$/);
@@ -92,6 +96,10 @@ describe('AvailabilityCalendar', () => {
   it('jumps to the next open day via the shortcut button', async () => {
     const onDateSelect = renderCalendar({ selectedDate: null });
     await waitFor(() => expect(mockedFetch).toHaveBeenCalled());
+    // toHaveBeenCalled fires when the fetch is issued, not when it resolves.
+    // Clicking before bookedSet arrives makes "next available" today itself,
+    // which is a race this test lost on CI at 00:01 UTC.
+    await waitFor(() => expect(dayButton(0)?.getAttribute('aria-disabled')).toBe('true'));
     fireEvent.click(screen.getByRole('button', { name: /next available date/i }));
     expect(onDateSelect).toHaveBeenCalledWith(addDays(new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()), 1));
     expect(screen.getByRole('status').textContent?.length ?? 0).toBeGreaterThan(0);

@@ -41,10 +41,31 @@ export default function ImmersiveUI() {
     restDelta: 0.001
   });
 
+  /**
+   * The custom cursor is a pointer affordance, so it only exists where a
+   * precise pointer exists. `customCursor` now defaults to off, but it can be
+   * turned on in settings, and even when on, a phone or tablet would otherwise
+   * pay for two window listeners plus a React state update per mousemove frame
+   * for a cursor that can never be seen.
+   * The CSS side of this was already gated behind `(hover: hover)`; this
+   * closes the JS side so the two halves agree.
+   */
+  const [hasFinePointer, setHasFinePointer] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const update = () => setHasFinePointer(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  const cursorActive = customCursorEnabled && hasFinePointer;
+
   useEffect(() => {
     if (!loading) return;
+    // ~1.2s total. The old 2.1s counter held a first-time visitor on a blank
+    // screen for two full seconds before they saw any content.
     const controls = animate(0, 100, {
-      duration: 1.7,
+      duration: 1.0,
       ease: 'easeInOut',
       onUpdate: (v) => setCount(Math.round(v)),
     });
@@ -52,7 +73,7 @@ export default function ImmersiveUI() {
       sessionStorage.setItem('riman_preloader_shown', '1');
       isFirstVisit.current = false;
       setLoading(false);
-    }, 2100);
+    }, 1200);
     return () => { controls.stop(); clearTimeout(timer); };
   }, [loading]);
 
@@ -64,7 +85,7 @@ export default function ImmersiveUI() {
 
   // Throttled mouse tracking for custom cursor
   useEffect(() => {
-    if (!customCursorEnabled) return;
+    if (!cursorActive) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (mouseTrackingRef.current) {
@@ -96,17 +117,17 @@ export default function ImmersiveUI() {
       window.removeEventListener('mouseover', handleMouseOver);
       if (mouseTrackingRef.current) cancelAnimationFrame(mouseTrackingRef.current);
     };
-  }, [customCursorEnabled]);
+  }, [cursorActive]);
 
   // Toggle custom cursor class on <html>
   useEffect(() => {
     const html = document.documentElement;
-    if (customCursorEnabled) {
+    if (cursorActive) {
       html.classList.add('custom-cursor-active');
       return () => html.classList.remove('custom-cursor-active');
     }
     html.classList.remove('custom-cursor-active');
-  }, [customCursorEnabled]);
+  }, [cursorActive]);
 
   return (
     <>
@@ -126,7 +147,7 @@ export default function ImmersiveUI() {
             data-preloader
             initial={{ y: 0 }}
             exit={{ y: '-100%' }}
-            transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
+            transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[2000] bg-onyx text-ivory flex items-center justify-center"
           >
             <div className="overflow-hidden px-4">
@@ -136,7 +157,7 @@ export default function ImmersiveUI() {
                     key={i}
                     initial={{ y: '110%' }}
                     animate={{ y: 0 }}
-                    transition={{ duration: 0.9, delay: i * 0.07, ease: [0.19, 1, 0.22, 1] }}
+                    transition={{ duration: 0.5, delay: i * 0.05, ease: [0.19, 1, 0.22, 1] }}
                     className="inline-block"
                   >
                     {letter}
@@ -155,7 +176,7 @@ export default function ImmersiveUI() {
       </AnimatePresence>
 
       {/* Custom Global Cursor */}
-      {customCursorEnabled && (
+      {cursorActive && (
         <>
           {/* Trail ring — follows with lag (skipped if reduced motion) */}
           {!prefersReducedMotion && (

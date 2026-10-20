@@ -24,6 +24,8 @@ const PRIMARY_LINKS: NavItem[] = [
   { path: '/collection/bridal', key: 'nav.bridal' },
   { path: '/collection/couture', key: 'nav.couture' },
   { path: '/collections', key: 'nav.collections' },
+  { path: '/gallery', key: 'nav.gallery' },
+  { path: '/style-quiz', key: 'nav.style_quiz' },
   { path: '/about', key: 'nav.about' },
 ];
 
@@ -43,6 +45,7 @@ const DRAWER_GROUPS: { titleKey: string; links: NavItem[] }[] = [
     links: [
       { path: '/gallery', key: 'nav.gallery' },
       { path: '/style-quiz', key: 'nav.style_quiz', icon: Sparkles },
+      { path: '/about', key: 'nav.about' },
     ],
   },
   {
@@ -71,6 +74,7 @@ interface Tone {
   icon: string;
   mark: string;
   wordmark: string;
+  cta: string;
 }
 
 const TONE_OVER_DARK: Tone = {
@@ -80,24 +84,29 @@ const TONE_OVER_DARK: Tone = {
   icon: 'text-white/85 hover:text-white',
   mark: 'brightness-0 invert',
   wordmark: 'text-white/70',
+  cta: 'border-white/60 text-white hover:bg-white hover:text-onyx',
 };
 
 const TONE_ONYX: Tone = {
-  bar: 'bg-onyx/95 border-b border-white/10',
+  // Glassy, not solid: a 60% onyx tint + blur lets the page show through while
+  // keeping bone nav text legible over whichever section is scrolling under it.
+  bar: 'bg-onyx/60 backdrop-blur-md border-b border-white/10',
   link: 'text-bone/70 hover:text-bone',
   rule: 'bg-bone/80',
   icon: 'text-bone/80 hover:text-bone',
   mark: 'brightness-0 invert opacity-90',
   wordmark: 'text-bone/60',
+  cta: 'border-bone/50 text-bone hover:bg-bone hover:text-onyx',
 };
 
 const TONE_IVORY: Tone = {
-  bar: 'bg-ivory/95 backdrop-blur-sm border-b border-stone-200/70',
+  bar: 'bg-ivory/60 backdrop-blur-md border-b border-stone-200/70',
   link: 'text-stone-500 hover:text-stone-900',
   rule: 'bg-stone-900',
   icon: 'text-stone-600 hover:text-stone-900',
   mark: '',
   wordmark: 'text-stone-500',
+  cta: 'border-stone-800 text-stone-800 hover:bg-stone-800 hover:text-ivory',
 };
 
 /** Shared geometry so every bar child aligns to the same optical baseline. */
@@ -112,6 +121,8 @@ export default function Header() {
   const wishlistCount = wishlist.length;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  // Slim bar once the page is scrolled; also drives the tone switch below.
+  const compact = isScrolled;
 
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -219,7 +230,11 @@ export default function Header() {
       <div
         className={cn(
           'relative w-full grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 px-6 sm:px-10 lg:px-14',
-          HEADER_H,
+          // Full lockup at the top of the page; a slim bar once scrolling, so
+          // the fixed header stops eating the top of every screen. The header
+          // is position:fixed, so animating its height reflows nothing behind it.
+          'transition-[height] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none',
+          compact ? 'h-14' : HEADER_H,
         )}
       >
         {/* ── Start: primary nav (desktop) ── */}
@@ -240,8 +255,8 @@ export default function Header() {
                 {t(link.key)}
                 <span
                   className={cn(
-                    'absolute bottom-2 start-0 h-px transition-all duration-300',
-                    active ? 'w-full' : 'w-0 group-hover:w-full',
+                    'absolute bottom-2 start-0 h-px w-full origin-left rtl:origin-right transition-transform duration-300',
+                    active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
                     tone.rule,
                   )}
                   aria-hidden="true"
@@ -268,7 +283,10 @@ export default function Header() {
         <Link
           to="/"
           id="logo"
-          className="justify-self-center flex flex-col items-center gap-1.5"
+          className={cn(
+            'justify-self-center flex flex-col items-center transition-[gap] duration-[400ms] motion-reduce:transition-none',
+            compact ? 'gap-0' : 'gap-1.5',
+          )}
           aria-label="Riman Fashion home"
         >
           {/*
@@ -292,7 +310,10 @@ export default function Header() {
               'font-heading text-[11px] uppercase leading-none',
               // Optical centring: wide tracking adds a trailing gap on the last
               // letter, so nudge back by half of it.
-              'tracking-[0.42em] translate-x-[0.21em] whitespace-nowrap transition-colors duration-500',
+              'tracking-[0.42em] translate-x-[0.21em] whitespace-nowrap',
+              // Collapses smoothly so the slim bar holds just the monogram.
+              'overflow-hidden transition-[opacity,max-height] duration-300 motion-reduce:transition-none',
+              compact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100',
               tone.wordmark,
             )}
           >
@@ -310,6 +331,17 @@ export default function Header() {
           header past md would otherwise be unreachable on a tablet.
         */}
         <div className="hidden md:flex items-center justify-self-end gap-1 md:gap-2 lg:gap-3">
+          <Link
+            to="/appointment"
+            className={cn(
+              'hidden lg:inline-flex items-center min-h-[36px] px-4 me-2 border',
+              'font-label text-[11px] uppercase tracking-[0.18em] whitespace-nowrap',
+              'transition-colors duration-300',
+              tone.cta,
+            )}
+          >
+            {t('cta.appointment')}
+          </Link>
           <button
             onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
             className={cn(
@@ -376,7 +408,7 @@ export default function Header() {
                 <button
                   ref={closeButtonRef}
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-white transition-all duration-300"
+                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-white transition duration-300"
                   aria-label={t('header.menu_close')}
                 >
                   <X className="w-5 h-5" />
@@ -384,7 +416,7 @@ export default function Header() {
               </div>
               <div className="h-px bg-gradient-to-r from-transparent via-terracotta/30 to-transparent" />
 
-              <div className="flex-1 overflow-y-auto px-5 py-6">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-6">
                 <div className="flex items-center gap-2 mb-6">
                   <div
                     className="flex flex-1 border border-stone-200"
@@ -425,7 +457,7 @@ export default function Header() {
                           <Link
                             to={link.path}
                             onClick={() => setIsMenuOpen(false)}
-                            className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition-all"
+                            className="group flex items-center justify-between font-heading text-xs tracking-wide text-stone-800 py-2.5 px-3 border border-stone-100 hover:border-terracotta hover:bg-terracotta/5 transition"
                           >
                             <span className="flex items-center gap-2">
                               {link.icon && <link.icon className="w-3.5 h-3.5 text-terracotta-dark" />}

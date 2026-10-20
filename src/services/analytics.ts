@@ -6,7 +6,10 @@ export type AnalyticsEvent =
   | 'remove_from_cart'
   | 'request_viewing'
   | 'begin_checkout'
-  | 'order_complete';
+  | 'order_complete'
+  | 'tryon_opened'
+  | 'tryon_generated'
+  | 'tryon_error';
 
 export interface AnalyticsPayload {
   event: AnalyticsEvent;
@@ -89,4 +92,6 @@ export const analytics = {
     trackEvent({ event: 'begin_checkout', value, currency, selectionSize: itemCount }),
   orderComplete: (orderId: string, value: number, currency = 'AED', itemCount: number) =>
     trackEvent({ event: 'order_complete', orderId, value, currency, selectionSize: itemCount }),
+  tryOnOpened: (product: { id: string; name: string; category?: string }) =>
+    trackEvent({ event: 'tryon_opened', productId: product.id, productName: product.name, category: product.category }),
 };

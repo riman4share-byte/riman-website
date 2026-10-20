@@ -10,6 +10,15 @@
   --font-arabic-heading: "Amiri", serif;
   --font-jewelry: "Fraunces", serif;
 
+  /* Wider shell on large displays. Tailwind's stock caps put a max-w-6xl
+     section at 1152px — ~60% of a 1920px viewport — which reads as a narrow
+     column next to full-bleed fashion sites. These raise every max-w-*
+     section and editorial plate so the layout actually uses the screen. */
+  --container-4xl: 64rem;   /* 1024px (was 896) */
+  --container-5xl: 72rem;   /* 1152px (was 1024) */
+  --container-6xl: 88rem;   /* 1408px (was 1152) */
+  --container-7xl: 96rem;   /* 1536px (was 1280) */
+
   /* Couture warm-neutral remap of Tailwind's stone scale (spec §1) */
   --color-stone-50: #faf8f3;
   --color-stone-100: #f4efe7;
@@ -64,6 +73,10 @@
   --color-stone-500: #6b6250;
   --color-jewelry: linear-gradient(45deg, #8a6a3c 0%, #b08d57 45%, #c9a96f 50%, #b08d57 55%, #8a6a3c 100%);
 
+  /* Single shared easing curve. Mirrors EASE_COUTURE in src/lib/motion.ts and
+     backs every var(--ease-couture) reference in this file. */
+  --ease-couture: cubic-bezier(0.22, 1, 0.36, 1);
+
   --animate-fade-up: fade-up 0.8s ease-out forwards;
   --animate-fade-in: fade-in 1s ease-out forwards;
   --animate-float: float 6s ease-in-out infinite;
@@ -86,6 +99,8 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
   }
   body {
     @apply font-body bg-ivory text-stone-800 overflow-x-hidden leading-relaxed;
@@ -103,6 +118,21 @@
     outline-offset: 2px;
     border-radius: 1px;
   }
+
+  /* Mobile baseline: touch-action and press-target text selection.
+     `a` is deliberately excluded from user-select:none — links here wrap
+     product names and legal copy that a user may legitimately select. */
+  button, [role="button"], .chip, .tab {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  a { touch-action: manipulation; }
+  @media (pointer: coarse) {
+    input, textarea, select { font-size: 16px; }
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
@@ -194,7 +224,7 @@
     border-radius: 0;
     padding: 0.85rem 0.25rem;
     color: var(--color-stone-800);
-    transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: border-color 400ms var(--ease-couture);
   }
   input:not([type="checkbox"]):not([type="radio"]):focus,
   textarea:focus,
@@ -258,9 +288,9 @@
     isolation: isolate;
     letter-spacing: 0.25em;
     transition:
-      color 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      color 700ms var(--ease-couture),
+      border-color 700ms var(--ease-couture),
+      transform 700ms var(--ease-couture);
   }
   .btn-luxury::before {
     content: '';
@@ -270,7 +300,7 @@
     background: var(--color-stone-800);
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 700ms var(--ease-couture);
   }
   .btn-luxury:hover {
     color: var(--color-ivory);
@@ -294,9 +324,9 @@
     isolation: isolate;
     letter-spacing: 0.25em;
     transition:
-      color 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      color 700ms var(--ease-couture),
+      border-color 700ms var(--ease-couture),
+      transform 700ms var(--ease-couture);
   }
   .btn-luxury-outline::before {
     content: '';
@@ -306,7 +336,7 @@
     background: color-mix(in srgb, var(--color-terracotta) 12%, transparent);
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 700ms var(--ease-couture);
   }
   .btn-luxury-outline:hover {
     color: var(--color-terracotta-dark);
@@ -330,8 +360,8 @@
     @apply relative inline-flex items-center justify-center min-h-[52px] px-2 font-label text-xs uppercase text-stone-800;
     letter-spacing: 0.25em;
     transition:
-      color 600ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      color 600ms var(--ease-couture),
+      transform 700ms var(--ease-couture);
   }
   .btn-couture-ghost::after {
     content: '';
@@ -342,7 +372,7 @@
     height: 1px;
     background: var(--color-gold);
     transform: scaleX(0.35);
-    transition: transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 800ms var(--ease-couture);
   }
   .btn-couture-ghost:hover {
     color: var(--color-gold-dark);
@@ -363,12 +393,47 @@
     outline-offset: 4px;
   }
 
+  /* Champagne sheen, per the 2026-09-16 micro-motion spec: a 60%-wide skewed
+     3-stop gradient sweeping -160% -> 260% over 900ms on hover/focus.
+
+     The spec puts this on ::before, but ::before already carries the scaleX
+     fill that .btn-luxury:hover's ivory label depends on for contrast. One
+     pseudo-element cannot hold both transforms, and a 60%-wide sheen there
+     would leave the hovered label ivory-on-ivory. ::after is unused on this
+     class, so the sheen runs over the fill instead of replacing it.
+
+     Declared after the focus-ring block above deliberately: coutureButtons
+     .test.ts locates `.btn-luxury:focus-visible` by first match, and this
+     block shares that prefix. */
+  .btn-luxury::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 60%;
+    z-index: -1;
+    background: linear-gradient(105deg,
+      transparent 0%,
+      rgba(201, 169, 111, 0.28) 45%,
+      rgba(246, 240, 230, 0.35) 50%,
+      rgba(201, 169, 111, 0.28) 55%,
+      transparent 100%);
+    transform: translateX(-160%) skewX(-14deg);
+    transition: transform 900ms var(--ease-couture);
+    pointer-events: none;
+  }
+  .btn-luxury:hover::after,
+  .btn-luxury:focus-visible::after {
+    transform: translateX(260%) skewX(-14deg);
+  }
+
   .link-couture {
     position: relative;
     letter-spacing: 0.25em;
     /* Safe to animate tracking here: these labels are one or two words, so the
        reflow is 1-2px rather than the ~24px jitter a long CTA would get. */
-    transition: letter-spacing 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: letter-spacing 700ms var(--ease-couture);
   }
   .link-couture::after {
     content: '';
@@ -380,7 +445,7 @@
     background: var(--color-terracotta);
     transform: scaleX(0.25);
     transform-origin: left;
-    transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 700ms var(--ease-couture);
   }
   .link-couture:hover::after,
   .link-couture:focus-visible::after {
@@ -407,6 +472,12 @@
     }
     .btn-luxury::before,
     .btn-luxury-outline::before {
+      transition-duration: 0.01ms !important;
+    }
+    /* The sheen rests off the inline-start edge at -160% and ends off the far
+       edge at 260%, so collapsing its duration parks it fully out of frame
+       rather than mid-button. No travel, no stray highlight. */
+    .btn-luxury::after {
       transition-duration: 0.01ms !important;
     }
     .btn-luxury:hover::before,
@@ -437,13 +508,11 @@
   @media (hover: hover) and (pointer: fine) {
     h1.font-heading, h2.font-heading, h3.font-heading,
     [data-heading] {
-      transition: text-shadow 500ms cubic-bezier(0.22, 1, 0.36, 1),
-                  letter-spacing 500ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition: text-shadow 500ms var(--ease-couture);
     }
     h1.font-heading:hover, h2.font-heading:hover, h3.font-heading:hover,
     [data-heading]:hover {
       text-shadow: 0 0 40px rgba(212,175,55,0.25), 0 2px 20px rgba(212,175,55,0.15);
-      letter-spacing: 0.02em;
     }
   }
 
@@ -456,7 +525,7 @@
     to   { transform: scale(1.11) translateY(-1.8%); }
   }
   .ken-burns > img {
-    animation: ken-burns 24s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+    animation: ken-burns 24s var(--ease-couture) infinite alternate;
     will-change: transform;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -469,7 +538,7 @@
     to   { transform: scale(1.08) translateY(-1.2%); }
   }
   .ken-burns-slow {
-    animation: ken-burns-slow 30s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+    animation: ken-burns-slow 30s var(--ease-couture) infinite alternate;
     will-change: transform;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -485,7 +554,7 @@
     background: transparent;
   }
   .card-couture img {
-    transition: transform 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 1200ms var(--ease-couture);
   }
   .card-couture:hover img,
   .card-couture:focus-within img {
@@ -505,7 +574,7 @@
     padding: 0.85rem 0.25rem;
     color: var(--color-stone-800);
     outline: none;
-    transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: border-color 400ms var(--ease-couture);
   }
   .field-couture:focus {
     outline: none;
@@ -585,15 +654,31 @@
 @keyframes marquee-rtl {
   to { transform: translateX(50%); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
-  .instagram-marquee { animation: none; }
-}
 
 /* Instagram marquee — CSS-only for GPU efficiency */
 .instagram-marquee {
   animation: marquee 40s linear infinite;
   will-change: transform;
+}
+/* Same RTL flip .marquee-track already has. Without this the strip runs
+   left-to-right in Arabic, contradicting the salon rebrand safety rail
+   "RTL: marquee flips direction". Must out-specify the reduced-motion kill
+   below, hence the attribute selector. */
+[dir="rtl"] .marquee-track,
+[dir="rtl"] .instagram-marquee {
+  animation-name: marquee-rtl;
+}
+/* Declared after both animation definitions on purpose: at equal specificity
+   the later rule wins, and these selectors must cancel the RTL
+   animation-name above as well as the base animation. Without the RTL
+   selectors here, `marquee-rtl` survives reduced-motion and leaves the strip
+   parked at translateX(50%) — a visible seam instead of the seamless
+   translateX(-50%) rest position. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  [dir="rtl"] .marquee-track,
+  .instagram-marquee,
+  [dir="rtl"] .instagram-marquee { animation: none; }
 }
 
 /* Arabic display type takes over headings under RTL */
@@ -650,9 +735,19 @@
 [data-projection-id] {
   will-change: transform;
 }
-/* Smooth scrolling */
+/* Smooth scrolling. scroll-padding keeps anchor targets (#atelier,
+   #main-content, in-page links) clear of the 97px fixed header instead of
+   landing underneath it. */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+/* Widen the shared .container shell on very large displays. */
+@media (min-width: 1536px) {
+  .container {
+    max-width: 100rem; /* 1600px */
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   html {

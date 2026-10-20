@@ -138,7 +138,7 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
   }
 
   return (
-    <section ref={sectionRef} className="relative bg-onyx" style={{ height: '260vh' }} aria-label="Cinematic gown sequence">
+    <section ref={sectionRef} className="relative bg-onyx" style={{ height: '212vh' }} aria-label="Cinematic gown sequence">
       <div className="sticky top-0 h-screen overflow-hidden">
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" aria-hidden="true" />
         <div className="absolute inset-0 bg-onyx/30" aria-hidden="true" />
@@ -150,8 +150,8 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
                 key={i}
                 className={
                   i === 1
-                    ? 'absolute font-heading text-bone text-3xl md:text-5xl font-light leading-tight max-w-3xl transition-all duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
-                    : 'absolute font-editorial italic text-bone/90 text-2xl md:text-[2rem] leading-relaxed max-w-3xl transition-all duration-700 [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
+                    ? 'absolute font-heading text-bone text-3xl md:text-5xl font-light leading-tight max-w-3xl transition-[opacity,transform] duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
+                    : 'absolute font-editorial italic text-bone/90 text-2xl md:text-[2rem] leading-relaxed max-w-3xl transition-[opacity,transform] duration-700 [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
                 }
                 style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(14px)' }}
               >

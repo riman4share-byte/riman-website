@@ -114,7 +114,7 @@ export default function AdminDashboard() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-        <p className="text-rose-500 text-sm mb-4">{error}</p>
+        <p className="text-terracotta-dark text-sm mb-4">{error}</p>
         <button onClick={loadDashboard} className="btn-luxury text-micro">Retry</button>
       </div>
     );
@@ -229,9 +229,9 @@ export default function AdminDashboard() {
 
 function StatCard({ title, value, icon: Icon }: { title: string; value: string; icon: React.ComponentType<{ className?: string }> }) {
   return (
-    <div className="bg-ivory p-6 border border-stone-200 group hover:border-terracotta transition-all duration-300">
+    <div className="bg-ivory p-6 border border-stone-200 group hover:border-terracotta transition duration-300">
       <div className="flex justify-between items-start mb-4">
-        <div className="p-3 bg-ivory text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition-all duration-500">
+        <div className="p-3 bg-ivory text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition duration-500">
           <Icon className="w-5 h-5" />
         </div>
       </div>
@@ -243,12 +243,12 @@ function StatCard({ title, value, icon: Icon }: { title: string; value: string; 
 
 function OrderRow({ order }: { key?: React.Key; order: Order }) {
   const statusColors: Record<string, string> = {
-    completed: 'bg-green-50 text-green-600',
-    confirmed: 'bg-green-50 text-green-600',
+    completed: 'bg-brass/5 text-brass-ink',
+    confirmed: 'bg-brass/5 text-brass-ink',
     processing: 'bg-blue-50 text-blue-600',
     shipped: 'bg-terracotta/10 text-terracotta-dark',
     pending: 'bg-stone-100 text-stone-600',
-    cancelled: 'bg-rose-50 text-rose-600',
+    cancelled: 'bg-terracotta/5 text-terracotta-dark',
   };
 
   const itemNames = order.items?.map(i => i.product_name).join(', ') || '—';

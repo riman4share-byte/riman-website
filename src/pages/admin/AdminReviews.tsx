@@ -79,7 +79,7 @@ export default function AdminReviews() {
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={cn(
-                  "px-4 py-2 text-micro tracking-widest uppercase font-bold transition-all border",
+                  "px-4 py-2 text-micro tracking-widest uppercase font-bold transition border",
                   statusFilter === s ? "border-terracotta text-terracotta-dark" : "border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
                 )}
               >
@@ -141,7 +141,7 @@ export default function AdminReviews() {
                     <td className="px-8 py-4">
                       <span className={cn(
                         "px-3 py-1 text-micro tracking-widest uppercase font-bold rounded",
-                        r.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        r.status === 'approved' ? 'bg-brass/5 text-brass-ink border border-brass/20' : 'bg-amber-50 text-amber-700 border border-amber-200'
                       )}>
                         {r.status}
                       </span>
@@ -161,7 +161,7 @@ export default function AdminReviews() {
                         )}
                         <button
                           onClick={() => handleDelete(r.id)}
-                          className="px-3 py-1.5 border border-rose-200 text-rose-500 text-micro tracking-widest uppercase font-bold hover:bg-rose-50 hover:border-rose-400 transition-colors"
+                          className="px-3 py-1.5 border border-terracotta/30 text-terracotta-dark text-micro tracking-widest uppercase font-bold hover:bg-terracotta/5 hover:border-terracotta/50 transition-colors"
                         >
                           Delete
                         </button>

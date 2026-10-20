@@ -251,7 +251,7 @@ export default function AdminGallery() {
                         <button onClick={() => handleEdit(item)} className="text-stone-400 hover:text-terracotta-dark transition-colors">
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setDeleteConfirm(item.id)} className="text-stone-400 hover:text-rose-500 transition-colors">
+                        <button onClick={() => setDeleteConfirm(item.id)} className="text-stone-400 hover:text-terracotta-dark transition-colors">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </>
@@ -286,7 +286,7 @@ export default function AdminGallery() {
                 <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-4 py-2 border border-stone-200 text-xs tracking-widest uppercase hover:border-terracotta">
                   Cancel
                 </button>
-                <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} className="flex-1 px-4 py-2 bg-rose-500 text-white text-xs tracking-widest uppercase hover:bg-rose-600">
+                <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} className="flex-1 px-4 py-2 bg-terracotta text-white text-xs tracking-widest uppercase hover:bg-terracotta-dark">
                   Delete
                 </button>
               </div>

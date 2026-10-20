@@ -41,7 +41,7 @@ test.describe('Booking-first conversion', () => {
     await cards.nth(1).locator('button', { hasText: /add to wishlist/i }).click();
 
     await page.goto('/wishlist');
-    const req = page.getByRole('button', { name: /book a private fitting|request private viewing|احجزي قياسًا خاصًا|طلب مشاهدة خاصة/i }).first();
+    const req = page.getByRole('button', { name: /book a fitting for these gowns|book a private fitting|request private viewing|احجزي قياسًا لهذه الفساتين|احجزي قياسًا خاصًا|طلب مشاهدة خاصة/i }).first();
     await expect(req).toBeVisible();
     await req.click();
     await expect(page).toHaveURL(/\/appointment/);

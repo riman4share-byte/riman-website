@@ -227,7 +227,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
                     onFocus={() => setFocusedDate(date)}
                     onClick={() => selectable && onDateSelect?.(date)}
                     className={cn(
-                      'w-full h-full flex items-center justify-center text-micro transition-all bg-ivory',
+                      'w-full h-full flex items-center justify-center text-micro transition bg-ivory',
                       loading && 'animate-pulse opacity-60',
                       !inMonth && 'text-stone-200',
                       (past || booked) && inMonth && 'bg-stone-50 text-stone-500 cursor-not-allowed',

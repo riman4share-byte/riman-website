@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Mail, Phone, MapPin, ChevronUp, ArrowRight, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import Logo from './Logo';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSettings } from '../contexts/SettingsContext';
@@ -12,11 +8,14 @@ import { cn } from '../lib/utils';
 
 function CollapsibleSection({ title, children, defaultOpen = false }: { title: string, children: React.ReactNode, defaultOpen?: boolean }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-  
+  const contentId = React.useId();
+
   return (
     <div className="border-b border-white/5 last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-controls={contentId}
         className="w-full flex items-center justify-between py-4 md:py-0 md:cursor-default"
       >
         <h4 className="font-label text-xs tracking-[0.3em] uppercase text-terracotta-dark font-bold text-center md:text-left flex-1">{title}</h4>
@@ -25,18 +24,24 @@ function CollapsibleSection({ title, children, defaultOpen = false }: { title: s
           isOpen && "rotate-180"
         )} />
       </button>
-      <AnimatePresence>
-        {(isOpen || typeof window !== 'undefined') && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className={cn("overflow-hidden", !isOpen && "max-h-0 opacity-0 md:max-h-[999px] md:opacity-100")}
-          >
-            {children}
-          </motion.div>
+      {/*
+        The old AnimatePresence gate was `isOpen || typeof window !== 'undefined'`,
+        which is always true on the client, so the panel never unmounted and the
+        exit animation never ran — the mobile accordion snapped open/closed.
+        grid-template-rows 0fr→1fr animates to the content's real height (no
+        max-height magic number), while md: pins it open on desktop. The content
+        stays in the DOM either way, so it remains crawlable.
+      */}
+      <div
+        id={contentId}
+        className={cn(
+          "grid overflow-hidden transition-[grid-template-rows,opacity] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          "md:grid-rows-[1fr] md:opacity-100",
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
-      </AnimatePresence>
+      >
+        <div className="min-h-0">{children}</div>
+      </div>
     </div>
   );
 }
@@ -48,15 +53,13 @@ export default function Footer() {
   // the contact page and the admin panel.
   const { settings } = useSettings();
 
-  const newsletterSchema = z.object({
-    email: z.string().email(t('footer.valid_email'))
-  });
-
-  type NewsletterForm = z.infer<typeof newsletterSchema>;
-
-  const { register, handleSubmit, reset, formState: { errors, isSubmitSuccessful } } = useForm<NewsletterForm>({
-    resolver: zodResolver(newsletterSchema)
-  });
+  // Plain state, not react-hook-form + zod. This is a single email field in the
+  // footer, so it sits in the entry bundle on every page; RHF + zodResolver +
+  // zod cost ~75 kB minified for one regex check. ContactPage and Checkout still
+  // use RHF, but they are lazy routes, so the dependency now loads only there.
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   // The newsletter previously wrote to localStorage and reported success. That
   // is silent data loss: the visitor saw "subscribed" and the address existed
@@ -64,13 +67,23 @@ export default function Footer() {
   // There is no newsletter table and no mailing-list provider wired up, so
   // rather than pretend, the form hands the address to WhatsApp — the same
   // channel the rest of the site uses — and says so.
-  const onNewsletterSubmit = async (data: NewsletterForm) => {
+  const onNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim();
+    // Pragmatic address check — enough to catch typos, not an RFC 5322 parser.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setEmailError(t('footer.valid_email'));
+      setSubmitted(false);
+      return;
+    }
+    setEmailError(null);
     const number = (settings.social.whatsapp || '971553730792').replace(/[^\d]/g, '');
     const message = encodeURIComponent(
-      `Please add ${data.email} to the Riman Fashion mailing list.`,
+      `Please add ${value} to the Riman Fashion mailing list.`,
     );
     window.open(`https://wa.me/${number}?text=${message}`, '_blank', 'noopener,noreferrer');
-    reset();
+    setSubmitted(true);
+    setEmail('');
   };
 
   const scrollToTop = () => {
@@ -91,24 +104,25 @@ export default function Footer() {
             <p className="font-body text-stone-500 text-xs md:text-sm tracking-wider mb-6 leading-relaxed uppercase">
               {t('footer.newsletter_text')}
             </p>
-            <form onSubmit={handleSubmit(onNewsletterSubmit)} className="relative group">
+            <form onSubmit={onNewsletterSubmit} className="relative group" noValidate>
               <label htmlFor="newsletter-email" className="sr-only">
                 {t('footer.newsletter_placeholder')}
               </label>
               <input
                 id="newsletter-email"
-                {...register('email')}
                 type="email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(null); }}
                 aria-required="true"
-                aria-invalid={errors.email ? true : undefined}
+                aria-invalid={emailError ? true : undefined}
                 placeholder={t('footer.newsletter_placeholder')}
-                className="w-full bg-transparent border-b border-stone-800 focus:border-terracotta py-3 md:py-4 pr-12 text-sm font-body tracking-[0.15em] outline-none transition-all placeholder:text-stone-400"
+                className="w-full bg-transparent border-b border-stone-800 focus:border-terracotta py-3 md:py-4 pr-12 text-sm font-body tracking-[0.15em] outline-none transition placeholder:text-stone-400"
               />
               <button type="submit" aria-label={t('footer.newsletter_submit')} className="absolute right-0 bottom-3 md:bottom-4 text-terracotta-dark hover:translate-x-1 transition-transform">
-                {isSubmitSuccessful ? <span className="text-micro tracking-widest">{t('footer.submitted')}</span> : <ArrowRight className="w-5 h-5" aria-hidden="true" />}
+                {submitted ? <span className="text-micro tracking-widest">{t('footer.submitted')}</span> : <ArrowRight className="w-5 h-5" aria-hidden="true" />}
               </button>
-              {errors.email && <p role="alert" className="absolute top-full mt-2 text-red-600 text-micro uppercase tracking-widest">{errors.email.message}</p>}
+              {emailError && <p role="alert" className="absolute top-full mt-2 text-red-600 text-micro uppercase tracking-widest">{emailError}</p>}
             </form>
           </div>
         </div>
@@ -230,8 +244,11 @@ export default function Footer() {
 function FooterLink({ to, children }: { to: string, children: React.ReactNode }) {
   return (
     <li>
-      <Link to={to} className="font-body text-xs md:text-sm text-stone-500 hover:text-terracotta-dark tracking-[0.1em] uppercase transition-all duration-300 flex items-center group">
-        <span className="w-0 group-hover:w-3 h-px bg-terracotta transition-all duration-300 mr-0 group-hover:mr-2" />
+      <Link to={to} className="relative inline-flex items-center font-body text-xs md:text-sm text-stone-500 hover:text-terracotta-dark tracking-[0.1em] uppercase transition-colors duration-300 group">
+        <span
+          aria-hidden="true"
+          className="absolute bottom-0 start-0 h-px w-full origin-left rtl:origin-right scale-x-0 bg-terracotta transition-transform duration-300 group-hover:scale-x-100"
+        />
         {children}
       </Link>
     </li>
@@ -244,7 +261,7 @@ function SocialLink({ href, icon, label }: { href: string; icon: React.ReactElem
       href={href} 
       target="_blank"
       rel="noopener noreferrer"
-      className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-stone-800 flex items-center justify-center text-stone-400 hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-500"
+      className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-stone-800 flex items-center justify-center text-stone-400 hover:bg-terracotta hover:border-terracotta hover:text-white transition duration-500"
       aria-label={label}
     >
       {React.cloneElement(icon, { className: "w-4 h-4" })}

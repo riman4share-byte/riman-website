@@ -130,7 +130,7 @@ test.describe('payment journey (stub gateway)', () => {
     }
 
     // returnOrigin is normalised to a bare origin, never a path or query.
-    expect(body.returnOrigin).toBe('http://localhost:3101');
+    expect(body.returnOrigin).toBe('http://localhost:3001');
   });
 
   test('confirms the order after a paid session and empties the bag', async ({ page }) => {

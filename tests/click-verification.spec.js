@@ -14,12 +14,23 @@ async function waitForApp(page) {
   await page.waitForTimeout(500);
 }
 
+/** Dismiss the cookie consent overlay; it sits above the header (z-200) and
+ *  intercepts pointer events, so a drawer click never lands. */
+async function dismissConsent(page) {
+  const dismiss = page.getByRole('button', { name: /^(reject|accept)/i }).first();
+  if (await dismiss.isVisible().catch(() => false)) {
+    await dismiss.click({ timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
+  }
+}
+
 /** Navigate to the homepage and confirm it loaded. */
 async function goHome(page) {
   // Suite assumes English copy; the app defaults to Arabic ('ar').
   await page.addInitScript(() => localStorage.setItem('riman_lang', 'en'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await waitForApp(page);
+  await dismissConsent(page);
 }
 
 // ---------------------------------------------------------------------------
@@ -31,13 +42,16 @@ test.describe('Header Desktop Navigation', () => {
     await goHome(page);
   });
 
+  // Mirrors PRIMARY_LINKS plus the header's Book CTA (src/components/Header.tsx).
+  // Contact, Rentals and "Our Story" are drawer links now, not desktop nav.
   const navLinks = [
     { label: 'Bridal', path: '/collection/bridal' },
-    { label: 'Evening', path: '/collection/evening' },
-    { label: 'Rentals', path: '/collection/rental' },
-    { label: 'Book Now', path: '/appointment' },
-    { label: 'Our Story', path: '/about' },
-    { label: 'Contact', path: '/contact' },
+    { label: 'Couture', path: '/collection/couture' },
+    { label: 'Collections', path: '/collections' },
+    { label: 'Gallery', path: '/gallery' },
+    { label: 'Style Quiz', path: '/style-quiz' },
+    { label: 'About', path: '/about' },
+    { label: 'Book Appointment', path: '/appointment' },
   ];
 
   for (const { label, path } of navLinks) {
@@ -70,7 +84,9 @@ test.describe('Header Icon Links', () => {
     { name: 'Search', path: '/search', ariaLabel: 'Search' },
     // Wishlist icon was rebranded to "Your Selection" — match by href instead of aria-label.
     { name: 'Wishlist', path: '/wishlist', ariaLabel: null },
-    { name: 'Account', path: '/profile', ariaLabel: 'Account' },
+    // Account is auth-gated: a signed-out visitor (every e2e run) lands on
+    // /auth, so asserting /profile only passed before the guard redirected.
+    { name: 'Account', path: '/auth', ariaLabel: 'Account' },
     { name: 'Cart', path: '/checkout', ariaLabel: null },
   ];
 
@@ -454,7 +470,7 @@ test.describe('Mobile Navigation', () => {
     const mobileLinks = [
       { path: '/collection/bridal', name: 'Bridal' },
       { path: '/collection/couture', name: 'Couture' },
-      { path: '/about', name: 'Our Story' },
+      { path: '/about', name: 'About' },
       { path: '/collections', name: 'Collections' },
       { path: '/faq', name: 'FAQ' },
     ];
@@ -479,8 +495,9 @@ test.describe('Mobile Navigation', () => {
       // desktop nav or footer link behind the drawer's scrim. Wait for it rather
       // than sampling, because AnimatePresence keeps the outgoing drawer mounted
       // while it animates out.
-      const drawer = page.locator('[role="dialog"]');
+      const drawer = page.getByRole('dialog', { name: /open navigation menu|افتح قائمة التنقل/i });
       await expect(drawer).toBeVisible({ timeout: 10000 });
+      await dismissConsent(page);
       const link = drawer.locator(`a[href="${path}"]`).first();
       await link.click();
       await page.waitForURL(`**${path}`, { timeout: 10000 });

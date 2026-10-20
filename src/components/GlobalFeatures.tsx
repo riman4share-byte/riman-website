@@ -61,7 +61,7 @@ export default function GlobalFeatures() {
           href="https://wa.me/971553730792"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed end-4 md:end-8 bottom-20 md:bottom-6 z-[100] w-12 h-12 md:w-13 md:h-13 bg-onyx text-ivory border border-terracotta/30 flex items-center justify-center hover:border-terracotta hover:scale-[1.04] transition-all"
+          className="fixed end-4 md:end-8 bottom-20 md:bottom-6 z-[100] w-12 h-12 md:w-13 md:h-13 bg-onyx text-ivory border border-terracotta/30 flex items-center justify-center hover:border-terracotta hover:scale-[1.04] transition"
           aria-label={t('common.whatsapp_label')}
         >
           <MessageCircle className="w-6 h-6 md:w-7 md:h-7" />

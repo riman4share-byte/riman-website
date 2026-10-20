@@ -67,7 +67,7 @@ export default function ProfilePage() {
                    <ProfileLink icon={Settings} label={t('profile.preferences')} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
                  <button 
                     onClick={async () => { await signOut(); navigate('/'); }}
-                   className="w-full flex items-center gap-4 p-4 text-micro text-stone-600 uppercase tracking-[0.2em] hover:text-rose-500 hover:bg-rose-50/30 transition-all text-left mt-8 border-t border-stone-50 pt-8"
+                   className="w-full flex items-center gap-4 p-4 text-micro text-stone-600 uppercase tracking-[0.2em] hover:text-terracotta-dark hover:bg-terracotta/5 transition text-left mt-8 border-t border-stone-50 pt-8"
                  >
                     <LogOut className="w-4 h-4" /> {t('profile.sign_out')}
                  </button>
@@ -131,8 +131,8 @@ export default function ProfilePage() {
                          <span className="text-terracotta-dark font-heading text-sm font-bold">{formatPrice(order.subtotal)}</span>
                          <span className={cn(
                            "px-3 py-1 text-micro font-bold uppercase tracking-widest border",
-                           order.status === 'cancelled' ? 'text-rose-400 border-rose-100 bg-rose-50/30' :
-                           order.status === 'completed' || order.status === 'delivered' ? 'text-emerald-600 border-emerald-100 bg-emerald-50/30' :
+                           order.status === 'cancelled' ? 'text-terracotta-dark border-terracotta/20 bg-terracotta/5' :
+                           order.status === 'completed' || order.status === 'delivered' ? 'text-brass-ink border-brass/20 bg-brass/5' :
                            'text-terracotta-dark border-terracotta/10 bg-ivory'
                          )}>
                            {order.status}
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                  </div>
                )}
                {recentOrders.length > 0 && (
-                 <Link to="/collection/bridal" className="inline-flex items-center gap-3 text-micro text-terracotta-dark uppercase tracking-[0.3em] font-bold mt-8 hover:gap-5 transition-all">
+                 <Link to="/collection/bridal" className="inline-flex items-center gap-3 text-micro text-terracotta-dark uppercase tracking-[0.3em] font-bold mt-8 hover:gap-5 transition-[gap]">
                     {t('profile.explore_new')} <ChevronRight className="w-3 h-3" />
                  </Link>
                )}
@@ -160,7 +160,7 @@ function ProfileLink({ icon: Icon, label, active, onClick }: any) {
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-4 p-4 text-micro uppercase tracking-[0.2em] transition-all text-left border-l-2",
+        "w-full flex items-center gap-4 p-4 text-micro uppercase tracking-[0.2em] transition text-left border-l-2",
         active ? "bg-terracotta/5 text-terracotta-dark font-bold border-terracotta" : "text-stone-600 hover:text-stone-800 hover:bg-stone-50 border-transparent"
       )}
     >

@@ -10,12 +10,12 @@ const STATUS_OPTIONS = ['pending', 'confirmed', 'processing', 'shipped', 'delive
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'text-amber-600 border-amber-200 bg-amber-50',
-  confirmed: 'text-emerald-600 border-emerald-200 bg-emerald-50',
+  confirmed: 'text-brass-ink border-brass/20 bg-brass/5',
   processing: 'text-sky-600 border-sky-200 bg-sky-50',
   shipped: 'text-indigo-600 border-indigo-200 bg-indigo-50',
   delivered: 'text-teal-600 border-teal-200 bg-teal-50',
   completed: 'text-stone-600 border-stone-200 bg-stone-50',
-  cancelled: 'text-rose-600 border-rose-200 bg-rose-50',
+  cancelled: 'text-terracotta-dark border-terracotta/20 bg-terracotta/5',
 };
 
 const STATUS_ICONS: Record<string, any> = {
@@ -163,7 +163,7 @@ export default function AdminOrders() {
           </div>
         ) : error ? (
           <div className="p-12 text-center">
-            <p className="text-rose-500 text-xs tracking-widest uppercase mb-4">{error}</p>
+            <p className="text-terracotta-dark text-xs tracking-widest uppercase mb-4">{error}</p>
             <button onClick={loadOrders} className="btn-luxury-outline text-xs">Retry</button>
           </div>
         ) : filteredOrders.length === 0 ? (
@@ -216,9 +216,9 @@ export default function AdminOrders() {
                       <td className="px-6 py-4">
                         <span className={cn(
                           "text-micro tracking-widest uppercase font-bold px-2 py-1 border flex items-center gap-1 w-fit",
-                          order.payment_status === 'paid' ? 'text-emerald-600 border-emerald-200 bg-emerald-50' :
+                          order.payment_status === 'paid' ? 'text-brass-ink border-brass/20 bg-brass/5' :
                           order.payment_status === 'processing' ? 'text-amber-600 border-amber-200 bg-amber-50' :
-                          order.payment_status === 'failed' ? 'text-rose-600 border-rose-200 bg-rose-50' :
+                          order.payment_status === 'failed' ? 'text-terracotta-dark border-terracotta/20 bg-terracotta/5' :
                           'text-stone-600 border-stone-200 bg-stone-50'
                         )}>
                           {order.payment_method === 'card' ? <CreditCard className="w-2 h-2" /> : <Building2 className="w-2 h-2" />}
@@ -231,7 +231,7 @@ export default function AdminOrders() {
                             setSelectedOrder(order);
                             setAdminNotes(order.admin_notes || '');
                           }}
-                          className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition-all"
+                          className="p-2 border border-stone-200 text-stone-400 hover:text-terracotta-dark hover:border-terracotta transition"
                           aria-label="View order details"
                         >
                           <Eye className="w-3 h-3" />
@@ -292,7 +292,7 @@ export default function AdminOrders() {
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Date</span><span className="text-stone-800 font-bold">{selectedOrder.created_at ? new Date(selectedOrder.created_at).toLocaleString() : '-'}</span></p>
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Type</span><span className="text-micro tracking-widest uppercase text-stone-600 font-medium">{selectedOrder.type}</span></p>
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Payment Method</span><span className="text-micro tracking-widest uppercase text-stone-600 font-medium flex items-center gap-1.5">{selectedOrder.payment_method === 'card' ? <><CreditCard className="w-3 h-3" /> Card</> : <><Building2 className="w-3 h-3" /> Atelier</>}</span></p>
-                      <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Payment Status</span><span className={cn("text-micro tracking-widest uppercase font-bold", selectedOrder.payment_status === 'paid' ? 'text-emerald-600' : selectedOrder.payment_status === 'failed' ? 'text-rose-600' : 'text-stone-600')}>{selectedOrder.payment_status || 'pending'}</span></p>
+                      <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Payment Status</span><span className={cn("text-micro tracking-widest uppercase font-bold", selectedOrder.payment_status === 'paid' ? 'text-brass-ink' : selectedOrder.payment_status === 'failed' ? 'text-terracotta-dark' : 'text-stone-600')}>{selectedOrder.payment_status || 'pending'}</span></p>
                       <p><span className="text-stone-600 uppercase text-micro tracking-widest block">Total</span><span className="text-terracotta-dark font-heading font-bold">{formatPrice(selectedOrder.subtotal)}</span></p>
                     </div>
                   </div>
@@ -312,7 +312,7 @@ export default function AdminOrders() {
                             onClick={() => handleStatusUpdate(selectedOrder.id!, status)}
                             disabled={updating === selectedOrder.id}
                             className={cn(
-                              "text-micro tracking-widest uppercase px-3 py-2 border flex items-center gap-1.5 transition-all",
+                              "text-micro tracking-widest uppercase px-3 py-2 border flex items-center gap-1.5 transition",
                               isActive
                                 ? "bg-stone-800 text-white border-stone-800"
                                 : "text-stone-600 border-stone-200 hover:border-stone-400 hover:text-stone-800",
@@ -340,7 +340,7 @@ export default function AdminOrders() {
                       value={adminNotes}
                       onChange={e => setAdminNotes(e.target.value)}
                       rows={4}
-                      className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest outline-none focus:border-terracotta transition-all resize-none"
+                      className="w-full bg-stone-50 border border-stone-100 p-4 text-xs tracking-widest outline-none focus:border-terracotta transition resize-none"
                       placeholder="Internal notes about this order..."
                     />
                     <button

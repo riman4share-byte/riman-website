@@ -9,15 +9,19 @@ const ICONS = {
   info: Info,
 };
 
+// On-brand status colours. emerald/rose were the only Tailwind defaults left
+// in the app and read as a generic dashboard next to the brass/terracotta
+// palette. brass-ink is the AA-safe gold ink on light surfaces, and
+// terracotta-dark is the established light-surface alert ink.
 const COLORS = {
-  success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-  error: 'bg-rose-50 border-rose-200 text-rose-800',
+  success: 'bg-brass/10 border-brass/40 text-brass-ink',
+  error: 'bg-terracotta/10 border-terracotta/40 text-terracotta-dark',
   info: 'bg-stone-50 border-stone-200 text-stone-800',
 };
 
 const ICON_COLORS = {
-  success: 'text-emerald-500',
-  error: 'text-rose-500',
+  success: 'text-brass-ink',
+  error: 'text-terracotta',
   info: 'text-stone-500',
 };
 

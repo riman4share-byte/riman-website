@@ -65,7 +65,7 @@ export default function PaymentSuccess() {
 
       {status === 'success' && (
         <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-          <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 mb-8 mx-auto">
+          <div className="w-24 h-24 bg-brass/10 rounded-full flex items-center justify-center text-brass-ink mb-8 mx-auto">
             <CheckCircle2 className="w-12 h-12" />
           </div>
           <h1 className="font-heading text-4xl md:text-6xl text-stone-800 uppercase mb-4">{t('payment.success_title')}</h1>
@@ -78,7 +78,7 @@ export default function PaymentSuccess() {
 
       {status === 'error' && (
         <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-          <div className="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-8 mx-auto">
+          <div className="w-24 h-24 bg-terracotta/10 rounded-full flex items-center justify-center text-terracotta-dark mb-8 mx-auto">
             <XCircle className="w-12 h-12" />
           </div>
           <h2 className="font-heading text-3xl text-stone-800 uppercase mb-4">{t('payment.error_title')}</h2>

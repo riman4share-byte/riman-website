@@ -45,8 +45,9 @@ test.describe('Riman Fashion — Homepage', () => {
   /** ─── FEATURED PRODUCTS ─── */
   test.describe('Featured Products Section', () => {
     test('featured products section heading is visible', async ({ page }) => {
-      const section = page.locator('section').filter({ hasText: /featured|collection|curated/i }).first();
+      const section = page.locator('section:has(a[href^="/product/"])').first();
       await expect(section).toBeVisible({ timeout: 10000 });
+      await expect(section.locator('h2, h3').first()).toBeVisible();
     });
 
     test('product cards render when products are loaded', async ({ page }) => {

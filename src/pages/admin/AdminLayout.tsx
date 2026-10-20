@@ -53,7 +53,7 @@ function SidebarContent({ onNav }: { onNav: () => void }) {
 
       <div className="p-4 border-t border-stone-800">
         <button onClick={async () => { await signOut(); navigate('/auth'); }} aria-label="Sign out"
-          className="w-full flex items-center gap-3 px-4 py-3 text-xs tracking-widest uppercase text-stone-400 hover:text-rose-400 transition-colors"
+          className="w-full flex items-center gap-3 px-4 py-3 text-xs tracking-widest uppercase text-stone-400 hover:text-terracotta-light transition-colors"
         >
           <LogOut className="w-4 h-4" /> Sign Out
         </button>
@@ -100,7 +100,7 @@ export default function AdminLayout() {
 
       {/* Main content — scrolls at top level so fixed children (modals) overlay sidebar correctly */}
       <main className={cn(
-        "h-screen flex flex-col transition-all duration-300 overflow-y-auto",
+        "h-screen flex flex-col transition-[margin-left] duration-300 overflow-y-auto",
         desktopSidebarOpen ? "lg:ml-64" : "lg:ml-0"
       )}>
         <header className="h-16 bg-ivory border-b border-stone-200 px-4 md:px-8 flex items-center justify-between shrink-0 sticky top-0 z-10">

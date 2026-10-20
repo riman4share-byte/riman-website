@@ -15,8 +15,8 @@ const SERVICE_LABELS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700 border-amber-200',
-  confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  cancelled: 'bg-red-50 text-red-700 border-red-200',
+  confirmed: 'bg-brass/5 text-brass-ink border-brass/20',
+  cancelled: 'bg-terracotta/5 text-terracotta-dark border-terracotta/20',
   completed: 'bg-stone-50 text-stone-700 border-stone-200',
 };
 
@@ -76,7 +76,7 @@ export default function AdminAppointments() {
       </div>
 
       {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 text-sm">
+          <div className="mb-4 p-4 bg-terracotta/5 border border-terracotta/20 text-terracotta-dark text-sm">
             {error}
             <button onClick={() => setError(null)} className="ml-2 underline">Dismiss</button>
           </div>
@@ -121,10 +121,10 @@ export default function AdminAppointments() {
                   </div>
                 </div>
                 <div className="flex gap-2" onClick={e => e.stopPropagation()}>
-                  <button onClick={() => handleStatusChange(appt.id!, 'confirmed')} className="p-2 text-emerald-500 hover:bg-emerald-50 transition-colors" aria-label="Confirm appointment" title="Confirm">
+                  <button onClick={() => handleStatusChange(appt.id!, 'confirmed')} className="p-2 text-brass-ink hover:bg-brass/10 transition-colors" aria-label="Confirm appointment" title="Confirm">
                     <CheckCircle2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleStatusChange(appt.id!, 'cancelled')} className="p-2 text-red-400 hover:bg-red-50 transition-colors" aria-label="Cancel appointment" title="Cancel">
+                  <button onClick={() => handleStatusChange(appt.id!, 'cancelled')} className="p-2 text-terracotta hover:bg-terracotta/10 transition-colors" aria-label="Cancel appointment" title="Cancel">
                     <XCircle className="w-4 h-4" />
                   </button>
                 </div>

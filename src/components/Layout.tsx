@@ -17,7 +17,7 @@ export default function Layout() {
   const isCheckout = CHECKOUT_ROUTES.some(r => pathname.startsWith(r));
 
   return (
-    <div id="layout-root" className="min-h-screen flex flex-col font-body pb-16 md:pb-0">
+    <div id="layout-root" className="min-h-screen flex flex-col font-body pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <SEOHead />
       <ImmersiveUI />
       <CurtainTransition />

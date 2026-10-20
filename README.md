@@ -5,8 +5,14 @@ React 19 + Vite 6 + TypeScript fashion e-commerce app with a Supabase backend
 Tailwind CSS v4, motion animations, and an admin dashboard. Ships as a static
 SPA with **build-time prerendered, SEO-complete routes** behind Nginx (Docker).
 
-> Note: the AI Studio banner below is a project-origin artifact. This codebase
-> does **not** call the Gemini API; no `GEMINI_API_KEY` is needed or used.
+> Note: the AI Studio banner below is a project-origin artifact.
+>
+> This codebase supports an **optional** AI virtual try-on. It is the only
+> feature that calls the Gemini API, it is **disabled by default** (the
+> `virtualTryOn` feature flag is `false`), and it requires a server-only
+> `GEMINI_API_KEY` set on the `virtual-tryon` Edge Function
+> (see `.env.example`). Nothing else in the app touches Gemini, and no
+> `VITE_`-prefixed Gemini variable is ever used.
 
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
