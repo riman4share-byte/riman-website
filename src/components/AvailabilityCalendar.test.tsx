@@ -72,7 +72,11 @@ describe('AvailabilityCalendar', () => {
     mockedFetch.mockResolvedValue([format(TODAY, 'yyyy-MM-dd')]);
     renderCalendar();
     const grid = screen.getByTestId('availability-grid');
-    const todayCell = await waitFor(() => document.querySelector(`[data-date="${format(TODAY, 'yyyy-MM-dd')}"]`) as HTMLButtonElement);
+    // Waiting for the cell to exist is not enough: it renders before the booked
+    // dates arrive, and pressing Enter on a not-yet-blocked day selects it
+    // instead of announcing "booked".
+    await waitFor(() => expect(dayButton(0)?.getAttribute('aria-disabled')).toBe('true'));
+    const todayCell = dayButton(0);
     todayCell.focus();
     fireEvent.keyDown(grid, { key: 'Enter' });
     expect(screen.getByRole('status').textContent).toMatch(/, booked$/);
