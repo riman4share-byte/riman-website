@@ -4,17 +4,25 @@
  */
 
 const IP_MAX_LEN = 64;
-const IP_SHAPE = /^[0-9a-fA-F:.]+$/;
+const IPV4_SHAPE = /^(\d{1,3}\.){3}\d{1,3}$/;
+const IPV6_SHAPE = /^[0-9a-fA-F:]+$/;
 
 function isIpShaped(value: string): boolean {
-  return Boolean(value) && value.length <= IP_MAX_LEN && IP_SHAPE.test(value);
+  if (!value || value.length > IP_MAX_LEN) return false;
+  if (IPV4_SHAPE.test(value)) {
+    return value.split('.').every(octet => parseInt(octet, 10) <= 255);
+  }
+  if (IPV6_SHAPE.test(value)) {
+    return true;
+  }
+  return false;
 }
 
 /**
  * Best-effort client IP for rate-limit bucketing.
  *
  * `x-forwarded-for` is a client-settable request header. A naive read of its
- * FIRST entry — the conventional "left-most = original client" assumption —
+ * FIRST entry - the conventional "left-most = original client" assumption -
  * is therefore attacker-controlled: sending a different `X-Forwarded-For` on
  * each request gives every request its own rate-limit bucket, so the limiter
  * can be bypassed with a one-line curl loop. That is the opposite of what a
@@ -28,7 +36,7 @@ function isIpShaped(value: string): boolean {
  * overwritten by the edge and is not client-forgeable.
  *
  * Never throws and never returns long attacker-controlled blobs. Anything
- * malformed collapses to "unknown" — a single shared bucket, which is the safe
+ * malformed collapses to "unknown" - a single shared bucket, which is the safe
  * direction: junk keys must not each get an unlimited personal budget.
  */
 export function clientIp(headers: Headers): string {

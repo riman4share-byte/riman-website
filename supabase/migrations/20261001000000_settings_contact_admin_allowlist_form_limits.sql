@@ -115,7 +115,16 @@ BEGIN
   END IF;
 
   BEGIN
-    ip := split_part(hdrs::jsonb ->> 'x-forwarded-for', ',', 1);
+    -- Use the right-most X-Forwarded-For entry (the one appended by the nearest
+    -- trusted proxy). The left-most is client-controlled.
+    ip := (
+      SELECT btrim(v)
+      FROM jsonb_array_elements_text(
+        ('[' || replace(hdrs::jsonb ->> 'x-forwarded-for', ',', '","') || ']')::jsonb
+      ) AS elem(v)
+      ORDER BY elem.v DESC
+      LIMIT 1
+    );
   EXCEPTION WHEN OTHERS THEN
     RETURN NEW;  -- unparseable header: fail open rather than block bookings
   END;

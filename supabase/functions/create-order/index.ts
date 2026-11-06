@@ -62,13 +62,26 @@ serve(async (req) => {
     if (!parsed.ok) return json({ error: parsed.error }, 400);
     const payload = parsed.value;
 
-    if (TURNSTILE_SECRET_KEY) {
+    // Require captcha for rental bookings when secret is configured.
+    // This prevents anonymous inventory holds without human verification.
+    const hasRentalLines = payload.lines.some((l) => l.intent === 'rent');
+    if (hasRentalLines && TURNSTILE_SECRET_KEY) {
       const captchaOk = await verifyTurnstileToken({
         token: payload.captchaToken,
         secret: TURNSTILE_SECRET_KEY,
         ip: clientIp(req.headers),
       });
       if (!captchaOk) return json({ error: 'Please complete the security check.' }, 400);
+    } else if (TURNSTILE_SECRET_KEY) {
+      // Non-rental orders: captcha optional but verified if provided
+      if (payload.captchaToken) {
+        const captchaOk = await verifyTurnstileToken({
+          token: payload.captchaToken,
+          secret: TURNSTILE_SECRET_KEY,
+          ip: clientIp(req.headers),
+        });
+        if (!captchaOk) return json({ error: 'Please complete the security check.' }, 400);
+      }
     }
 
     // --- 2. Shipping details (authoritative validation) ---
@@ -163,6 +176,7 @@ serve(async (req) => {
 
     for (const item of insertedItems ?? []) {
       if (item.rental_start_date && item.rental_end_date) {
+        const holdExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h hold
         const { error: bookingError } = await supabase.from('rental_bookings').insert({
           order_item_id: item.id,
           product_id: item.product_id,
@@ -171,8 +185,10 @@ serve(async (req) => {
           customer_phone: payload.customerPhone,
           start_date: item.rental_start_date,
           end_date: item.rental_end_date,
-          status: 'confirmed',
+          status: 'pending',
           deposit_collected: item.security_deposit || 0,
+          hold_expires_at: holdExpiresAt,
+          notes: `Hold expires ${holdExpiresAt}. Admin must confirm before expiry.`,
         });
         if (bookingError) {
           // The exclusion constraint caught a double-book race (23P01) —
