@@ -17,13 +17,16 @@ if (-not $SupabaseAccessToken) {
 $env:SUPABASE_ACCESS_TOKEN = $SupabaseAccessToken
 
 Write-Host "=== Linking to Supabase project ===" -ForegroundColor Cyan
-npx supabase link --project-ref gebhmvdyrbxnlpxgjwne
+npx supabase link --project-ref vbuavhnpemnfsuguglqn
 
 Write-Host "`n=== Deploying send-notification ===" -ForegroundColor Cyan
-npx supabase functions deploy send-notification --no-verify-jwt
+npx supabase functions deploy send-notification
 if ($ResendApiKey) {
   npx supabase secrets set RESEND_API_KEY=$ResendApiKey
 }
+
+Write-Host "`n=== Deploying upload-review-photo ===" -ForegroundColor Cyan
+npx supabase functions deploy upload-review-photo --no-verify-jwt
 
 Write-Host "`n=== Deploying create-checkout ===" -ForegroundColor Cyan
 npx supabase functions deploy create-checkout --no-verify-jwt
@@ -45,9 +48,9 @@ npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=$env:SUPABASE_SERVICE_ROLE_KE
 
 Write-Host "`n=== Done ===" -ForegroundColor Green
 Write-Host "`nAfter deployment, configure .env locally:" -ForegroundColor Yellow
-Write-Host "  VITE_STRIPE_CHECKOUT_ENDPOINT=https://gebhmvdyrbxnlpxgjwne.supabase.co/functions/v1/create-checkout" -ForegroundColor White
-Write-Host "  VITE_NOTIFICATION_WEBHOOK=https://gebhmvdyrbxnlpxgjwne.supabase.co/functions/v1/send-notification" -ForegroundColor White
+Write-Host "  VITE_STRIPE_CHECKOUT_ENDPOINT=https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/create-checkout" -ForegroundColor White
+Write-Host "  VITE_NOTIFICATION_WEBHOOK=https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/send-notification" -ForegroundColor White
 
 Write-Host "`nFor stripe-webhook, configure the webhook endpoint in Stripe Dashboard:" -ForegroundColor Yellow
-Write-Host "  URL: https://gebhmvdyrbxnlpxgjwne.supabase.co/functions/v1/stripe-webhook" -ForegroundColor White
+Write-Host "  URL: https://vbuavhnpemnfsuguglqn.supabase.co/functions/v1/stripe-webhook" -ForegroundColor White
 Write-Host "  Events: checkout.session.completed, checkout.session.expired" -ForegroundColor White

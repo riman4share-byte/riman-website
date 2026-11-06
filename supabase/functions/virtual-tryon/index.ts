@@ -111,8 +111,8 @@ const admin = SUPABASE_SERVICE_ROLE_KEY
 
 async function withinRateLimit(userId: string): Promise<boolean> {
   if (!admin) {
-    console.error('tryon rate limit skipped (no service role key)');
-    return true;
+    console.error('tryon rate limit skipped (no service role key) — failing closed');
+    return false;
   }
   const { data, error } = await admin.rpc('try_rate_limit', {
     p_bucket: 'virtual-tryon',
@@ -121,9 +121,8 @@ async function withinRateLimit(userId: string): Promise<boolean> {
     p_window_seconds: RATE_LIMIT_WINDOW_S,
   });
   if (error) {
-    // Fail open but loud: a missing migration must not take try-on down.
-    console.error('tryon rate limit rpc failed (failing open):', error.message);
-    return true;
+    console.error('tryon rate limit rpc failed (failing closed):', error.message);
+    return false;
   }
   return data === true;
 }

@@ -22,21 +22,32 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = 'riman_cart_v2';
+const CART_SCHEMA_VERSION = 2;
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
-      const saved = localStorage.getItem('riman_cart');
+      const saved = localStorage.getItem(CART_STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Version check: discard stale carts on schema mismatch
+        if (parsed && parsed._version === CART_SCHEMA_VERSION && Array.isArray(parsed.items)) {
+          return parsed.items;
+        }
+        // Legacy format (bare array) or version mismatch — discard
+        localStorage.removeItem(CART_STORAGE_KEY);
+        localStorage.removeItem('riman_cart');
       }
     } catch {
+      localStorage.removeItem(CART_STORAGE_KEY);
       localStorage.removeItem('riman_cart');
     }
     return [];
   });
 
   useEffect(() => {
-    localStorage.setItem('riman_cart', JSON.stringify(items));
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ _version: CART_SCHEMA_VERSION, items }));
   }, [items]);
 
   const addItem = (product: Product, intent: 'sale' | 'rent', size?: string, date?: Date) => {

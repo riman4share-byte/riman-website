@@ -12,6 +12,7 @@ import { translateProductValue, localizedContent } from '../lib/productVocab';
 import { useFeature } from '../hooks/useFeature';
 import { Skeleton } from './Skeleton';
 import { useProductAvailability } from '../hooks/useProductAvailability';
+import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
   product: Product;
@@ -93,14 +94,14 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
       style={{ opacity: 1 }}
       className="group relative"
     >
-      <div className="block overflow-hidden relative aspect-[3/4] bg-stone-100 mb-4 cursor-pointer">
+      <div className="block overflow-hidden relative aspect-[3/4] bg-stone-100 mb-4 cursor-pointer m-zoom">
         <Link to={`/product/${product.id}`} className="absolute inset-0 z-0">
           {!imageLoaded && <Skeleton className="absolute inset-0 w-full h-full rounded-none" />}
-          <img 
-            src={product.images[0]} 
+          <OptimizedImage
+            src={product.images[0]}
             alt={productName}
+            widths={[0, 480, 800]}
             loading="lazy"
-            referrerPolicy="no-referrer"
             onLoad={() => setImageLoaded(true)}
             className={cn(
               "w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]",

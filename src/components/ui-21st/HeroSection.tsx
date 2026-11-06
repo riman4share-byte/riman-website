@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import CalligraphicAccent from '../salon/CalligraphicAccent';
-import KineticHeading from '../motion/KineticHeading';
 import MaskReveal from '../motion/MaskReveal';
+import SplitHeroHeading from '../motion/SplitHeroHeading';
 
 const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
 const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
@@ -115,10 +115,12 @@ export default function HeroSection21st() {
           <p className="font-label text-[11px] md:text-xs tracking-[0.4em] uppercase text-bone/85 mb-6 [text-shadow:0_1px_10px_rgba(22,21,19,0.7)]">
             <MaskReveal delay={0.05}>{t('hero.subtitle')}</MaskReveal>
           </p>
-          <KineticHeading
+          <SplitHeroHeading
+            key={language}
             as="h1"
             text={t('hero.headline')}
             emphasisChars={['&']}
+            emphasisClassName="font-editorial italic text-terracotta-light"
             delay={0.3}
             className="font-heading text-bone font-light leading-[1.04] text-[clamp(2.4rem,6vw,5.5rem)] mb-8 [text-shadow:0_2px_28px_rgba(22,21,19,0.55)]"
           />

@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 
 export default function MaskReveal({ children, delay = 0, className = '' }: { children: ReactNode; delay?: number; className?: string }) {
   const reduced = useReducedMotion();
-  if (reduced) return <div className={className}>{children}</div>;
+  if (reduced) return <span className={className}>{children}</span>;
   return (
     <span className={`inline-block overflow-hidden ${className}`}>
       <motion.span

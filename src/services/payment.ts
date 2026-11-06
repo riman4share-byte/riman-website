@@ -9,6 +9,7 @@
  */
 
 import { edgeFunctionsBase, supabaseAnonKey } from './supabase';
+import { Sentry } from '../lib/sentry';
 
 export interface CheckoutLine {
   product_id: string;
@@ -101,6 +102,9 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Check
       let message = '';
       try { message = JSON.parse(raw)?.error || ''; } catch { /* non-json body */ }
       console.error('[Riman] Checkout session rejected:', response.status, raw);
+      Sentry.captureException(new Error(message || 'Checkout session rejected'), {
+        tags: { feature: 'payment', operation: 'createCheckoutSession', status: response.status },
+      });
       throw new Error(message || 'Payment is temporarily unavailable. Please try again or pay at the atelier.');
     }
 
@@ -110,6 +114,7 @@ export async function createCheckoutSession(input: CheckoutInput): Promise<Check
   } catch (err) {
     if (err instanceof Error && !(err instanceof TypeError)) throw err;
     console.error('[Riman] Failed to create checkout session:', err);
+    Sentry.captureException(err, { tags: { feature: 'payment', operation: 'createCheckoutSession' } });
     throw new Error('Payment is temporarily unavailable. Please try again or pay at the atelier.');
   }
 }

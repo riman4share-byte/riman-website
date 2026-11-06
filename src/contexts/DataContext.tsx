@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { products as initialProducts } from '../data/products';
 import { Product } from '../types';
 import { isSupabaseConfigured } from '../services/supabase';
+import { Sentry } from '../lib/sentry';
 import { fetchProducts } from '../services/products';
 import { useToast } from './ToastContext';
 
@@ -155,6 +156,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         if (updates.quoteImage !== undefined) await updateSiteContentKey('quoteImage', updates.quoteImage);
       } catch (err) {
         console.error('[Riman] Failed to save content to Supabase:', err);
+        Sentry.captureException(err, { tags: { feature: 'data', operation: 'saveContent' } });
         addToast({ type: 'error', title: 'Could not save content', message: 'Changes kept locally only.' });
       }
     }

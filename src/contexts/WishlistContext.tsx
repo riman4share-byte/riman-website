@@ -37,22 +37,30 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   };
 
+const WISHLIST_STORAGE_KEY = 'riman_wishlist_v2';
+const WISHLIST_SCHEMA_VERSION = 2;
+
   const loadFromLocal = () => {
     try {
-      const saved = localStorage.getItem('riman_wishlist');
+      const saved = localStorage.getItem(WISHLIST_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setWishlist(parsed);
+        if (parsed && parsed._version === WISHLIST_SCHEMA_VERSION && Array.isArray(parsed.items)) {
+          setWishlist(parsed.items);
+        } else {
+          // Legacy or version mismatch — discard
+          localStorage.removeItem(WISHLIST_STORAGE_KEY);
+          localStorage.removeItem('riman_wishlist');
         }
       }
     } catch {
+      localStorage.removeItem(WISHLIST_STORAGE_KEY);
       localStorage.removeItem('riman_wishlist');
     }
   };
 
   const saveToLocal = (items: Product[]) => {
-    localStorage.setItem('riman_wishlist', JSON.stringify(items));
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify({ _version: WISHLIST_SCHEMA_VERSION, items }));
   };
 
   const addToWishlist = (product: Product) => {

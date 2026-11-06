@@ -506,15 +506,15 @@ async function withinRateLimit(bucket: string, req: Request, limit: number, wind
       p_window_seconds: windowSeconds,
     });
     if (error) {
-      // Fail open but LOUD: a missing migration must not take checkout down;
-      // the log line is the alarm.
-      console.error('rate limit rpc failed (failing open):', error.message);
-      return true;
+      // Fail closed: if the rate-limit RPC is unavailable, reject the request
+      // rather than allowing unlimited traffic through.
+      console.error('rate limit rpc failed (failing closed):', error.message);
+      return false;
     }
     return data === true;
   } catch (err) {
-    console.error('rate limit check threw (failing open):', err);
-    return true;
+    console.error('rate limit check threw (failing closed):', err);
+    return false;
   }
 }
 

@@ -222,14 +222,14 @@ export default function Header() {
       )}
 
       {/*
-        Three equal columns: nav, logo, actions. A 1fr/auto/1fr grid keeps the
-        logo optically centred and pulls both clusters inward to a consistent
-        inner edge, instead of letting them float against the viewport border.
-        Under dir="rtl" the columns mirror automatically.
+        Three zones: nav (start), logo (centre), actions (end). Both side zones
+        are flex-1, so they always claim equal width and the logo stays exactly
+        centred no matter how wide the nav or action cluster is. `start`/`end`
+        logical utilities mirror everything under dir="rtl".
       */}
       <div
         className={cn(
-          'relative w-full grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-6 px-6 sm:px-10 lg:px-14',
+          'relative w-full flex items-center px-6 sm:px-10 lg:px-14',
           // Full lockup at the top of the page; a slim bar once scrolling, so
           // the fixed header stops eating the top of every screen. The header
           // is position:fixed, so animating its height reflows nothing behind it.
@@ -238,7 +238,8 @@ export default function Header() {
         )}
       >
         {/* ── Start: primary nav (desktop) ── */}
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-9 justify-self-start" aria-label="Primary">
+        <div className="flex-1 min-w-0 flex items-center justify-start">
+        <nav className="hidden xl:flex items-center gap-4 2xl:gap-7" aria-label="Primary">
           {PRIMARY_LINKS.map((link) => {
             const active = location.pathname === link.path;
             return (
@@ -266,11 +267,11 @@ export default function Header() {
           })}
         </nav>
 
-        {/* ── Start: menu trigger (below lg) ── */}
+        {/* ── Start: menu trigger (below xl) ── */}
         <button
           onClick={() => setIsMenuOpen(true)}
           className={cn(
-            'lg:hidden justify-self-start -ms-2 p-2 flex items-center justify-center transition-colors',
+            'xl:hidden -ms-2 p-2 flex items-center justify-center transition-colors',
             tone.icon,
           )}
           aria-label={t('header.menu_open')}
@@ -278,13 +279,14 @@ export default function Header() {
         >
           <Menu className={ICON} strokeWidth={1.5} />
         </button>
+        </div>
 
         {/* ── Centre: mark + wordmark ── */}
         <Link
           to="/"
           id="logo"
           className={cn(
-            'justify-self-center flex flex-col items-center transition-[gap] duration-[400ms] motion-reduce:transition-none',
+            'shrink-0 flex flex-col items-center transition-[gap] duration-[400ms] motion-reduce:transition-none z-10',
             compact ? 'gap-0' : 'gap-1.5',
           )}
           aria-label="Riman Fashion home"
@@ -310,7 +312,7 @@ export default function Header() {
               'font-heading text-[11px] uppercase leading-none',
               // Optical centring: wide tracking adds a trailing gap on the last
               // letter, so nudge back by half of it.
-              'tracking-[0.42em] translate-x-[0.21em] whitespace-nowrap',
+              'tracking-[0.42em] translate-x-[0.21em] rtl:-translate-x-[0.21em] whitespace-nowrap',
               // Collapses smoothly so the slim bar holds just the monogram.
               'overflow-hidden transition-[opacity,max-height] duration-300 motion-reduce:transition-none',
               compact ? 'max-h-0 opacity-0' : 'max-h-4 opacity-100',
@@ -330,11 +332,12 @@ export default function Header() {
           `lg`, because the bottom nav disappears at md — anything hidden in the
           header past md would otherwise be unreachable on a tablet.
         */}
-        <div className="hidden md:flex items-center justify-self-end gap-1 md:gap-2 lg:gap-3">
+        <div className="flex-1 min-w-0 flex items-center justify-end">
+        <div className="hidden md:flex items-center gap-1 md:gap-2 lg:gap-3">
           <Link
             to="/appointment"
             className={cn(
-              'hidden lg:inline-flex items-center min-h-[36px] px-4 me-2 border',
+              'hidden xl:inline-flex items-center min-h-[36px] px-4 me-2 border',
               'font-label text-[11px] uppercase tracking-[0.18em] whitespace-nowrap',
               'transition-colors duration-300',
               tone.cta,
@@ -375,6 +378,7 @@ export default function Header() {
               )}
             </Link>
           ))}
+        </div>
         </div>
       </div>
 

@@ -82,16 +82,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   };
 
   const updateSetting = async <K extends keyof SiteSettings>(section: K, key: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [section]: { ...(prev[section] as any), [key]: value },
-    }));
+    let updatedSection: any;
+    setSettings(prev => {
+      updatedSection = { ...(prev[section] as any), [key]: value };
+      return { ...prev, [section]: updatedSection };
+    });
 
     if (isSupabaseConfigured) {
       try {
         const { updateSiteSetting } = await import('../services/siteContent');
-        const currentSection = settings[section];
-        const updatedSection = { ...(currentSection as any), [key]: value };
         await updateSiteSetting(section, updatedSection);
       } catch (err) {
         console.error(`[Riman] Failed to save setting ${section}.${key}:`, err);

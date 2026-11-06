@@ -7,7 +7,7 @@ import RevealWords from '../components/motion/RevealWords';
 import InvitationRule from '../components/salon/InvitationRule';
 import EditorialPlate from '../components/salon/EditorialPlate';
 import HeroSection21st from '../components/ui-21st/HeroSection';
-import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
+import HorizontalLookbook from '../components/luxury/HorizontalLookbook';
 import Marquee21st from '../components/ui-21st/Marquee21st';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
@@ -164,7 +164,7 @@ export default function Index() {
 
       <Marquee21st />
 
-      <ElegantCarousel21st />
+      <HorizontalLookbook />
 
       <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 

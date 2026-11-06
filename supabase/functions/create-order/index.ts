@@ -131,6 +131,7 @@ serve(async (req) => {
         notes: payload.notes,
         payment_method: 'atelier',
         payment_status: 'pending',
+        checkout_token: crypto.randomUUID(),
       })
       .select()
       .single();
@@ -202,15 +203,13 @@ async function withinRateLimit(req: Request): Promise<boolean> {
       p_window_seconds: RATE_LIMIT_WINDOW_S,
     });
     if (error) {
-      // Fail open but LOUD — a not-yet-applied migration must not break the
-      // in-atelier flow; this log line is the alarm.
-      console.error('rate limit rpc failed (failing open):', error.message);
-      return true;
+      console.error('rate limit rpc failed (failing closed):', error.message);
+      return false;
     }
     return data === true;
   } catch (err) {
-    console.error('rate limit check threw (failing open):', err);
-    return true;
+    console.error('rate limit check threw (failing closed):', err);
+    return false;
   }
 }
 

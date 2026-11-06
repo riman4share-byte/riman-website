@@ -13,26 +13,30 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { lazyWithRetry } from '../lib/lazyWithRetry';
 import { useFeature } from '../hooks/useFeature';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
+import RecentlyViewed from '../components/RecentlyViewed';
 import { useToast } from '../contexts/ToastContext';
 import { useSettings } from '../contexts/SettingsContext';
 import { fetchApprovedReviews, submitReview, type Review, type ReviewDelivery } from '../services/reviews';
-import { uploadImage } from '../services/upload';
+import { uploadReviewPhoto } from '../services/upload';
 import { translateProductValue, localizedContent } from '../lib/productVocab';
 import ProductCard from '../components/ProductCard';
 import AvailabilityCalendar from '../components/AvailabilityCalendar';
 import SizeGuide from '../components/SizeGuide';
 import { ProductDetailSkeleton } from '../components/Skeleton';
-import { VirtualTryOnModal } from '../components/VirtualTryOnModal';
+import OptimizedImage from '../components/OptimizedImage';
 import { isSafeGarmentPath } from '../../supabase/functions/virtual-tryon/tryOnValidation';
 import { analytics } from '../services/analytics';
 
 const ThreeDViewer = lazyWithRetry(() => import('../components/ThreeDViewer'));
+const VirtualTryOnModal = lazyWithRetry(() => import('../components/VirtualTryOnModal').then(m => ({ default: m.VirtualTryOnModal })));
 
 export default function ProductDetail() {
   const { products: dynamicProducts, isLoading } = useData();
   const { id } = useParams();
   const { addItem } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addProduct: trackRecentlyViewed } = useRecentlyViewed();
   const { t, language } = useLanguage();
   const { settings } = useSettings();
   const navigate = useNavigate();
@@ -90,6 +94,10 @@ export default function ProductDetail() {
   const product = useMemo(() =>
     dynamicProducts.find(p => p.id === id) || products.find(p => p.id === id),
   [id, dynamicProducts, products]);
+
+  useEffect(() => {
+    if (product) trackRecentlyViewed(product);
+  }, [product?.id]);
 
   const { name: productName, description: productDescription } = localizedContent(product ?? { name: '', description: '' }, language);
 
@@ -373,7 +381,7 @@ export default function ProductDetail() {
                   const index = product.videoUrl ? i + 1 : i;
                   return (
                     <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition", currentImageIndex === index ? "border-terracotta" : "border-transparent")}>
-                      <img src={img} className="w-full h-full object-cover" loading="lazy" alt={`${productName} thumbnail ${i + 1}`} />
+                      <OptimizedImage src={img} widths={[0, 480]} loading="lazy" className="w-full h-full object-cover" alt={`${productName} thumbnail ${i + 1}`} />
                     </button>
                   );
                 })}
@@ -875,14 +883,14 @@ export default function ProductDetail() {
                               <input
                                 id="review-photo-upload"
                                 type="file"
-                                accept="image/*"
+                                accept="image/jpeg,image/png,image/webp"
                                 className="hidden"
                                 onChange={async (e) => {
                                   const file = e.target.files?.[0];
                                   if (!file) return;
                                   setIsUploadingPhoto(true);
                                   try {
-                                    const url = await uploadImage(file);
+                                    const url = await uploadReviewPhoto(file);
                                     setNewReview(prev => ({ ...prev, photoUrl: url }));
                                   } catch (err) {
                                     console.error('Upload failed:', err);
@@ -966,12 +974,16 @@ export default function ProductDetail() {
             <BookingConfirmationModal product={product} date={bookingDate} onClose={() => setShowConfirmation(false)} />
           )}
           {showTryOn && tryOnEligible && (
-            <VirtualTryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
+            <Suspense fallback={null}>
+              <VirtualTryOnModal product={product} isOpen={showTryOn} onClose={() => setShowTryOn(false)} />
+            </Suspense>
           )}
         </AnimatePresence>
       </div>
 
       <SizeGuide isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
+
+      <RecentlyViewed />
     </>
   );
 }

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useRef, ReactNode } fro
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { getProfile } from '../services/auth';
 import { hashPassword } from '../lib/crypto';
+import { Sentry } from '../lib/sentry';
 import { useToast } from './ToastContext';
 import { useLanguage } from './LanguageContext';
 
@@ -22,8 +23,11 @@ interface AuthContextType {
 }
 
 // Local fallback storage keys (client-only, never admin)
+// Only used when VITE_DEV_AUTH=true and Supabase is not configured.
 const LOCAL_SESSION_KEY = 'riman_session';
 const LOCAL_USERS_KEY = 'riman_users';
+
+const DEV_AUTH_ENABLED = import.meta.env.VITE_DEV_AUTH === 'true';
 
 // Rate limiting
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
@@ -79,8 +83,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isSupabaseConfigured) {
       initSupabaseAuth();
-    } else {
+    } else if (DEV_AUTH_ENABLED) {
       initLocalAuth();
+    } else {
+      // No Supabase and no dev auth: auth is unavailable
+      setIsLoading(false);
+      setError('Authentication service is not configured.');
     }
   }, []);
 
@@ -108,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     } catch (err) {
       console.error('[Riman] Auth initialization failed:', err);
+      Sentry.captureException(err, { tags: { feature: 'auth', operation: 'initSupabaseAuth' } });
     } finally {
       clearTimeout(timeout);
       setIsLoading(false);
@@ -131,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (err) {
       console.error('[Riman] Failed to load profile:', err);
+      Sentry.captureException(err, { tags: { feature: 'auth', operation: 'loadSupabaseProfile' } });
       addToast({ type: 'info', title: t('auth.load_fail_title'), message: t('auth.limited_msg') });
       setUser({ id: userId, name: email.split('@')[0], email, role: 'client' });
     }
@@ -156,7 +166,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email = email.trim().toLowerCase();
 
     if (!isSupabaseConfigured) {
-      return localSignIn(email, password);
+      if (DEV_AUTH_ENABLED) {
+        return localSignIn(email, password);
+      }
+      setError('Authentication service is not configured.');
+      throw new Error('Authentication service is not configured.');
     }
 
     const { error: authError } = await supabase.auth.signInWithPassword({
@@ -175,7 +189,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email = email.trim().toLowerCase();
 
     if (!isSupabaseConfigured) {
-      return localSignUp(email, name, password);
+      if (DEV_AUTH_ENABLED) {
+        return localSignUp(email, name, password);
+      }
+      setError('Authentication service is not configured.');
+      throw new Error('Authentication service is not configured.');
     }
 
     const { error: authError } = await supabase.auth.signUp({

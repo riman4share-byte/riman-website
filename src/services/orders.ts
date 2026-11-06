@@ -1,4 +1,5 @@
 import { supabase, edgeFunctionsBase, supabaseAnonKey } from './supabase';
+import { Sentry } from '../lib/sentry';
 
 export interface OrderItem {
   id?: string;
@@ -85,6 +86,9 @@ export async function createOrderViaEdge(payload: {
       let message = '';
       try { message = JSON.parse(raw)?.error || ''; } catch { /* non-json body */ }
       console.error('[Riman] create-order rejected:', response.status, raw);
+      Sentry.captureException(new Error(message || 'create-order rejected'), {
+        tags: { feature: 'orders', operation: 'createOrder', status: response.status },
+      });
       throw new Error(message || 'The order service is temporarily unavailable. Please try again.');
     }
 

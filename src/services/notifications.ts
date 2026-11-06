@@ -1,3 +1,5 @@
+import { Sentry } from '../lib/sentry';
+
 const NOTIFICATION_ENDPOINT = import.meta.env.VITE_NOTIFICATION_WEBHOOK || '';
 
 interface OrderNotification {
@@ -22,6 +24,7 @@ export async function sendNotification(notification: OrderNotification): Promise
     return response.ok;
   } catch (err) {
     console.error('[Riman] Notification failed:', err);
+    Sentry.captureException(err, { tags: { feature: 'notifications', operation: 'sendNotification' } });
     return false;
   }
 }

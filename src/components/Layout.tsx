@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -15,12 +16,26 @@ export default function Layout() {
   const { pathname } = useLocation();
   const { t } = useLanguage();
   const isCheckout = CHECKOUT_ROUTES.some(r => pathname.startsWith(r));
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div id="layout-root" className="min-h-screen flex flex-col font-body pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0">
       <SEOHead />
       <ImmersiveUI />
       <CurtainTransition />
+      {/* Scroll progress bar */}
+      <div className="fixed top-0 start-0 z-[200] h-[2px] bg-terracotta transition-[width] duration-150 ease-out" style={{ width: `${scrollProgress}%` }} aria-hidden="true" />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:start-4 focus:z-[300] focus:px-5 focus:py-3 focus:bg-onyx focus:text-ivory focus:font-label focus:text-xs focus:tracking-widest focus:uppercase focus:outline focus:outline-2 focus:outline-gold"

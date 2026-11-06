@@ -35,13 +35,14 @@ function renderWithProviders() {
 }
 
 describe('HorizontalLookbook', () => {
-  it('renders nothing when gallery is empty', () => {
+  it('falls back to the house gallery when the live feed is empty', () => {
     vi.mocked(useGallery).mockReturnValue({
       items: [], isLoading: false, error: null, hasMore: false,
       totalCount: 0, loadMore: vi.fn(), refresh: vi.fn(),
     });
     const { container } = renderWithProviders();
-    expect(container.querySelector('section')).toBeNull();
+    expect(container.querySelectorAll('section').length).toBeGreaterThan(0);
+    expect(container.querySelectorAll('img').length).toBeGreaterThan(0);
   });
 
   it('renders panel titles for gallery items', () => {
