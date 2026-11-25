@@ -46,7 +46,7 @@ export default function KineticHeading({
     const Tag = HTML_TAGS[as];
     return (
       <Tag
-        className={`${className} transition-all duration-500 hover:[text-shadow:0_0_28px_rgba(212,175,55,0.35)] cursor-default`}
+        className={`${className} transition-all duration-500 hover:[text-shadow:0_0_28px_rgba(176,141,87,0.35)] cursor-default`}
         data-heading
       >
         {text}
@@ -76,7 +76,7 @@ export default function KineticHeading({
                   ? {
                       y: -3,
                       scale: 1.06,
-                      color: '#D4AF37',
+                      color: '#B08D57',
                       transition: { type: 'spring', stiffness: 500, damping: 20 },
                     }
                   : undefined

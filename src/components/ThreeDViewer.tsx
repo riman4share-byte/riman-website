@@ -176,14 +176,14 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
           <div className="absolute bottom-6 right-6 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={handleReset}
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-bone transition-all rounded-full"
               title={t('threed.reset_view')}
               aria-label={t('threed.reset_view')}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
             <button 
-              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-white transition-all rounded-full"
+              className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-bone transition-all rounded-full"
               title="View in AR"
               aria-label="View in augmented reality"
               onClick={() => modelRef.current?.activateAR()}

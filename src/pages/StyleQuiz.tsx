@@ -180,7 +180,7 @@ export default function StyleQuiz() {
                     <button
                       key={option}
                       onClick={() => handleAnswer(option)}
-                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta hover:shadow-xl hover:shadow-gold/5 transition-all duration-300 text-left"
+                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta transition-colors duration-300 text-left"
                     >
                       <span className="font-body text-sm text-stone-700 group-hover:text-stone-900 group-hover:pl-2 transition-all duration-300">{option}</span>
                       <ChevronRight className="w-4 h-4 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
@@ -220,7 +220,7 @@ export default function StyleQuiz() {
                     {/* R17 — the quiz was the best zero-friction entry point on the
                         site and ended with nowhere to go. Close it into a booking. */}
                     <div className="border border-terracotta/30 bg-terracotta/[0.04] p-7 md:p-9 text-center mb-10">
-                      <h3 className="font-heading text-xl md:text-2xl font-light text-stone-800 mb-3">
+                      <h3 className="font-heading text-xl md:text-2xl text-stone-800 mb-3">
                         {t('quiz.next_step_heading')}
                       </h3>
                       <p className="font-body text-sm text-stone-600 leading-relaxed mb-6 max-w-lg mx-auto">

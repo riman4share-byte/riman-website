@@ -1,122 +1,184 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-12T19:23:00Z",
-  "title": "Design System: Atelier Riman",
+  "generatedAt": "2026-11-25T00:00:00Z",
+  "title": "Design System: Riman Fashion - The Couture Atelier",
+  "note": "Regenerated from src/index.css @theme, which is the canonical source. The previous version described a retired system (Plus Jakarta Sans, Playfair Display, #D4AF37, onyx #0A0A0A) and was actively misleading.",
   "extensions": {
     "colorMeta": {
-      "gold": { "role": "primary", "displayName": "Gold", "canonical": "oklch(72% 0.15 85)", "tonalRamp": ["oklch(25% 0.10 85)", "oklch(35% 0.12 85)", "oklch(45% 0.14 85)", "oklch(55% 0.15 85)", "oklch(65% 0.15 85)", "oklch(72% 0.15 85)", "oklch(80% 0.12 85)", "oklch(92% 0.08 85)"] },
-      "gold-light": { "role": "primary", "displayName": "Gold Light", "canonical": "oklch(88% 0.12 95)", "tonalRamp": [] },
-      "gold-dark": { "role": "primary", "displayName": "Gold Dark", "canonical": "oklch(48% 0.14 80)", "tonalRamp": [] },
-      "onyx": { "role": "neutral", "displayName": "Onyx", "canonical": "oklch(5% 0.005 70)", "tonalRamp": ["oklch(3% 0.005 70)", "oklch(5% 0.005 70)", "oklch(10% 0.005 70)", "oklch(20% 0.005 70)", "oklch(35% 0.005 70)", "oklch(50% 0.005 70)", "oklch(65% 0.005 70)", "oklch(80% 0.005 70)"] },
-      "bone": { "role": "neutral", "displayName": "Bone", "canonical": "oklch(96% 0.005 85)", "tonalRamp": [] },
-      "ivory": { "role": "neutral", "displayName": "Ivory", "canonical": "oklch(98% 0.003 85)", "tonalRamp": [] },
-      "pearl": { "role": "neutral", "displayName": "Pearl", "canonical": "oklch(94% 0.004 80)", "tonalRamp": [] }
+      "onyx": { "role": "primary-dark", "displayName": "Onyx", "hex": "#0F0D0A", "purpose": "Primary dark ground: hero, interstitials, CTA band, footer, mobile nav." },
+      "bone": { "role": "neutral", "displayName": "Bone", "hex": "#EFEAE2", "purpose": "Default page ground." },
+      "ivory": { "role": "neutral", "displayName": "Ivory", "hex": "#EFEAE2", "purpose": "Alias of bone - identical surface." },
+      "champagne": { "role": "neutral", "displayName": "Champagne", "hex": "#F6F0E6", "purpose": "Warm light ground for plates, testimonials, forms." },
+      "pearl": { "role": "neutral", "displayName": "Pearl", "hex": "#E8E3D9", "purpose": "Hairlines, subtle fills, hover rows." },
+      "stone-50": { "role": "neutral", "displayName": "Stone 50", "hex": "#FAF8F3" },
+      "stone-100": { "role": "neutral", "displayName": "Stone 100", "hex": "#F4EFE7" },
+      "stone-200": { "role": "neutral", "displayName": "Stone 200", "hex": "#E6DFD1", "purpose": "Hairlines, ghost numerals." },
+      "stone-300": { "role": "neutral", "displayName": "Stone 300", "hex": "#D2C8B6" },
+      "stone-400": { "role": "neutral", "displayName": "Stone 400", "hex": "#AD9F86" },
+      "stone-500": { "role": "neutral", "displayName": "Stone 500", "hex": "#6B6250", "purpose": "Muted text on light surfaces (5.03:1 on ivory)." },
+      "stone-600": { "role": "neutral", "displayName": "Stone 600", "hex": "#655C49", "purpose": "Body copy on light surfaces." },
+      "stone-700": { "role": "neutral", "displayName": "Stone 700", "hex": "#4B4335" },
+      "stone-800": { "role": "neutral", "displayName": "Stone 800", "hex": "#2E2820", "purpose": "Main text on light surfaces." },
+      "stone-900": { "role": "neutral", "displayName": "Stone 900", "hex": "#1B1712", "purpose": "Second dark surface, for variety against onyx." },
+      "stone-950": { "role": "neutral", "displayName": "Stone 950", "hex": "#0F0D0A", "purpose": "Alias of onyx." },
+      "terracotta": { "role": "accent-interface", "displayName": "Terracotta", "hex": "#A2492B", "purpose": "Hairlines, focus rings, badges, button fills. 4.98:1 on bone, 3.26:1 on onyx." },
+      "terracotta-light": { "role": "accent-interface", "displayName": "Terracotta Light", "hex": "#C45A3C", "purpose": "Accent text on dark surfaces (4.50:1 on onyx). Large/label use only." },
+      "terracotta-dark": { "role": "accent-interface", "displayName": "Terracotta Dark", "hex": "#7A3520", "purpose": "Accent text on light surfaces (7.44:1 on bone). Fails on dark - use brass-light there." },
+      "brass": { "role": "accent-ornament", "displayName": "Brass", "hex": "#B08D57", "purpose": "Rare ornament only: ghost-button rule, jewelry gradient. 2.58:1 on light - never body text." },
+      "brass-light": { "role": "accent-ornament", "displayName": "Brass Light", "hex": "#C9A96F", "purpose": "Ornament text on dark surfaces (8.67:1 on onyx)." },
+      "brass-ink": { "role": "accent-ornament", "displayName": "Brass Ink", "hex": "#7A5D34", "purpose": "Brass when it must be text on a light surface (5.09:1 on ivory)." }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headlines and major section titles. Always uppercase with wide tracking." },
-      "editorial": { "displayName": "Editorial", "purpose": "Accent phrases within headings. Always italic, never uppercase." },
-      "body": { "displayName": "Body", "purpose": "Paragraphs, descriptions, all running text." },
-      "label": { "displayName": "Label", "purpose": "Navigation, badges, metadata. Always uppercase." }
+      "display": { "displayName": "Display", "purpose": "Headings and chapter titles. Prata 400 only - font-light is a no-op. Large headings are mixed case; short brand marks are uppercase with wide tracking." },
+      "editorial": { "displayName": "Editorial", "purpose": "Italic accents and pull quotes. Newsreader. Never body paragraphs, never uppercase." },
+      "body": { "displayName": "Body", "purpose": "Paragraphs and running text. Newsreader 400, leading-relaxed / leading-loose, capped at max-w-2xl." },
+      "label": { "displayName": "Label", "purpose": "Navigation, badges, metadata, eyebrows. Archivo 300-500, uppercase, 11-12px, tracking 0.25em-0.45em. 11px is the hard floor (14px in RTL)." },
+      "arabic-body": { "displayName": "Arabic Body", "purpose": "Cairo / IBM Plex Sans Arabic. RTL swaps body to Cairo 500." },
+      "arabic-heading": { "displayName": "Arabic Heading", "purpose": "Amiri 700 in RTL. Prata must never render Arabic." }
     },
-    "shadows": [
-      { "name": "gold-hover", "value": "0 4px 20px rgba(212, 175, 55, 0.1)", "purpose": "Warm gold glow on button hover states." }
-    ],
+    "shadows": [],
+    "elevation": {
+      "rule": "Flat by default. Depth comes from tonal contrast and spacing, never box-shadow. 1px hairlines in stone-200, terracotta/15-40, or bone/5-10 on dark."
+    },
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Standard easing for page entrances and transitions." },
-      { "name": "ease-duration", "value": "500ms", "purpose": "Standard transition duration for component hover states." },
-      { "name": "ease-duration-slow", "value": "700ms", "purpose": "Header scroll transition." },
-      { "name": "ease-duration-fast", "value": "300ms", "purpose": "Quick hover effects." }
+      { "name": "ease-couture", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The only easing curve in the system." },
+      { "name": "duration-micro", "value": "300ms", "purpose": "Hover and small state changes." },
+      { "name": "duration-swift", "value": "500ms", "purpose": "Standard transitions." },
+      { "name": "duration-couture", "value": "800ms", "purpose": "Reveals." },
+      { "name": "duration-slow", "value": "1200ms", "purpose": "Image hover, wipe reveals." },
+      { "name": "duration-press", "value": "180ms", "purpose": "Press feedback - deliberately faster than hover." }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
       { "name": "md", "value": "768px" },
       { "name": "lg", "value": "1024px" },
-      { "name": "xl", "value": "1280px" }
-    ]
+      { "name": "xl", "value": "1280px" },
+      { "name": "2xl", "value": "1536px" }
+    ],
+    "shape": {
+      "radius": "0 everywhere, enforced globally with border-radius: 0 !important. rounded-full has no effect - do not add it.",
+      "shadow": "None by default. No shadow-xl."
+    }
   },
   "components": [
     {
       "name": "Primary Button",
       "kind": "button",
-      "refersTo": "button-primary",
-      "description": "The primary call-to-action. Used for key actions like booking appointments, exploring collections, and checkout.",
-      "html": "<button class=\"ds-btn-primary\">EXPLORE COLLECTION</button>",
-      "css": ".ds-btn-primary { background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; padding: 20px 40px; border: none; cursor: pointer; transition: all 0.5s ease; box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1); } .ds-btn-primary:hover { color: #D4AF37; transform: scale(1.05); } .ds-btn-primary:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; }"
+      "refersTo": "btn-luxury",
+      "description": "Primary CTA. Stone-800 hairline and label; fills stone-800 on hover and the label turns ivory, with a champagne sheen.",
+      "css": ".btn-luxury { px-10 py-4; font-label 12px uppercase; letter-spacing 0.25em; 1px stone-800 hairline; scaleX fill wipes from the inline-start edge, mirrored in RTL; 1px lift; 180ms press at scale(0.985). }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "Outline variant for secondary actions. Used alongside primary buttons or for less prominent CTAs.",
-      "html": "<button class=\"ds-btn-secondary\">BOOK APPOINTMENT</button>",
-      "css": ".ds-btn-secondary { background: transparent; color: #D4AF37; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; padding: 20px 40px; border: 1px solid rgba(212, 175, 55, 0.4); cursor: pointer; transition: all 0.5s ease; } .ds-btn-secondary:hover { background: #D4AF37; color: #0A0A0A; } .ds-btn-secondary:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; }"
+      "refersTo": "btn-luxury-outline",
+      "description": "Secondary CTA. Stone-400/60 border, stone-700 label; 12% terracotta tint wipe on hover.",
+      "css": ".btn-luxury-outline { px-8 py-3; font-label 12px uppercase; letter-spacing 0.25em; 1px stone-400/60 border; terracotta tint wipe from the inline-start edge, mirrored in RTL. }"
     },
     {
-      "name": "Nav Link",
-      "kind": "nav",
-      "refersTo": "nav-link",
-      "description": "Top-level navigation link in the header. Transparent style on hero, white-background style when scrolled.",
-      "html": "<nav><a class=\"ds-nav-link\" href=\"#\">BRIDAL</a></nav>",
-      "css": ".ds-nav-link { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #78716c; text-decoration: none; transition: all 0.3s ease; padding: 4px 0; border-bottom: 1px solid transparent; } .ds-nav-link:hover { color: #D4AF37; border-bottom-color: rgba(212, 175, 55, 0.4); }"
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "btn-couture-ghost",
+      "description": "Over imagery. No fill, no border. A brass rule under the label sweeps from scaleX(.35) to full.",
+      "css": ".btn-couture-ghost { min-h 52px; no fill; no border; brass 1px rule under the label; pair with !text-bone on dark. }"
     },
     {
-      "name": "Product Card",
-      "kind": "card",
-      "refersTo": "product-card",
-      "description": "Product display card with 3:4 image aspect ratio, hover overlay with actions, and structured metadata below.",
-      "html": "<div class=\"ds-product-card\"><div class=\"ds-product-image\"><img src=\"https://placehold.co/600x800/F3F1ED/78716c?text=Gown\" alt=\"Product\" /></div><div class=\"ds-product-info\"><p class=\"ds-product-category\">Bridal</p><h3 class=\"ds-product-name\">The Legacy Gown</h3><p class=\"ds-product-price\">From AED 12,000</p></div></div>",
-      "css": ".ds-product-card { width: 100%; max-width: 350px; } .ds-product-image { aspect-ratio: 3/4; overflow: hidden; background: #F3F1ED; margin-bottom: 16px; position: relative; } .ds-product-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s ease-out; } .ds-product-card:hover .ds-product-image img { transform: scale(1.05); } .ds-product-info { padding: 0; } .ds-product-category { font-family: Inter, sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #a8a29e; margin-bottom: 4px; } .ds-product-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 500; color: #1c1917; margin-bottom: 8px; transition: color 0.3s; } .ds-product-card:hover .ds-product-name { color: #D4AF37; } .ds-product-price { font-family: Inter, sans-serif; font-size: 0.8rem; color: #78716c; }"
+      "name": "Dark Band CTA",
+      "kind": "button",
+      "refersTo": "bg-terracotta",
+      "description": "Primary CTA on a dark band. Terracotta fill with a bone label - never onyx, which fails at 3.26:1.",
+      "css": ".bg-terracotta { background #A2492B; color #EFEAE2; min-height 56px; padding-inline 3rem; hover background #7A3520. }"
+    },
+    {
+      "name": "Couture Link",
+      "kind": "link",
+      "refersTo": "link-couture",
+      "description": "Inline text link with a terracotta underline that scales from 0.25 to 1.",
+      "css": ".link-couture { font-label uppercase; letter-spacing 0.25em -> 0.32em on hover; terracotta underline scaleX(.25) -> 1; transform-origin flips to right in RTL. }"
     },
     {
       "name": "Text Input",
       "kind": "input",
-      "refersTo": "input-text",
-      "description": "Border-bottom style input with gold focus state. Used in forms and newsletter signup.",
-      "html": "<div class=\"ds-input-wrap\"><input class=\"ds-input\" type=\"email\" placeholder=\"YOUR EMAIL ADDRESS\" /></div>",
-      "css": ".ds-input-wrap { position: relative; width: 100%; max-width: 400px; } .ds-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid #44403c; padding: 16px 0; font-family: Inter, sans-serif; font-size: 0.875rem; letter-spacing: 0.2em; color: #fff; outline: none; transition: border-color 0.3s ease; } .ds-input::placeholder { color: #44403c; letter-spacing: 0.2em; } .ds-input:focus { border-bottom-color: #D4AF37; }"
+      "refersTo": "input-hairline",
+      "description": "Borderless with a bottom hairline only. Focus recolours the bottom border to terracotta and adds the 2px terracotta outline.",
+      "css": "input { background transparent; border 0; border-bottom 1px stone-300; padding 0.85rem 0.25rem; 400ms colour transition; focus outline 2px terracotta offset 2px. }"
     },
     {
-      "name": "Social Link",
-      "kind": "custom",
-      "refersTo": "social-link",
-      "description": "Circular social media icon link with gold hover transition.",
-      "html": "<a class=\"ds-social-link\" href=\"#\" aria-label=\"Instagram\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"2\" width=\"20\" height=\"20\" rx=\"5\"/><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\"/><line x1=\"17.5\" y1=\"6.5\" x2=\"17.51\" y2=\"6.5\"/></svg></a>",
-      "css": ".ds-social-link { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #44403c; color: #a8a29e; transition: all 0.5s ease; } .ds-social-link:hover { background: #D4AF37; border-color: #D4AF37; color: #fff; } .ds-social-link:focus-visible { outline: 2px solid #D4AF37; outline-offset: 2px; }"
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card-couture",
+      "description": "3:4 image with a look-number badge at the inline-start corner, fabric line, availability chip for rentals. Quick-add bar is de-emphasised and appears on hover or tap.",
+      "css": ".card-couture { 1px stone-200 border; transparent; image zooms 1.04 over 1200ms. }"
+    },
+    {
+      "name": "Editorial Plate",
+      "kind": "card",
+      "refersTo": "EditorialPlate",
+      "description": "Numbered silhouette plate. Ghost numeral behind, image in 7 columns with a clip-path wipe reveal, caption in 5 columns overlapping the image edge on a champagne panel.",
+      "css": "EditorialPlate { clip-path inset(0 0 100% 0) -> 0 over 1.2s, direction alternates per reverse and flips in RTL; ghost numeral parallax at a different rate than the image; no shadow. }"
+    },
+    {
+      "name": "Chapter Label",
+      "kind": "other",
+      "refersTo": "ChapterLabel",
+      "description": "Chapter opener. Ghost roman numeral in stone-200, a 40px terracotta hairline, then the KineticHeading title.",
+      "css": "ChapterLabel { numeral font-heading text-6xl md:text-8xl text-stone-200; 40px terracotta hairline; title font-heading text-3xl md:text-5xl normal-case. }"
+    },
+    {
+      "name": "Invitation Rule",
+      "kind": "other",
+      "refersTo": "InvitationRule",
+      "description": "Divider between chapters that ends in a path to /appointment. 96px terracotta hairline, italic line, arrow link.",
+      "css": "InvitationRule { 96px terracotta hairline; Newsreader italic line; arrow link to /appointment. }"
+    },
+    {
+      "name": "Calligraphic Accent",
+      "kind": "other",
+      "refersTo": "CalligraphicAccent",
+      "description": "Arabic word used as art, not decoration filler. Amiri at clamp(5rem,12vw,11rem), terracotta-dark/5 on light and up to 20% on dark. aria-hidden.",
+      "css": "CalligraphicAccent { font-arabic-heading; text-terracotta-dark/5; aria-hidden; pointer-events none. }"
     }
   ],
   "narrative": {
-    "northStar": "The Golden Atelier",
-    "overview": "A warm, handcrafted sanctuary where heritage meets contemporary luxury. Atelier Riman's visual language is built on the interplay of deep tonal dark, warm ivory, and accent gold — like a private fitting room bathed in candlelight. Every surface feels deliberate, tactile, and intimate. The system rejects mass-produced, fast-fashion aesthetics in favor of architectural precision softened by editorial elegance.",
+    "northStar": "The Couture Atelier",
+    "overview": "A private fitting room by candlelight: warm black, bone paper, brass and rust ornament. A Sharjah couture house since 2011 - bridal, evening and rental - where every chapter should end in an invitation to a private viewing.",
     "keyCharacteristics": [
-      "Warm layered depth through tonal surfaces, never harsh shadows",
-      "Gold as a restrained accent that signals luxury without excess",
-      "Sharp typographic hierarchy with editorial serif flourishes",
-      "Intimate, tactile component interactions",
-      "Arabic-first support alongside English"
+      "Warm grandeur: opulent, never cold",
+      "Craft over flash - ornament serves structure",
+      "Heritage made present through modern type and motion",
+      "Intimacy at scale",
+      "Accent rarity: brass and terracotta together stay under 10% of any screen"
     ],
     "rules": [
-      { "name": "The Gold Rarity Rule", "body": "Gold occupies ≤10% of any given screen. Its scarcity is its weight. Never use gold as a background fill for large areas, as body text, or in gradients for text.", "section": "colors" },
-      { "name": "The Warm-Black Rule", "body": "Never use pure #000 or #fff. All dark surfaces are onyx (#0A0A0A); all light surfaces are ivory (#FFFDF9) or bone (#FDFBF7).", "section": "colors" },
-      { "name": "The Uppercase Rule", "body": "Display, headline, and label text is always uppercase. Editorial accents and body text are never uppercase.", "section": "typography" },
-      { "name": "The Editorial Rule", "body": "Playfair Display italic is reserved for single words or short phrases within headings. Never use it for body text, full paragraphs, or multiple consecutive lines.", "section": "typography" },
-      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Depth comes from tonal contrast and spacing, not from box-shadows. Shadows appear only as response to state (hover, focus) and are always gold-tinted.", "section": "elevation" }
+      { "name": "The Accent Rarity Rule", "body": "Brass and terracotta together occupy no more than 10% of any screen. Hairlines, numerals, small labels, one CTA. Never a large fill, never body text, never gradient text.", "section": "colors" },
+      { "name": "The Warm-Black Rule", "body": "No #000 and no #fff. Dark surfaces are onyx #0F0D0A; light surfaces are bone #EFEAE2, champagne #F6F0E6 or pearl #E8E3D9.", "section": "colors" },
+      { "name": "The Contrast Rule", "body": "Text on light uses terracotta-dark, brass-ink or stone-600 and above. Text on dark uses brass-light, terracotta-light (large/label only) or bone. Terracotta-dark on onyx is 2.18:1 - never.", "section": "colors" },
+      { "name": "The Scale Rule", "body": "Pair huge Prata display type with tiny tracked Archivo labels. Scale contrast is the cure for a flat, template-like page.", "section": "typography" },
+      { "name": "The Editorial Rule", "body": "Newsreader italic marks one word or a short phrase inside a heading, or a pull quote. Never body text, never uppercase.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Depth comes from tonal contrast and spacing, never box-shadow.", "section": "elevation" },
+      { "name": "The RTL Rule", "body": "In Arabic, headings render in Amiri 700, body in Cairo 500, all letter-spacing is forced to 0, type scales up 25-30%, and Arabic is never letter-split.", "section": "typography" },
+      { "name": "The Motion Rule", "body": "Every easing route through cubic-bezier(0.22, 1, 0.36, 1). Reveals run 600-900ms, image hover 1200-1600ms, press 180ms. Transform and opacity only.", "section": "motion" }
     ],
     "dos": [
-      "Do use gold as a restrained accent (≤10% of any screen). Its rarity is its power.",
-      "Do use onyx (#0A0A0A) for dark surfaces and ivory (#FFFDF9) for light surfaces — never pure black or white.",
-      "Do use Plus Jakarta Sans uppercase with wide tracking for all headings and navigation.",
-      "Do use Playfair Display italic sparingly for editorial accent words within headings.",
-      "Do use sharp edges (no border-radius) on buttons, cards, and containers.",
-      "Do use warm tonal layering for depth rather than box-shadows."
+      "Do alternate dark and light chapters: onyx, stone-900, champagne, bone, pearl.",
+      "Do use onyx #0F0D0A and bone #EFEAE2 as the backbone.",
+      "Do keep accents under 10% of a screen: hairlines, numerals, labels, one CTA.",
+      "Do pair huge Prata with tiny tracked Archivo labels.",
+      "Do use Newsreader italic for one word or a quote.",
+      "Do use logical CSS properties (start-*, end-*, ps-*, me-*) and mirror arrow directions in RTL.",
+      "Do end chapters with a path to /appointment.",
+      "Do provide a reduced-motion static twin of every animation."
     ],
     "donts": [
-      "Don't use gold as a background fill for large areas or as body text.",
-      "Don't use gradient text (background-clip: text with gradients) — decorative, never meaningful.",
-      "Don't use pure #000 or #fff anywhere — tint neutrals toward the brand warmth.",
-      "Don't use border-radius on buttons, cards, or containers — sharp edges are architectural.",
-      "Don't use glassmorphism or frosted-glass effects as default decorative treatment.",
-      "Don't use side-stripe borders (border-left/right >1px colored accents on cards or callouts).",
-      "Don't do fast fashion aesthetics — avoid anything mass-produced, trendy, or disposable-feeling."
+      "Don't use terracotta or brass as a large fill, body text, or gradient text.",
+      "Don't use #000, #fff, border-radius, box-shadow as default surface treatment, or glassmorphism as decoration.",
+      "Don't add bounce, float, ambient shimmer, or springs on brand surfaces.",
+      "Don't animate layout properties or letter-spacing on long labels.",
+      "Don't letter-split Arabic. Don't render Prata for Arabic.",
+      "Don't add stat counters, icon journey rows, or auto-rotating carousels.",
+      "Don't autoplay new heavy video above the fold or ship un-lazy images.",
+      "Don't use #D4AF37 - the retired gold. The brass is #B08D57.",
+      "Don't hard-code visible strings - every string needs an en and an ar key."
     ]
   }
 }

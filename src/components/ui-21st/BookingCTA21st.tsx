@@ -19,7 +19,7 @@ export default function BookingCTA21st() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="font-heading text-3xl md:text-5xl font-light text-ivory mb-6">
+          <h2 className="font-heading text-3xl md:text-5xl text-ivory mb-6">
             {t('cta.band_heading')}
           </h2>
           <p className="font-body text-stone-300 max-w-2xl mx-auto mb-8 leading-relaxed">
@@ -38,7 +38,7 @@ export default function BookingCTA21st() {
           <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${isRtl ? 'flex-row-reverse' : ''}`}>
             <Link
               to="/appointment"
-              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-12 bg-terracotta text-onyx font-label text-xs tracking-[0.25em] uppercase font-bold hover:bg-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-ivory outline-none"
+              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-12 bg-terracotta text-bone font-label text-xs tracking-[0.25em] uppercase font-bold hover:bg-terracotta-dark transition-colors"
             >
               <CalendarCheck className="w-4 h-4 mr-2" /> {t('cta.book_fitting')}
             </Link>
@@ -46,7 +46,7 @@ export default function BookingCTA21st() {
               href={wa}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-ivory border border-ivory/30 hover:border-terracotta hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none"
+              className="w-full sm:w-auto min-h-[56px] inline-flex items-center justify-center px-10 font-label text-xs tracking-[0.25em] uppercase text-ivory border border-ivory/30 hover:border-terracotta hover:text-terracotta-dark transition-colors"
             >
               <MessageCircle className="w-4 h-4 mr-2" /> {t('cta.ask_about')} {dressCode}
             </a>

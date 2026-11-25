@@ -306,7 +306,7 @@ export default function ContactPage() {
 function ContactInfoItem({ icon, title, content }: { icon: React.ReactNode, title: string, content: React.ReactNode }) {
   return (
     <div className="flex gap-6 group">
-      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-terracotta-dark group-hover:bg-terracotta group-hover:text-white transition-all duration-500 shrink-0">
+      <div className="w-12 h-12 bg-ivory flex items-center justify-center text-terracotta-dark group-hover:bg-terracotta group-hover:text-bone transition-all duration-500 shrink-0">
         {icon}
       </div>
       <div>

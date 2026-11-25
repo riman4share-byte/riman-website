@@ -24,7 +24,7 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
       <span
         aria-hidden="true"
         className={cn(
-          'pointer-events-none select-none absolute -top-[0.4em] font-heading font-light leading-none text-stone-200/70 text-[clamp(7rem,16vw,15rem)]',
+          'pointer-events-none select-none absolute -top-[0.4em] font-heading leading-none text-stone-200/70 text-[clamp(7rem,16vw,15rem)]',
           reverse ? 'end-0 md:-end-8' : 'start-0 md:-start-8',
         )}
       >
@@ -59,7 +59,7 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
           {t('silhouettes.look')} {lookNumber}
         </span>
         <Link to={`/product/${product.id}`}>
-          <h3 className="font-heading text-3xl md:text-4xl font-light text-stone-800 leading-tight group-hover:text-terracotta-dark transition-colors duration-700">
+          <h3 className="font-heading text-3xl md:text-4xl text-stone-800 leading-tight group-hover:text-terracotta-dark transition-colors duration-700">
             {productName}
           </h3>
         </Link>

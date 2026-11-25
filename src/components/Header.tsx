@@ -74,12 +74,12 @@ interface Tone {
 }
 
 const TONE_OVER_DARK: Tone = {
-  bar: 'bg-gradient-to-b from-black/55 via-black/20 to-transparent border-b border-transparent',
-  link: 'text-white/75 hover:text-white',
+  bar: 'bg-gradient-to-b from-onyx/55 via-onyx/20 to-transparent border-b border-transparent',
+  link: 'text-bone/75 hover:text-bone',
   rule: 'bg-bone/80',
-  icon: 'text-white/85 hover:text-white',
+  icon: 'text-bone/85 hover:text-bone',
   mark: 'brightness-0 invert',
-  wordmark: 'text-white/70',
+  wordmark: 'text-bone/70',
 };
 
 const TONE_ONYX: Tone = {
@@ -335,7 +335,7 @@ export default function Header() {
               {action.children}
               {!!action.badge && action.badge > 0 && (
                 <span
-                  className="absolute top-1 end-0 bg-terracotta text-white text-[10px] font-bold min-w-[16px] h-[16px] px-1 flex items-center justify-center leading-none"
+                  className="absolute top-1 end-0 bg-terracotta text-bone text-[10px] font-bold min-w-[16px] h-[16px] px-1 flex items-center justify-center leading-none"
                   aria-hidden="true"
                 >
                   {action.badge}
@@ -376,7 +376,7 @@ export default function Header() {
                 <button
                   ref={closeButtonRef}
                   onClick={() => setIsMenuOpen(false)}
-                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-white transition-all duration-300"
+                  className="w-9 h-9 flex items-center justify-center bg-stone-100 text-stone-800 hover:bg-terracotta hover:text-bone transition-all duration-300"
                   aria-label={t('header.menu_close')}
                 >
                   <X className="w-5 h-5" />
@@ -399,7 +399,7 @@ export default function Header() {
                         className={cn(
                           'flex-1 min-h-[44px] font-label text-[11px] tracking-[0.2em] uppercase transition-colors',
                           language === lang
-                            ? 'bg-stone-800 text-white'
+                            ? 'bg-stone-800 text-bone'
                             : 'text-stone-600 hover:bg-stone-100',
                         )}
                       >

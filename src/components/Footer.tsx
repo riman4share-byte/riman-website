@@ -86,7 +86,7 @@ export default function Footer() {
         {/* Newsletter - Full Width */}
         <div className="border-b border-white/5 pb-12 mb-8 text-center md:text-left">
           <div className="max-w-xl mx-auto md:mx-0">
-            <h4 className="font-heading text-xl md:text-2xl tracking-widest uppercase mb-3 text-white">{t('footer.newsletter_title')}</h4>
+            <h4 className="font-heading text-xl md:text-2xl tracking-widest uppercase mb-3 text-bone">{t('footer.newsletter_title')}</h4>
             <div className="w-10 h-px bg-terracotta mb-4 mx-auto md:mx-0" />
             <p className="font-body text-stone-500 text-xs md:text-sm tracking-wider mb-6 leading-relaxed uppercase">
               {t('footer.newsletter_text')}
@@ -177,7 +177,7 @@ export default function Footer() {
 
         {/* Giant couture wordmark */}
         <div className="select-none pointer-events-none text-center overflow-hidden mb-8" aria-hidden="true">
-          <p className="font-heading font-light text-[clamp(3.5rem,16vw,16rem)] leading-[0.8] tracking-[-0.02em] text-terracotta-dark/10 whitespace-nowrap">
+          <p className="font-heading text-[clamp(3.5rem,16vw,16rem)] leading-[0.8] tracking-[-0.02em] text-terracotta-dark/10 whitespace-nowrap">
             RIMAN<sup className="text-[1.6vw] align-super">®</sup>
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function Footer() {
         <div className="flex justify-center mb-8">
           <button 
             onClick={scrollToTop}
-            className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-white/40 hover:text-terracotta-dark transition-colors font-bold"
+            className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-bone/40 hover:text-terracotta-light transition-colors font-bold"
           >
             <ChevronUp className="w-4 h-4" /> {t('footer.ascend')}
           </button>
@@ -218,8 +218,8 @@ export default function Footer() {
             © {new Date().getFullYear()} RIMAN FASHION. {t('footer.rights')}
           </p>
           <div className="flex gap-6">
-            <Link to="/privacy" className="font-body text-micro text-stone-600 hover:text-white uppercase tracking-[0.2em] transition-colors">{t('footer.privacy')}</Link>
-            <Link to="/terms" className="font-body text-micro text-stone-600 hover:text-white uppercase tracking-[0.2em] transition-colors">{t('footer.legal')}</Link>
+            <Link to="/privacy" className="font-body text-micro text-stone-600 hover:text-bone uppercase tracking-[0.2em] transition-colors">{t('footer.privacy')}</Link>
+            <Link to="/terms" className="font-body text-micro text-stone-600 hover:text-bone uppercase tracking-[0.2em] transition-colors">{t('footer.legal')}</Link>
           </div>
         </div>
       </div>
@@ -230,7 +230,7 @@ export default function Footer() {
 function FooterLink({ to, children }: { to: string, children: React.ReactNode }) {
   return (
     <li>
-      <Link to={to} className="font-body text-xs md:text-sm text-stone-500 hover:text-terracotta-dark tracking-[0.1em] uppercase transition-all duration-300 flex items-center group">
+      <Link to={to} className="font-body text-xs md:text-sm text-stone-500 hover:text-terracotta-light tracking-[0.1em] uppercase transition-all duration-300 flex items-center group">
         <span className="w-0 group-hover:w-3 h-px bg-terracotta transition-all duration-300 mr-0 group-hover:mr-2" />
         {children}
       </Link>
@@ -244,7 +244,7 @@ function SocialLink({ href, icon, label }: { href: string; icon: React.ReactElem
       href={href} 
       target="_blank"
       rel="noopener noreferrer"
-      className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-stone-800 flex items-center justify-center text-stone-400 hover:bg-terracotta hover:border-terracotta hover:text-white transition-all duration-500"
+      className="w-10 h-10 md:w-11 md:h-11 rounded-full border border-stone-800 flex items-center justify-center text-stone-400 hover:bg-terracotta hover:border-terracotta hover:text-bone transition-all duration-500"
       aria-label={label}
     >
       {React.cloneElement(icon, { className: "w-4 h-4" })}

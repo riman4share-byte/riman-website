@@ -57,7 +57,7 @@ export default function AlterationsPage() {
       </section>
 
       {/* Process Timeline */}
-      <section className="bg-stone-900 py-32 text-white">
+      <section className="bg-stone-900 py-32 text-bone">
         <div className="container mx-auto px-6">
           <div className="flex flex-col items-center text-center mb-20">
             <h2 className="font-heading text-4xl mb-4 uppercase tracking-widest">{t('alt.fitting_journey')}</h2>
@@ -126,7 +126,7 @@ export default function AlterationsPage() {
 function ServiceCard({ icon: Icon, title, desc }: any) {
   return (
     <div className="bg-ivory p-12 border border-stone-100 hover:border-terracotta/30 transition-all duration-500 group">
-      <div className="w-12 h-12 bg-ivory text-terracotta-dark flex items-center justify-center mb-8 rounded-sm group-hover:bg-terracotta group-hover:text-white transition-colors">
+      <div className="w-12 h-12 bg-ivory text-terracotta-dark flex items-center justify-center mb-8 rounded-sm group-hover:bg-terracotta group-hover:text-bone transition-colors">
         <Icon className="w-5 h-5" />
       </div>
       <h3 className="font-heading text-xl mb-4 tracking-widest uppercase text-stone-800">{title}</h3>

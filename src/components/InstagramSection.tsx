@@ -26,7 +26,7 @@ export default function InstagramSection() {
             href="https://www.instagram.com/rimanfashion/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-white hover:text-terracotta-dark transition-all duration-500"
+            className="group flex items-center gap-3 px-10 py-4 bg-onyx text-bone hover:text-terracotta-light transition-all duration-500"
           >
             <Instagram className="w-4 h-4" />
             <span className="text-micro tracking-[0.3em] uppercase font-bold transition-colors">
@@ -56,8 +56,8 @@ export default function InstagramSection() {
                 loading="lazy"
               />
               <div className="absolute inset-0 bg-stone-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-                 <Instagram className="text-white w-8 h-8" />
-                 <span className="text-micro text-white uppercase tracking-[0.2em] font-bold">{t('instagram.view_aura')}</span>
+                 <Instagram className="text-bone w-8 h-8" />
+                 <span className="text-micro text-bone uppercase tracking-[0.2em] font-bold">{t('instagram.view_aura')}</span>
               </div>
             </a>
           ))}

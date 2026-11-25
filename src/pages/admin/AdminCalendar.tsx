@@ -69,7 +69,7 @@ export default function AdminCalendar() {
                   onClick={() => setSelectedDate(day)}
                   className={cn(
                     "min-h-[120px] bg-ivory p-2 transition-all cursor-pointer w-full text-left group",
-                    isSelected ? "ring-2 ring-inset ring-gold z-10" : "hover:bg-ivory",
+                    isSelected ? "ring-2 ring-inset ring-terracotta z-10" : "hover:bg-ivory",
                     !isCurrentMonth && "opacity-30"
                   )}
                 >

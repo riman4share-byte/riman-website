@@ -81,8 +81,8 @@ function GalleryVideoItem({ item, onClick, index }: { item: GalleryItem; onClick
       />
       <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" aria-hidden="true" />
       <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100 transition-opacity">
-        <Play className="w-4 h-4 text-white fill-white" aria-hidden="true" />
-        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
+        <Play className="w-4 h-4 text-bone fill-white" aria-hidden="true" />
+        <span className="text-bone text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
       </div>
     </motion.div>
   );
@@ -118,8 +118,8 @@ function GalleryPhotoItem({ item, onClick, index }: { item: GalleryItem; onClick
       />
       <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/30 transition-colors duration-300" aria-hidden="true" />
       <div className="absolute bottom-3 left-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 group-focus:opacity-100 group-focus-within:opacity-100 transition-opacity">
-        <ImageIcon className="w-4 h-4 text-white" aria-hidden="true" />
-        <span className="text-white text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
+        <ImageIcon className="w-4 h-4 text-bone" aria-hidden="true" />
+        <span className="text-bone text-micro tracking-widest uppercase font-bold">{item.title || t('gallery.untitled')}</span>
       </div>
     </motion.div>
   );

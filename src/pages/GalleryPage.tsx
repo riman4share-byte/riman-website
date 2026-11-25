@@ -93,7 +93,7 @@ export default function GalleryPage() {
         <div className="mt-16">
           {/* R16 — turn a passive gallery into a lead-capture step */}
           <div className="max-w-3xl mx-auto text-center border border-terracotta/30 bg-terracotta/[0.04] p-8 md:p-10">
-            <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
+            <h2 className="font-heading text-2xl md:text-3xl text-stone-800 mb-4">
               {t('gallery.cta_heading')}
             </h2>
             <p className="font-body text-sm text-stone-600 leading-relaxed mb-7 max-w-xl mx-auto">

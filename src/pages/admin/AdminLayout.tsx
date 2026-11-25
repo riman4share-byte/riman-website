@@ -41,7 +41,7 @@ function SidebarContent({ onNav }: { onNav: () => void }) {
               onClick={onNav}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 text-xs tracking-widest uppercase transition-colors duration-200",
-                isActive ? "bg-terracotta text-onyx font-bold" : "text-stone-400 hover:text-ivory hover:bg-stone-800"
+                isActive ? "bg-terracotta text-bone font-bold" : "text-stone-400 hover:text-ivory hover:bg-stone-800"
               )}
             >
               <Icon className="w-4 h-4" />

@@ -35,6 +35,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.bridal': 'Bridal',
     'cat.evening': 'Evening',
     'cat.rentals': 'Rentals',
+    'cat.bespoke': 'Bespoke',
     'cat.jewelry': 'Fine Jewelry',
     'cat.collection': 'The Collection',
     'cat.gala': 'Gala Gowns',
@@ -51,9 +52,22 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Hero
     'hero.title': 'Reverie & Essence',
-    'hero.headline': 'Bridal Gowns Made to Measure in Sharjah — Since 2011',
+    'hero.headline': 'Bridal & Evening, Made to Measure in Sharjah',
     'hero.subtitle': "Sharjah's Premier Couture Atelier",
     'hero.discover': 'Discover',
+    'hero.buy': 'Buy',
+    'hero.rent': 'Rent',
+    'hero.bespoke': 'Bespoke',
+    'hero.since': 'Since 2011 · Sharjah',
+    'hero.alt': 'Lamé evening gown from the Riman atelier in Sharjah',
+    'hero.private_viewing': 'Private viewing at the atelier — Sharjah',
+    'lookbook.title': 'Lookbook',
+    'lookbook.view_gallery': 'View gallery',
+    'lookbook.intro': 'The Atelier',
+    'frames.caption_1': 'We weave dreams into silk',
+    'frames.caption_2': 'Every thread, a story',
+    'frames.caption_3': 'Sharjah — since 2011',
+    'lookbook.real_riman': 'Real Riman',
 
     // Salon chapters
     'chapter.atelier': "L'Atelier",
@@ -951,6 +965,7 @@ const translations: Record<Language, Record<string, string>> = {
     'cat.bridal': 'العرائس',
     'cat.evening': 'السهرة',
     'cat.rentals': 'الإيجار',
+    'cat.bespoke': 'تفصيل حسب الطلب',
     'cat.jewelry': 'المجوهرات الراقية',
     'cat.collection': 'المجموعة',
     'cat.gala': 'فساتين الحفلات',
@@ -967,9 +982,18 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Hero
     'hero.title': 'حلمٌ وجوهر',
-    'hero.headline': 'فساتين عروس تُفصَّل على المقاس في الشارقة — منذ 2011',
+    'hero.headline': 'فساتين عروس وسهرة تُفصَّل على المقاس في الشارقة',
     'hero.subtitle': 'دار الأزياء الرائدة في الشارقة',
     'hero.discover': 'اكتشف',
+    'hero.buy': 'شراء',
+    'hero.rent': 'إيجار',
+    'hero.bespoke': 'تفصيل حسب الطلب',
+    'hero.since': 'منذ ٢٠١١ · الشارقة',
+    'hero.alt': 'فستان سهرة لامع من ريمان للأزياء في الشارقة',
+    'hero.private_viewing': 'معاينة خاصة في الأتيليه — الشارقة',
+    'frames.caption_1': 'نحن ننسج الأحلام في الحرير',
+    'frames.caption_2': 'كل خيط حكاية',
+    'frames.caption_3': 'من الشارقة — منذ ٢٠١١',
 
     // Salon chapters
     'chapter.atelier': 'الأتيليه',
@@ -1004,6 +1028,10 @@ const translations: Record<Language, Record<string, string>> = {
     'lookbook.eyebrow': 'دفتر الإطلالات',
     'lookbook.heading': 'قصّات في حركة',
     'lookbook.cta': 'شاهدي المجموعة',
+    'lookbook.real_riman': 'ريمان الحقيقية',
+    'lookbook.title': 'دفتر الإطلالات',
+    'lookbook.view_gallery': 'تصفّحي المعرض',
+    'lookbook.intro': 'الأتيليه',
 
     // CTAs
     'cta.explore': 'استكشف المجموعة',

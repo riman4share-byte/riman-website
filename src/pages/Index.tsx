@@ -7,8 +7,9 @@ import RevealWords from '../components/motion/RevealWords';
 import InvitationRule from '../components/salon/InvitationRule';
 import EditorialPlate from '../components/salon/EditorialPlate';
 import HeroSection21st from '../components/ui-21st/HeroSection';
+import ChapterRail from '../components/motion/ChapterRail';
 import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
-import Marquee21st from '../components/ui-21st/Marquee21st';
+import TypeInterlude from '../components/salon/TypeInterlude';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
 import GoldThread from '../components/motion/GoldThread';
@@ -22,7 +23,7 @@ const DISCIPLINES = [
 
 export default function Index() {
   const { products, content } = useData();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   const featured = products.filter((p) => p.isFeatured).slice(0, 6);
   const plates = featured.length >= 2 ? featured : products.slice(0, 6);
@@ -30,6 +31,7 @@ export default function Index() {
   return (
     <div className="film-grain">
       <HeroSection21st />
+      <ChapterRail />
 
       <GoldThread className="bg-bone" />
       <section id="atelier" className="bg-bone py-28 md:py-40 px-6 md:px-12 lg:px-20">
@@ -41,7 +43,7 @@ export default function Index() {
           </div>
           <div className="md:col-span-8 flex flex-col gap-10">
             <ScrollReveal>
-              <h3 className="font-heading text-3xl md:text-5xl font-light text-stone-800 leading-tight">
+              <h3 className="font-heading text-3xl md:text-5xl text-stone-800 leading-tight">
                 {t('atelier.heading')}
               </h3>
             </ScrollReveal>
@@ -98,19 +100,11 @@ export default function Index() {
 
       {/* Pinned canvas frame sequence — 131 frames @8fps, DPR-aware; poster fallback on mobile/reduced-motion/save-data */}
       <FrameSequence
-        captions={
-          language === 'ar'
-            ? [
-                { text: 'نحن ننسج الأحلام في الحرير', at: 0.15 },
-                { text: 'كل خيط حكاية', at: 0.5 },
-                { text: 'من الشارقة — منذ ٢٠١١', at: 0.82 },
-              ]
-            : [
-                { text: 'We weave dreams into silk', at: 0.15 },
-                { text: 'Every thread, a story', at: 0.5 },
-                { text: 'Sharjah — since 2011', at: 0.82 },
-              ]
-        }
+        captions={[
+          { text: t('frames.caption_1'), at: 0.15 },
+          { text: t('frames.caption_2'), at: 0.5 },
+          { text: t('frames.caption_3'), at: 0.82 },
+        ]}
       />
 
       <section className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
@@ -147,7 +141,7 @@ export default function Index() {
                       />
                     )}
                   </div>
-                  <h3 className="font-heading text-2xl font-light text-stone-800 mt-5">{t(d.titleKey)}</h3>
+                  <h3 className="font-heading text-2xl text-stone-800 mt-5">{t(d.titleKey)}</h3>
                   <p className="font-editorial italic text-stone-600 mt-2">{t(d.descKey)}</p>
                   <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-terracotta-dark">
                     {t('disciplines.discover')}
@@ -162,7 +156,7 @@ export default function Index() {
 
       <InvitationRule className="bg-bone border-t border-terracotta/15" />
 
-      <Marquee21st />
+      <TypeInterlude />
 
       <ElegantCarousel21st />
 
@@ -174,7 +168,7 @@ export default function Index() {
       <section className="sticky bottom-0 z-30 bg-onyx/95 border-t border-terracotta/20 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
           <p className="font-label text-[11px] tracking-[0.2em] uppercase text-bone/80 text-center sm:text-start">
-            {language === 'ar' ? 'معاينة خاصة في الأتيليه — الشارقة' : 'Private viewing at the atelier — Sharjah'}
+            {t('hero.private_viewing')}
           </p>
           <Link to="/appointment" className="btn-couture-ghost !text-bone whitespace-nowrap min-h-[44px]">
             {t('cta.viewing')}

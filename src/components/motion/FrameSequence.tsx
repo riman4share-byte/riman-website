@@ -125,7 +125,7 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
               key={i}
               className={
                 i === 1
-                  ? 'font-heading text-bone text-3xl md:text-5xl font-light leading-tight max-w-3xl [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
+                  ? 'font-heading text-bone text-3xl md:text-5xl leading-tight max-w-3xl [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
                   : 'font-editorial italic text-bone/90 text-xl md:text-2xl leading-relaxed max-w-2xl [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
               }
             >
@@ -150,7 +150,7 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
                 key={i}
                 className={
                   i === 1
-                    ? 'absolute font-heading text-bone text-3xl md:text-5xl font-light leading-tight max-w-3xl transition-all duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
+                    ? 'absolute font-heading text-bone text-3xl md:text-5xl leading-tight max-w-3xl transition-all duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
                     : 'absolute font-editorial italic text-bone/90 text-2xl md:text-[2rem] leading-relaxed max-w-3xl transition-all duration-700 [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
                 }
                 style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(14px)' }}

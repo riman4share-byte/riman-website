@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import CalligraphicAccent from '../salon/CalligraphicAccent';
 import KineticHeading from '../motion/KineticHeading';
-import MaskReveal from '../motion/MaskReveal';
 
 const HERO_VIDEO = '/assets/rimanfashion_3panel_split.mp4';
 const HERO_POSTER = '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg';
@@ -17,9 +17,21 @@ function prefersReducedData() {
 }
 
 export default function HeroSection21st() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+  const reduced = useReducedMotion();
   const [videoError, setVideoError] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
+  const [desktop, setDesktop] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mq = window.matchMedia('(min-width: 768px)');
+    const update = () => setDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     if (videoError || prefersReducedData()) return;
@@ -50,19 +62,34 @@ export default function HeroSection21st() {
     };
   }, [videoError]);
 
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const enableMotion = desktop && !reduced;
+  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const headlineY = useTransform(scrollYProgress, [0, 1], ['0%', '-8%']);
+  const headlineOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
+  const scrimOpacity = useTransform(scrollYProgress, [0, 1], [1, 1.35]);
+
   return (
-    <section id="hero" className="relative min-h-[92svh] flex items-center justify-center bg-onyx overflow-hidden">
-      {/* Near-full-bleed gown: light scrim only, the dress is the hero */}
-      <img
+    <section
+      id="hero"
+      ref={sectionRef}
+      className="relative min-h-[96svh] flex items-stretch bg-onyx overflow-hidden"
+    >
+      <motion.img
         className="absolute inset-0 w-full h-full object-cover object-[center_28%] ken-burns-slow"
         src={HERO_POSTER}
-        alt={language === 'ar' ? 'فستان سهرة لامع من ريمان للأزياء في الشارقة' : 'Lamé evening gown from the Riman atelier in Sharjah'}
+        alt={t('hero.alt')}
         loading="eager"
         fetchPriority="high"
         decoding="async"
+        style={enableMotion ? { scale: videoScale } : undefined}
       />
       {showVideo && !videoError && (
-        <video
+        <motion.video
           className="absolute inset-0 w-full h-full object-cover animate-fade-in"
           src={HERO_VIDEO}
           autoPlay
@@ -83,49 +110,45 @@ export default function HeroSection21st() {
             el.playbackRate = 0.8;
             if (el.paused) el.play().catch(() => {});
           }}
+          style={enableMotion ? { scale: videoScale } : undefined}
         />
       )}
-      {/* Minimal overlay — bottom gradient for legibility only */}
-      <div className="absolute inset-0 bg-gradient-to-t from-onyx/85 via-onyx/15 to-onyx/20" aria-hidden="true" />
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-t from-onyx/90 via-onyx/20 to-onyx/30"
+        aria-hidden="true"
+        style={enableMotion ? { opacity: scrimOpacity } : undefined}
+      />
       <CalligraphicAccent
         word="أناقة"
-        className="top-[18%] end-[6%] text-[clamp(5rem,12vw,11rem)] opacity-20 pointer-events-none"
+        className="top-[14%] end-[5%] text-[clamp(6rem,14vw,13rem)] opacity-15 pointer-events-none"
       />
 
-      {/*
-        Centred editorial composition.
+      {/* Corner eyebrow + vertical tag */}
+      <div className="absolute top-28 md:top-36 start-6 md:start-12 z-20 flex items-center gap-4">
+        <span className="font-label text-[11px] tracking-[0.45em] uppercase text-bone/75">
+          {t('hero.subtitle')}
+        </span>
+      </div>
+      <div className="absolute top-28 md:top-36 end-6 md:end-12 z-20 hidden md:flex flex-col items-end gap-1">
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase text-terracotta-light">{t('hero.buy')}</span>
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase text-bone/60">{t('hero.rent')}</span>
+        <span className="font-label text-[11px] tracking-[0.3em] uppercase text-bone/60">{t('hero.bespoke')}</span>
+      </div>
 
-        Was bottom-left aligned. The copy is now optically centred both ways so
-        the headline sits on the gown's centre line rather than fighting the
-        left gutter.
-
-        Vertical management is explicit, because two things collide with a
-        centred block: the fixed header above, and the "discover" scroll cue
-        below.
-          - pt-* reserves the header (h-20 / md:h-24). The old bottom-anchored
-            layout had no top clearance, so on a short viewport with a tall
-            headline the eyebrow and first line rode up underneath the bar —
-            measured overlapping at 1440x900 and 1280x720.
-          - pb-* reserves the scroll cue at bottom-8, so the CTA can never sit
-            on top of it.
-        min-h is only a floor, so the section grows rather than clipping.
-      */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pt-28 md:pt-36 pb-24 md:pb-28 text-center">
-        <div className="max-w-3xl mx-auto">
-          <p className="font-label text-[11px] md:text-xs tracking-[0.4em] uppercase text-bone/85 mb-6 [text-shadow:0_1px_10px_rgba(22,21,19,0.7)]">
-            <MaskReveal delay={0.05}>{t('hero.subtitle')}</MaskReveal>
-          </p>
+      {/* Start-aligned headline block */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-6 md:px-12 pt-40 md:pt-48 pb-28 md:pb-32">
+        <motion.div
+          style={enableMotion ? { y: headlineY, opacity: headlineOpacity } : undefined}
+        >
           <KineticHeading
             as="h1"
             text={t('hero.headline')}
             emphasisChars={['&']}
+            emphasisClassName="font-editorial italic text-terracotta-light text-[1.25em] leading-none"
             delay={0.3}
-            className="font-heading text-bone font-light leading-[1.04] text-[clamp(2.4rem,6vw,5.5rem)] mb-8 [text-shadow:0_2px_28px_rgba(22,21,19,0.55)]"
+            className="font-heading text-bone leading-[0.95] text-[clamp(3rem,9vw,9rem)] max-w-5xl"
           />
-          <p className="font-label text-[11px] tracking-[0.3em] uppercase text-terracotta-light mb-10 [text-shadow:0_1px_10px_rgba(22,21,19,0.7)]">
-            <MaskReveal delay={0.5}>{language === 'ar' ? 'شراء · إيجار · تفصيل حسب الطلب' : 'Buy · Rent · Bespoke'}</MaskReveal>
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+          <div className="mt-10 md:mt-14 flex flex-wrap items-center gap-x-8 gap-y-4">
             <Link
               to="/appointment"
               className="btn-couture-ghost !text-bone min-h-[52px]"
@@ -134,13 +157,18 @@ export default function HeroSection21st() {
               {t('cta.viewing')}
             </Link>
             <span className="hidden sm:block h-px w-16 bg-bone/30" aria-hidden="true" />
-            <span className="hidden sm:block font-label text-[11px] tracking-[0.25em] uppercase text-bone/60">
-              {language === 'ar' ? 'منذ ٢٠١١ · الشارقة' : 'Since 2011 · Sharjah'}
-            </span>
           </div>
-        </div>
+        </motion.div>
       </div>
-      <span aria-hidden="true" className="hidden md:block absolute bottom-8 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 font-label text-[11px] tracking-[0.35em] uppercase text-bone/60">
+
+      {/* Bottom edge: Since 2011 with rule */}
+      <div className="absolute bottom-8 start-6 md:start-12 z-20 flex items-center gap-4">
+        <span className="h-px w-12 bg-bone/40" aria-hidden="true" />
+        <span className="font-label text-[11px] tracking-[0.25em] uppercase text-bone/60">
+          {t('hero.since')}
+        </span>
+      </div>
+      <span aria-hidden="true" className="hidden md:block absolute bottom-8 end-6 md:end-12 font-label text-[11px] tracking-[0.35em] uppercase text-bone/50">
         {t('hero.discover')}
       </span>
     </section>

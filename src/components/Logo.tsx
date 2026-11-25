@@ -8,7 +8,7 @@ interface LogoProps {
 
 export default function Logo({ className, variant = 'gold', showText = true }: LogoProps) {
   const colors = {
-    light: 'text-white',
+    light: 'text-bone',
     dark: 'text-stone-900',
     gold: 'text-terracotta-dark'
   };

@@ -50,7 +50,7 @@ export default function SizeGuide({ isOpen, onClose }: SizeGuideProps) {
           >
             <div className="sticky top-0 bg-ivory border-b border-stone-100 px-6 py-4 flex items-center justify-between z-10">
               <h3 className="font-heading text-lg text-stone-800 tracking-widest uppercase">{t('size_guide.title')}</h3>
-              <button ref={closeRef} onClick={onClose} className="p-2 text-stone-600 hover:text-stone-800 transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none" aria-label="Close size guide">
+              <button ref={closeRef} onClick={onClose} className="p-2 text-stone-600 hover:text-stone-800 transition-colors" aria-label="Close size guide">
                 <X className="w-5 h-5" />
               </button>
             </div>

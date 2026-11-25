@@ -28,7 +28,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            className="text-micro text-white/70 uppercase tracking-[0.5em] mb-6 block"
+            className="text-micro text-bone/70 uppercase tracking-[0.5em] mb-6 block"
           >
             {t('about.hero_subtitle')}
           </motion.span>
@@ -37,7 +37,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.2 }}
-            className="font-heading text-6xl md:text-8xl text-white tracking-tighter mb-8"
+            className="font-heading text-6xl md:text-8xl text-bone tracking-tighter mb-8"
           >
             {t('about.hero_title').split(' ').map((word, i) => i === 2 ? <span key={i} className="italic font-serif">{word}</span> : word + ' ')}
           </motion.h1>
@@ -95,7 +95,7 @@ export default function AboutPage() {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-24">
-            <h2 className="font-heading text-4xl tracking-widest uppercase mb-4 text-white">{t('about.pillars')}</h2>
+            <h2 className="font-heading text-4xl tracking-widest uppercase mb-4 text-bone">{t('about.pillars')}</h2>
             <div className="w-20 h-px bg-terracotta mx-auto" />
           </div>
 

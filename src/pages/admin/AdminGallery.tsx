@@ -150,7 +150,7 @@ export default function AdminGallery() {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="flex items-center gap-2 px-4 py-2 bg-terracotta text-onyx text-xs tracking-widest uppercase font-bold hover:bg-terracotta/90 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-terracotta text-bone text-xs tracking-widest uppercase font-bold hover:bg-terracotta/90 transition-colors disabled:opacity-50"
         >
           <Upload className="w-4 h-4" />
           {uploading ? 'Uploading...' : t('gallery.admin_upload')}

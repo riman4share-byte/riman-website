@@ -132,7 +132,7 @@ export default function GlobalFeatures() {
               </button>
               <button
                 onClick={handleAcceptCookies}
-                className="px-5 py-2 bg-onyx text-white text-micro tracking-[0.2em] uppercase hover:bg-stone-800 transition-colors font-bold"
+                className="px-5 py-2 bg-onyx text-bone text-micro tracking-[0.2em] uppercase hover:bg-stone-800 transition-colors font-bold"
               >
                 {t('cookies.accept')}
               </button>

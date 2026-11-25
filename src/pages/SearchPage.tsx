@@ -66,7 +66,7 @@ export default function SearchPage() {
                     onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
                     className={cn(
                       "px-6 py-2 text-micro tracking-[0.2em] uppercase transition-all border",
-                      activeCategory === cat ? "bg-onyx text-white border-onyx" : "bg-ivory text-stone-600 border-stone-100 hover:border-terracotta"
+                      activeCategory === cat ? "bg-onyx text-bone border-onyx" : "bg-ivory text-stone-600 border-stone-100 hover:border-terracotta"
                     )}
                   >
                     {categoryLabel(cat)}
@@ -83,7 +83,7 @@ export default function SearchPage() {
            <h1 className="font-heading text-lg text-stone-800 tracking-widest uppercase">
              {t('search.results')} <span className="text-stone-500 font-normal ml-2">({filteredProducts.length})</span>
            </h1>
-           <button onClick={() => document.getElementById('search-categories')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-terracotta-dark transition-colors focus-visible:ring-2 focus-visible:ring-gold outline-none">
+           <button onClick={() => document.getElementById('search-categories')?.scrollIntoView({ behavior: 'smooth' })} className="flex items-center gap-2 text-micro text-stone-600 tracking-widest uppercase hover:text-terracotta-light transition-colors">
               <SlidersHorizontal className="w-3 h-3" /> {t('search.advanced_filters')}
            </button>
         </div>

@@ -152,7 +152,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
           <button
             type="button"
             onClick={() => goToMonth(-1)}
-            className="p-1 hover:text-terracotta-dark transition-colors"
+            className="p-1 hover:text-terracotta-light transition-colors"
             aria-label={t('calendar.prev')}
           >
             <PrevIcon className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
           <button
             type="button"
             onClick={() => goToMonth(1)}
-            className="p-1 hover:text-terracotta-dark transition-colors"
+            className="p-1 hover:text-terracotta-light transition-colors"
             aria-label={t('calendar.next')}
           >
             <NextIcon className="w-4 h-4" />
@@ -232,7 +232,7 @@ export default function AvailabilityCalendar({ productId, bookedDates: initialBo
                       !inMonth && 'text-stone-200',
                       (past || booked) && inMonth && 'bg-stone-50 text-stone-500 cursor-not-allowed',
                       selectable && 'hover:bg-terracotta/10 cursor-pointer text-stone-700',
-                      isSelected && 'bg-terracotta text-white hover:bg-terracotta'
+                      isSelected && 'bg-terracotta text-bone hover:bg-terracotta'
                     )}
                   >
                     <span>{format(date, 'd')}</span>

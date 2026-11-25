@@ -28,7 +28,7 @@ export default function GalleryFilters({ activeCategory, onCategoryChange, class
           className={cn(
             'relative px-5 py-2 text-micro tracking-[0.3em] uppercase font-bold transition-all duration-300 border overflow-hidden',
             activeCategory === cat.key
-              ? 'bg-terracotta text-onyx border-terracotta'
+              ? 'bg-terracotta text-bone border-terracotta'
               : 'border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-dark'
           )}
         >

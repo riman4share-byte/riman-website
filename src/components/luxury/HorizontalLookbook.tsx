@@ -48,7 +48,7 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
               <p className="text-micro uppercase tracking-[0.35em] text-ivory/40 mb-6">
                 ( 02 ) — {t('lookbook.eyebrow')}
               </p>
-              <h2 className="font-heading font-medium text-6xl md:text-[5.5vw] leading-[0.9] text-white mb-8">
+              <h2 className="font-heading font-medium text-6xl md:text-[5.5vw] leading-[0.9] text-bone mb-8">
                 {t('lookbook.heading')}
               </h2>
               <span className="text-micro uppercase tracking-[0.3em] text-ivory/40">
@@ -64,7 +64,7 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
 
             <div className="shrink-0 w-[30vw] flex items-center">
               <Link to="/collection/all" className="group">
-                <span className="font-heading italic font-medium text-5xl md:text-[4vw] leading-tight block text-white group-hover:text-terracotta-dark transition-colors duration-500">
+                <span className="font-heading italic font-medium text-5xl md:text-[4vw] leading-tight block text-bone group-hover:text-terracotta-light transition-colors duration-500">
                   {t('lookbook.cta')}
                 </span>
                 <span className="inline-block mt-6 text-2xl text-terracotta-dark group-hover:translate-x-3 transition-transform duration-500">→</span>
@@ -72,7 +72,7 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
             </div>
           </motion.div>
 
-          <div className="absolute bottom-8 left-[8vw] right-[8vw] h-px bg-white/15">
+          <div className="absolute bottom-8 left-[8vw] right-[8vw] h-px bg-bone/15">
             <motion.div className="h-full bg-terracotta origin-left" style={{ scaleX: progressScale }} />
           </div>
         </div>
@@ -81,7 +81,7 @@ function LookbookContent({ items }: { items: GalleryItem[] }) {
       {/* Mobile: vertical stack */}
       <section className="md:hidden bg-onyx px-6 py-24">
         <p className="text-micro uppercase tracking-[0.35em] text-ivory/40 mb-4">( 02 ) — {t('lookbook.eyebrow')}</p>
-        <h2 className="font-heading font-medium text-5xl leading-[0.9] text-white mb-10">{t('lookbook.heading')}</h2>
+        <h2 className="font-heading font-medium text-5xl leading-[0.9] text-bone mb-10">{t('lookbook.heading')}</h2>
         <div className="flex flex-col gap-14">
           {items.map((item) => (
             <div key={item.id}>

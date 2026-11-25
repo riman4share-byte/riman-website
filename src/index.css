@@ -62,6 +62,10 @@
   /* Muted text on light surfaces. Was #807662 = 3.74:1 on ivory (fails AA).
      #6b6250 = 5.03:1 ivory / 4.71:1 pearl / 5.31:1 champagne. */
   --color-stone-500: #6b6250;
+
+  /* Brass ornament gradient. This is a BACKGROUND value, not a colour, so
+     Tailwind's `bg-jewelry` utility (which resolves to background-color)
+     cannot use it - use the .bg-jewelry-gradient component class instead. */
   --color-jewelry: linear-gradient(45deg, #8a6a3c 0%, #b08d57 45%, #c9a96f 50%, #b08d57 55%, #8a6a3c 100%);
 
   --animate-fade-up: fade-up 0.8s ease-out forwards;
@@ -219,6 +223,13 @@
 }
 
 @layer components {
+  /* Brass ornament gradient. The token is a background value, so the
+     Tailwind `bg-jewelry` utility (background-color) cannot carry it.
+     Ornament only - never gradient text (brief section 12). */
+  .bg-jewelry-gradient {
+    background-image: var(--color-jewelry);
+  }
+
   /* Legacy alias. The accent migration replaced every text-gold usage with
      text-terracotta-dark (the AA-compliant ink step, 7.44:1 on bone) and the
      legibility guards in this file fall back to brass-light inside dark
@@ -442,7 +453,7 @@
     }
     h1.font-heading:hover, h2.font-heading:hover, h3.font-heading:hover,
     [data-heading]:hover {
-      text-shadow: 0 0 40px rgba(212,175,55,0.25), 0 2px 20px rgba(212,175,55,0.15);
+      text-shadow: 0 0 40px rgba(176,141,87,0.25), 0 2px 20px rgba(176,141,87,0.15);
       letter-spacing: 0.02em;
     }
   }
@@ -569,9 +580,11 @@
   filter: invert(1);
 }
 
-/* Couture marquee */
+/* Couture marquee - used by the display-scale type interlude (brief 9.5).
+   The track is duplicated exactly twice, so a -50% translate lands one copy
+   along and the seam is invisible. */
 .marquee-track {
-  animation: marquee 26s linear infinite;
+  animation: marquee 38s linear infinite;
 }
 .marquee-track:hover {
   animation-play-state: paused;

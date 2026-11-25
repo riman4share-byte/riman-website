@@ -136,16 +136,32 @@ export default function CollectionsPage() {
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/10 to-transparent" />
                       <div className="absolute bottom-0 start-0 w-full p-6">
-                        <p className="text-micro tracking-[0.25em] uppercase text-terracotta-dark mb-2">
+                        <p className="text-micro tracking-[0.25em] uppercase text-terracotta-light mb-2">
                           {matching.length} {t('collections.count')}
                         </p>
-                        <h2 className="font-heading text-2xl text-white tracking-wider uppercase mb-2">
+                        {/*
+                          The jewelry tile gets Fraunces, the one ornament face in
+                          the system, with the brass gradient reserved for the
+                          hairline beneath it. Gradient TEXT is banned by the
+                          brief, so the heading takes brass-light (8.67:1 on
+                          onyx) and the gradient stays on a rule.
+                        */}
+                        <h2
+                          className={
+                            def.slug === 'jewelry'
+                              ? 'font-jewelry text-2xl tracking-wider mb-2 text-brass-light'
+                              : 'font-heading text-2xl text-bone tracking-wider uppercase mb-2'
+                          }
+                        >
                           {t(def.nameKey)}
                         </h2>
-                        <p className="text-white/75 font-body text-sm leading-relaxed mb-4 max-w-sm">
+                        {def.slug === 'jewelry' && (
+                          <span className="block h-px w-16 bg-jewelry-gradient mb-3" aria-hidden="true" />
+                        )}
+                        <p className="text-bone/75 font-body text-sm leading-relaxed mb-4 max-w-sm">
                           {language === 'ar' ? def.blurb.ar : def.blurb.en}
                         </p>
-                        <span className="inline-flex items-center gap-2 text-white font-label text-xs tracking-[0.2em] uppercase border-b border-white/30 group-hover:border-terracotta group-hover:text-terracotta-dark transition-colors pb-1">
+                        <span className="inline-flex items-center gap-2 text-bone font-label text-xs tracking-[0.2em] uppercase border-b border-white/30 group-hover:border-terracotta group-hover:text-terracotta-dark transition-colors pb-1">
                           {t('collections.browse')}
                           <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
                         </span>

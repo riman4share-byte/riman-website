@@ -217,9 +217,9 @@ export default function ProductDetail() {
         <div className="container mx-auto px-5 py-10">
           {/* Breadcrumbs */}
           <nav className="flex gap-2 text-xs tracking-[0.2em] uppercase text-stone-600 mb-10">
-            <Link to="/" className="hover:text-terracotta-dark transition-colors">{t('nav.home')}</Link>
+            <Link to="/" className="hover:text-terracotta-light transition-colors">{t('nav.home')}</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link to={`/collection/${categoryToSlug(product.category)}`} className="hover:text-terracotta-dark transition-colors">{translateProductValue('category', product.category, language)}</Link>
+            <Link to={`/collection/${categoryToSlug(product.category)}`} className="hover:text-terracotta-light transition-colors">{translateProductValue('category', product.category, language)}</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-stone-800 font-medium">{productName}</span>
           </nav>
@@ -242,7 +242,7 @@ export default function ProductDetail() {
                       <video src={product.videoUrl} poster={product.images[0]} autoPlay muted loop playsInline className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-onyx/10 pointer-events-none" />
                       <div className="absolute bottom-5 left-5 p-2 bg-ivory/20 backdrop-blur-md rounded-full">
-                        <RotateCcw className="w-3 h-3 text-white animate-spin-slow" />
+                        <RotateCcw className="w-3 h-3 text-bone animate-spin-slow" />
                       </div>
                     </motion.div>
                   ) : (
@@ -284,10 +284,10 @@ export default function ProductDetail() {
                 {/* Nav Arrows */}
                 {totalAssets > 1 && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Previous image">
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label="Previous image">
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-white transition-all z-20" aria-label="Next image">
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label="Next image">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </>
@@ -296,11 +296,11 @@ export default function ProductDetail() {
                 {/* Perspective Toggle */}
                 {product.glbUrl && (
                   <div className="absolute top-5 right-5 z-30 flex gap-2">
-                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-terracotta text-white border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
+                    <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-terracotta text-bone border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
                       <Search className="w-3.5 h-3.5" />
                     </button>
                     {threeDViewerEnabled && (
-                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition-all backdrop-blur border", is3DMode ? "bg-terracotta text-white border-terracotta scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
+                      <button onClick={() => setIs3DMode(true)} className={cn("p-2.5 transition-all backdrop-blur border", is3DMode ? "bg-terracotta text-bone border-terracotta scale-105" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.view_3d')}>
                         <Box className="w-3.5 h-3.5" />
                       </button>
                     )}
@@ -312,7 +312,7 @@ export default function ProductDetail() {
                   <button
                     ref={shareButtonRef}
                     onClick={() => setShowShareMenu(v => !v)}
-                    className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-white transition-all"
+                    className="p-2.5 bg-ivory/90 text-stone-800 hover:bg-terracotta hover:text-bone transition-all"
                     aria-label={t('product.share')}
                     aria-haspopup="menu"
                     aria-expanded={showShareMenu}
@@ -345,7 +345,7 @@ export default function ProductDetail() {
                   <button onClick={() => setCurrentImageIndex(0)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-900 overflow-hidden border-2 transition-all flex items-center justify-center relative", currentImageIndex === 0 ? "border-terracotta" : "border-transparent")}>
                     <video src={product.videoUrl} poster={product.images[0]} preload="metadata" muted className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <RotateCcw className="w-4 h-4 text-white/80" />
+                      <RotateCcw className="w-4 h-4 text-bone/80" />
                     </div>
                   </button>
                 )}
@@ -418,7 +418,7 @@ export default function ProductDetail() {
                           'flex-1 min-h-[44px] font-label text-[11px] tracking-[0.25em] uppercase border transition-colors duration-500',
                           purchaseMode === mode
                             ? 'bg-onyx text-bone border-onyx'
-                            : 'bg-transparent text-stone-600 border-stone-200 hover:border-terracotta hover:text-terracotta-dark'
+                            : 'bg-transparent text-stone-600 border-stone-200 hover:border-terracotta hover:text-terracotta-light'
                         )}
                       >
                         {mode === 'sale' ? t('product.purchase') : t('product.rent')}
@@ -511,7 +511,7 @@ export default function ProductDetail() {
                     {['XS', 'S', 'M', 'L', 'XL'].map((size) => {
                       const isAvailable = product.sizes.includes(size);
                       return (
-                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition-all", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-terracotta bg-terracotta text-white" : "border-stone-200 text-stone-600 hover:border-terracotta")}>
+                        <button key={size} disabled={!isAvailable} onClick={() => setSelectedSize(size)} className={cn("w-11 h-11 flex items-center justify-center border text-micro tracking-widest transition-all", !isAvailable ? "border-stone-100 text-stone-200 cursor-not-allowed" : selectedSize === size ? "border-terracotta bg-terracotta text-bone" : "border-stone-200 text-stone-600 hover:border-terracotta")}>
                           {size}
                         </button>
                       );
@@ -543,7 +543,7 @@ export default function ProductDetail() {
                       </motion.p>
                     )}
                   </div>
-                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition-all relative overflow-hidden group", saved ? "border-terracotta/40 text-terracotta-dark bg-terracotta/[0.06]" : "border-stone-200 text-stone-600 hover:text-terracotta-dark hover:border-terracotta/40")} aria-label={saved ? (language === 'ar' ? 'إزالة من قائمة القياسات' : 'Remove from fitting list') : (language === 'ar' ? 'أضف إلى قائمة القياسات' : 'Add to fitting list')}>
+                  <button onClick={(e) => { e.preventDefault(); if (saved) { removeFromWishlist(product.id); } else { addToWishlist(product); } }} className={cn("w-12 h-12 flex items-center justify-center border transition-all relative overflow-hidden group", saved ? "border-terracotta/40 text-terracotta-dark bg-terracotta/[0.06]" : "border-stone-200 text-stone-600 hover:text-terracotta-light hover:border-terracotta/40")} aria-label={saved ? (language === 'ar' ? 'إزالة من قائمة القياسات' : 'Remove from fitting list') : (language === 'ar' ? 'أضف إلى قائمة القياسات' : 'Add to fitting list')}>
                     {/* gold thread fill on wishlist */}
                     <motion.span
                       aria-hidden="true"
@@ -662,7 +662,7 @@ export default function ProductDetail() {
                     <MessageCircle className="w-5 h-5 text-terracotta-dark" />
                   </div>
                   <div>
-                    <h4 className="font-heading text-xs tracking-[0.15em] uppercase text-stone-800 mb-1 group-hover:text-terracotta-dark transition-colors">{t('product.ask_stylist')}</h4>
+                    <h4 className="font-heading text-xs tracking-[0.15em] uppercase text-stone-800 mb-1 group-hover:text-terracotta-light transition-colors">{t('product.ask_stylist')}</h4>
                     <p className="text-micro text-stone-600 tracking-wide">{t('product.ask_stylist_desc')}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-terracotta-dark ml-auto group-hover:translate-x-1 transition-transform" />

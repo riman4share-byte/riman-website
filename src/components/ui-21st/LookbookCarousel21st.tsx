@@ -15,7 +15,7 @@ export default function LookbookCarousel21st() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="font-label text-xs tracking-[0.35em] uppercase text-terracotta-dark mb-2">Real Riman</p>
-            <h2 className="font-heading text-3xl md:text-5xl font-light text-stone-800">Lookbook</h2>
+            <h2 className="font-heading text-3xl md:text-5xl text-stone-800">Lookbook</h2>
           </div>
           <Link
             to="/gallery"
@@ -29,7 +29,7 @@ export default function LookbookCarousel21st() {
             <Link
               key={p.id}
               to={`/product/${p.id}`}
-              className="snap-start shrink-0 w-64 group focus-visible:ring-2 focus-visible:ring-gold outline-none"
+              className="snap-start shrink-0 w-64 group"
             >
               <div className="aspect-[3/4] overflow-hidden bg-stone-100 border border-stone-200">
                 <img

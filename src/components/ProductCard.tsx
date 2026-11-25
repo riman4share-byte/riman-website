@@ -112,12 +112,12 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
         {/* Badges — logical inset so RTL mirrors correctly */}
         <div className="absolute top-4 start-4 flex flex-col gap-2 pointer-events-none z-10">
           {product.isNew && (
-            <span className="bg-terracotta text-white text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
+            <span className="bg-terracotta text-bone text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
               {t('badge.new')}
             </span>
           )}
           {product.isFeatured && (
-            <span className="bg-onyx text-white text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
+            <span className="bg-onyx text-bone text-micro tracking-[0.3em] uppercase px-4 py-1.5 font-bold">
               {t('badge.featured')}
             </span>
           )}
@@ -139,8 +139,8 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
           className={cn(
             "md:hidden absolute bottom-0 left-0 right-0 z-20 py-3 text-micro tracking-[0.2em] uppercase font-body flex items-center justify-center gap-2 transition-all duration-300",
             showMobileActions 
-              ? "bg-onyx text-white" 
-              : "bg-terracotta text-white"
+              ? "bg-onyx text-bone" 
+              : "bg-terracotta text-bone"
           )}
           aria-label={showMobileActions ? 'Close quick shop' : 'Open quick shop'}
         >
@@ -176,8 +176,8 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                     className={cn(
                       "min-w-[2.5rem] h-9 px-2 flex items-center justify-center border text-micro tracking-wider transition-all",
                       selectedSize === size
-                        ? "border-terracotta bg-terracotta text-white"
-                        : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
+                        ? "border-terracotta bg-terracotta text-bone"
+                        : "border-stone-300 text-stone-600 hover:border-terracotta hover:text-terracotta-light"
                     )}
                   >
                     {size}
@@ -199,7 +199,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                 "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-all duration-300 flex items-center justify-center gap-1.5",
                 isAdded
                   ? "text-emerald-400"
-                  : "text-white hover:text-terracotta-dark"
+                  : "text-bone hover:text-terracotta-light"
               )}
             >
               {isAdded ? (
@@ -214,14 +214,14 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
                 </>
               )}
             </button>
-            <div className="w-px bg-white/10" />
+            <div className="w-px bg-bone/10" />
             <button
               onClick={toggleWishlist}
               className={cn(
                 "flex-1 py-3 text-micro tracking-[0.2em] uppercase font-body transition-colors duration-300 flex items-center justify-center gap-1.5",
                 saved
                   ? "text-rose-400"
-                  : "text-white/70 hover:text-rose-400"
+                  : "text-bone/70 hover:text-rose-400"
               )}
             >
               <Heart className={cn("w-3.5 h-3.5", saved && "fill-current")} />
@@ -239,7 +239,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             {t('silhouettes.look')} {lookNumber}
           </span>
         )}
-          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-terracotta-dark transition-colors leading-[1.1]">
+          <Link to={`/product/${product.id}`} className="block font-heading text-xl text-stone-900 tracking-tight hover:text-terracotta-light transition-colors leading-[1.1]">
             {productName}
         </Link>
         {product.fabric && (
@@ -277,7 +277,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
           <Link
             to={`/product/${product.id}`}
-            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-terracotta-dark transition-colors duration-500 mt-2"
+            className="inline-flex items-center gap-1.5 min-h-[44px] font-label text-micro tracking-[0.25em] uppercase text-stone-800 hover:text-terracotta-light transition-colors duration-500 mt-2"
           >
             {t('silhouettes.enquire')}
             <ArrowRight className="w-3 h-3" />

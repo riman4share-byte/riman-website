@@ -177,7 +177,7 @@ export default function AppointmentPage() {
           <div className="w-20 h-20 rounded-full bg-terracotta/10 flex items-center justify-center mx-auto mb-8">
             <CheckCircle2 className="w-10 h-10 text-terracotta-dark" />
           </div>
-          <h1 className="font-heading text-4xl font-light text-stone-800 mb-4">{t('appointment.booked')}</h1>
+          <h1 className="font-heading text-4xl text-stone-800 mb-4">{t('appointment.booked')}</h1>
           <div className="w-12 h-px bg-terracotta mx-auto mb-6" />
           <p className="font-body text-stone-600 leading-relaxed mb-2">
             {t('appointment.thank_you')}, <span className="text-stone-800 font-semibold">{form.name}</span>.
@@ -215,7 +215,7 @@ export default function AppointmentPage() {
     <div className="pt-24 min-h-screen bg-champagne">
       <div className="container mx-auto px-6 py-16 max-w-4xl">
         <nav className="flex gap-2 text-xs tracking-[0.2em] uppercase text-stone-600 mb-8">
-          <Link to="/" className="hover:text-terracotta-dark transition-colors">{t('nav.home')}</Link>
+          <Link to="/" className="hover:text-terracotta-light transition-colors">{t('nav.home')}</Link>
           <span>/</span>
           <span className="text-stone-800 font-medium">{t('cta.appointment')}</span>
         </nav>
@@ -227,7 +227,7 @@ export default function AppointmentPage() {
               <Sparkles className="w-4 h-4 text-terracotta-dark" />
               <span className="w-8 h-px bg-terracotta" />
             </div>
-            <h1 className="font-heading text-4xl md:text-5xl font-light text-stone-800 mb-4">{t('appointment.heading')}</h1>
+            <h1 className="font-heading text-4xl md:text-5xl text-stone-800 mb-4">{t('appointment.heading')}</h1>
             <p className="font-body text-stone-600 max-w-xl mx-auto leading-relaxed">
               {t('appointment.desc')}
             </p>
@@ -237,7 +237,7 @@ export default function AppointmentPage() {
           <div className="flex items-center justify-center gap-4 mb-12">
             {[1, 2, 3].map(s => (
               <button key={s} onClick={() => { if (s < step) setStep(s); }} className="flex items-center gap-3">
-                <div className={step >= s ? "w-10 h-10 bg-terracotta text-white flex items-center justify-center text-xs font-bold transition-all" : "w-10 h-10 border border-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold"}>
+                <div className={step >= s ? "w-10 h-10 bg-terracotta text-bone flex items-center justify-center text-xs font-bold transition-all" : "w-10 h-10 border border-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold"}>
                   {step > s ? <CheckCircle2 className="w-4 h-4" /> : s}
                 </div>
                 <span className={step >= s ? "text-xs tracking-widest uppercase font-bold text-stone-800 hidden md:block" : "text-xs tracking-widest uppercase text-stone-600 hidden md:block"}>
@@ -252,7 +252,7 @@ export default function AppointmentPage() {
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
-                  <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.your_details')}</h2>
+                  <h2 className="font-heading text-2xl text-stone-800">{t('appointment.your_details')}</h2>
                   <div className="w-8 h-px bg-terracotta mt-3" />
                 </div>
                 {incomingGowns.length > 0 && (
@@ -308,7 +308,7 @@ export default function AppointmentPage() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
-                  <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.choose_datetime')}</h2>
+                  <h2 className="font-heading text-2xl text-stone-800">{t('appointment.choose_datetime')}</h2>
                   <div className="w-8 h-px bg-terracotta mt-3" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -348,10 +348,10 @@ export default function AppointmentPage() {
                           className={cn(
                             "py-3 text-xs tracking-widest border transition-all relative",
                             form.time === formatSlot(slot)
-                              ? "font-bold bg-terracotta text-white border-terracotta"
+                              ? "font-bold bg-terracotta text-bone border-terracotta"
                               : isPeakSlot(slot)
-                                ? "border-terracotta/50 text-stone-700 hover:border-terracotta hover:text-terracotta-dark"
-                                : "border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-dark"
+                                ? "border-terracotta/50 text-stone-700 hover:border-terracotta hover:text-terracotta-light"
+                                : "border-stone-200 text-stone-600 hover:border-terracotta hover:text-terracotta-light"
                           )}
                         >
                           {formatSlot(slot)}
@@ -382,7 +382,7 @@ export default function AppointmentPage() {
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="bg-ivory p-8 md:p-12">
                 <div className="mb-8">
-                  <h2 className="font-heading text-2xl font-light text-stone-800">{t('appointment.review_confirm')}</h2>
+                  <h2 className="font-heading text-2xl text-stone-800">{t('appointment.review_confirm')}</h2>
                   <div className="w-8 h-px bg-terracotta mt-3" />
                 </div>
                 <div className="bg-ivory p-8 mb-8">
@@ -449,7 +449,7 @@ export default function AppointmentPage() {
           </AnimatePresence>
 
           <div className="mt-12 bg-onyx p-8 text-center">
-            <p className="font-heading text-lg text-white tracking-widest uppercase mb-2">Riman Fashion</p>
+            <p className="font-heading text-lg text-bone tracking-widest uppercase mb-2">Riman Fashion</p>
             <p className="font-body text-stone-400 text-sm mb-4">Sharjah, UAE</p>
             <p className="font-body text-stone-400 text-sm">{settings.contact.hours || t('appointment.atelier_hours')}</p>
             <a href="https://wa.me/971553730792" target="_blank" rel="noopener noreferrer" className="inline-block mt-6 text-terracotta-dark text-xs tracking-widest uppercase hover:text-terracotta-light transition-colors font-bold">

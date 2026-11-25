@@ -25,11 +25,11 @@ export default function StatCounter({ value, suffix, label, duration = 1.6 }: St
 
   return (
     <div>
-      <p className="font-heading text-5xl md:text-7xl text-white font-medium">
+      <p className="font-heading text-5xl md:text-7xl text-bone font-medium">
         <span ref={ref} data-testid="stat-value">{display}</span>
         {suffix && <span className="text-terracotta-dark text-3xl md:text-5xl align-top">{suffix}</span>}
       </p>
-      <p className="text-micro uppercase tracking-[0.3em] text-white/40 mt-3">{label}</p>
+      <p className="text-micro uppercase tracking-[0.3em] text-bone/40 mt-3">{label}</p>
     </div>
   );
 }

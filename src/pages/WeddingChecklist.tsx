@@ -40,7 +40,7 @@ export default function WeddingChecklist() {
 
       {/* R6 — a planning page with no path to the next step. This is the CTA. */}
       <div className="mt-16 border border-terracotta/30 bg-terracotta/[0.04] p-8 md:p-10 text-center">
-        <h2 className="font-heading text-2xl md:text-3xl font-light text-stone-800 mb-4">
+        <h2 className="font-heading text-2xl md:text-3xl text-stone-800 mb-4">
           {t('wedding.checklist.cta_heading')}
         </h2>
         <p className="font-body text-sm text-stone-600 leading-relaxed mb-7 max-w-xl mx-auto">
