@@ -11,6 +11,7 @@ import { submitContactForm } from '../services/contact';
 import { isSupabaseConfigured } from '../services/supabase';
 import { buildWhatsAppUrl } from '../lib/whatsapp';
 import { useToast } from '../contexts/ToastContext';
+import CalligraphicAccent from '../components/salon/CalligraphicAccent';
 
 export default function ContactPage() {
   const { t } = useLanguage();
@@ -79,11 +80,17 @@ export default function ContactPage() {
 
   return (
     <div className="pt-24 min-h-screen bg-ivory">
-      <header className="section-padding !py-20 text-center bg-ivory border-b border-stone-100">
+      <header className="section-padding !py-20 text-center bg-ivory border-b border-stone-100 relative overflow-hidden">
+        {/* One calligraphic accent (brief 8.3, Contact). Decorative only. */}
+        <CalligraphicAccent
+          word="أناقة"
+          className="top-1/2 -translate-y-1/2 end-[3%] text-[clamp(6rem,14vw,13rem)] opacity-15 pointer-events-none"
+        />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10"
         >
           <h1 className="font-heading text-5xl md:text-6xl text-stone-800 tracking-widest uppercase mb-4">{t('nav.contact')}</h1>
           <p className="font-body text-stone-600 text-sm tracking-[0.2em] uppercase">{t('footer.consultation')}</p>
@@ -123,7 +130,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="bg-ivory p-8 md:p-12 relative overflow-hidden ring-1 ring-stone-100">
+          <div className="bg-ivory p-8 md:p-12 relative overflow-hidden border border-stone-200">
             <AnimatePresence mode="wait">
               <motion.div
                 key="form-container"
@@ -145,7 +152,7 @@ export default function ContactPage() {
                             errors.name && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )} 
-                          placeholder="Sarah Al-Maktoum" 
+                          placeholder={t('contact.name_placeholder')} 
                         />
                         {errors.name && <span className="text-red-500 text-micro tracking-widest uppercase">{errors.name.message}</span>}
                       </div>
@@ -161,7 +168,7 @@ export default function ContactPage() {
                             errors.email && "border-red-300",
                             isSubmitted && "opacity-50 cursor-not-allowed"
                           )}
-                          placeholder="sarah@example.com" 
+                          placeholder={t('contact.email_placeholder')} 
                         />
                         {errors.email && <span className="text-red-500 text-micro tracking-widest uppercase">{errors.email.message}</span>}
                       </div>
@@ -178,7 +185,7 @@ export default function ContactPage() {
                           errors.phone && "border-red-300",
                           isSubmitted && "opacity-50 cursor-not-allowed"
                         )}
-                        placeholder="+971 -- --- ----" 
+                        placeholder={t('contact.phone_placeholder')} 
                       />
                       {errors.phone && <span className="text-red-500 text-micro tracking-widest uppercase">{errors.phone.message}</span>}
                     </div>
@@ -277,9 +284,6 @@ export default function ContactPage() {
                   </form>
               </motion.div>
             </AnimatePresence>
-            
-            <div className="absolute top-0 right-0 w-64 h-64 bg-terracotta/5 blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-stone-100/30 blur-[80px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
           </div>
         </div>
       </section>
