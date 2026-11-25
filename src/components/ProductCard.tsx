@@ -103,7 +103,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
             referrerPolicy="no-referrer"
             onLoad={() => setImageLoaded(true)}
             className={cn(
-              "w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.05]",
+              "w-full h-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]",
               !imageLoaded && "opacity-0"
             )}
           />
@@ -150,7 +150,7 @@ export default function ProductCard({ product, lookNumber }: ProductCardProps) {
 
         {/* Quick Actions — slim slide-up bar on hover */}
         <div className={cn(
-          "absolute bottom-0 left-0 right-0 z-10 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)]",
+          "absolute bottom-0 left-0 right-0 z-10 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           showMobileActions
             ? "translate-y-0 opacity-100"
             : "translate-y-full md:translate-y-full md:group-hover:translate-y-0 md:opacity-0 md:group-hover:opacity-100"

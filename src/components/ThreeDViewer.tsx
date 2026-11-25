@@ -184,8 +184,8 @@ const ThreeDViewer: React.FC<ThreeDViewerProps> = ({ src, poster, alt, className
             </button>
             <button 
               className="p-3 bg-ivory/80 backdrop-blur border border-stone-100 hover:bg-terracotta hover:text-bone transition-all rounded-full"
-              title="View in AR"
-              aria-label="View in augmented reality"
+              title={t('threed.view_ar')}
+              aria-label={t('threed.view_ar_label')}
               onClick={() => modelRef.current?.activateAR()}
             >
               <Maximize2 className="w-4 h-4" />

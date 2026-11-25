@@ -35,13 +35,15 @@ function renderWithProviders() {
 }
 
 describe('HorizontalLookbook', () => {
-  it('renders nothing when gallery is empty', () => {
+  it('falls back to the product catalogue when the gallery is empty', () => {
     vi.mocked(useGallery).mockReturnValue({
       items: [], isLoading: false, error: null, hasMore: false,
       totalCount: 0, loadMore: vi.fn(), refresh: vi.fn(),
     });
     const { container } = renderWithProviders();
-    expect(container.querySelector('section')).toBeNull();
+    // The section must not disappear, or the home page loses a chapter.
+    expect(container.querySelector('section')).not.toBeNull();
+    expect(screen.getAllByRole('img').length).toBeGreaterThan(0);
   });
 
   it('renders panel titles for gallery items', () => {

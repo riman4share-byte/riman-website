@@ -67,7 +67,7 @@ export default function Footer() {
   const onNewsletterSubmit = async (data: NewsletterForm) => {
     const number = (settings.social.whatsapp || '971553730792').replace(/[^\d]/g, '');
     const message = encodeURIComponent(
-      `Please add ${data.email} to the Riman Fashion mailing list.`,
+      t('footer.newsletter_wa_message').replace('{email}', data.email),
     );
     window.open(`https://wa.me/${number}?text=${message}`, '_blank', 'noopener,noreferrer');
     reset();
@@ -175,9 +175,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Giant couture wordmark */}
+        {/*
+          Giant couture wordmark. terracotta-dark fails on onyx (2.18:1), so
+          the mark is tinted bone instead. It is decorative and aria-hidden,
+          so contrast is not required - but the colour should still be correct.
+        */}
         <div className="select-none pointer-events-none text-center overflow-hidden mb-8" aria-hidden="true">
-          <p className="font-heading text-[clamp(3.5rem,16vw,16rem)] leading-[0.8] tracking-[-0.02em] text-terracotta-dark/10 whitespace-nowrap">
+          <p className="font-heading text-[clamp(3.5rem,16vw,16rem)] leading-[0.8] tracking-[-0.02em] text-bone/8 whitespace-nowrap">
             RIMAN<sup className="text-[1.6vw] align-super">®</sup>
           </p>
         </div>
@@ -195,20 +199,20 @@ export default function Footer() {
         {/* Trust blocks */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-8 border-y border-white/5 mb-8">
           <div className="text-center">
-            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Since 2011</p>
-            <p className="text-xs text-stone-500 mt-1">Sharjah atelier</p>
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">{t('footer.trust_since')}</p>
+            <p className="text-xs text-stone-500 mt-1">{t('footer.trust_atelier')}</p>
           </div>
           <div className="text-center">
-            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Bespoke Tailoring</p>
-            <p className="text-xs text-stone-500 mt-1">Made to measure</p>
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">{t('footer.trust_bespoke')}</p>
+            <p className="text-xs text-stone-500 mt-1">{t('footer.trust_measure')}</p>
           </div>
           <div className="text-center">
-            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Free Fittings</p>
-            <p className="text-xs text-stone-500 mt-1">& alterations</p>
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">{t('footer.trust_fittings')}</p>
+            <p className="text-xs text-stone-500 mt-1">{t('footer.trust_alterations')}</p>
           </div>
           <div className="text-center">
-            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">Salon Hours</p>
-            <p className="text-xs text-stone-500 mt-1">{settings.contact.hours || '11am – 8:30pm'}</p>
+            <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-light">{t('footer.trust_hours')}</p>
+            <p className="text-xs text-stone-500 mt-1">{settings.contact.hours || t('footer.hours_default')}</p>
           </div>
         </div>
 
