@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 type Caption = { text: string; at: number };
 
@@ -24,6 +25,7 @@ function dataSaver() {
  */
 export default function FrameSequence({ captions = [] }: { captions?: Caption[] }) {
   const reduced = useReducedMotion();
+  const { t } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const framesRef = useRef<HTMLImageElement[]>([]);
@@ -125,8 +127,8 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
               key={i}
               className={
                 i === 1
-                  ? 'font-heading text-bone text-3xl md:text-5xl leading-tight max-w-3xl [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
-                  : 'font-editorial italic text-bone/90 text-xl md:text-2xl leading-relaxed max-w-2xl [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
+                  ? 'font-heading text-bone text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.05] max-w-4xl [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
+                  : 'font-editorial italic text-bone/90 text-[clamp(1.5rem,3vw,2.5rem)] leading-relaxed max-w-3xl [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
               }
             >
               {c.text}
@@ -150,8 +152,8 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
                 key={i}
                 className={
                   i === 1
-                    ? 'absolute font-heading text-bone text-3xl md:text-5xl leading-tight max-w-3xl transition-all duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
-                    : 'absolute font-editorial italic text-bone/90 text-2xl md:text-[2rem] leading-relaxed max-w-3xl transition-all duration-700 [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
+                    ? 'absolute font-heading text-bone text-[clamp(2.25rem,5vw,4.5rem)] leading-[1.05] max-w-4xl transition-[opacity,transform] duration-700 [text-shadow:0_2px_18px_rgba(22,21,19,0.6)]'
+                    : 'absolute font-editorial italic text-bone/90 text-[clamp(1.5rem,3vw,2.5rem)] leading-relaxed max-w-3xl transition-[opacity,transform] duration-700 [text-shadow:0_2px_14px_rgba(22,21,19,0.6)]'
                 }
                 style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(14px)' }}
               >
@@ -162,11 +164,11 @@ export default function FrameSequence({ captions = [] }: { captions?: Caption[] 
         </div>
         <div className="absolute bottom-8 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center gap-3">
           <span className="h-px w-10 bg-bone/40" aria-hidden="true" />
-          <span className="font-label text-[10px] tracking-[0.4em] uppercase text-bone/70">Scroll</span>
+          <span className="font-label text-[11px] tracking-[0.4em] uppercase text-bone/70">{t('frames.scroll')}</span>
           <span className="h-px w-10 bg-bone/40" aria-hidden="true" />
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-bone/10" aria-hidden="true" />
-        <div className="absolute bottom-0 left-0 h-[2px] bg-terracotta" style={{ width: `${progress * 100}%` }} aria-hidden="true" />
+        <div className="absolute bottom-0 start-0 end-0 h-[2px] bg-bone/10" aria-hidden="true" />
+        <div className="absolute bottom-0 start-0 h-[2px] bg-terracotta" style={{ width: `${progress * 100}%` }} aria-hidden="true" />
       </div>
     </section>
   );

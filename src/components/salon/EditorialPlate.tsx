@@ -1,6 +1,7 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { cn, formatPrice } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { translateProductValue, localizedContent } from '../../lib/productVocab';
@@ -18,23 +19,41 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
   const { name: productName } = localizedContent(product, language);
   const lookNumber = String(index + 1).padStart(2, '0');
 
+  const figureRef = useRef<HTMLElement>(null);
+
+  // The ghost numeral drifts at a different rate from the image it sits
+  // behind, so the plate reads as layered rather than flat. Desktop only -
+  // on a phone the plate is one screen tall and the drift is invisible.
+  const { scrollYProgress } = useScroll({
+    target: figureRef,
+    offset: ['start end', 'end start'],
+  });
+  const numeralY = useTransform(scrollYProgress, [0, 1], ['-6%', '6%']);
+
+  // Wipe direction alternates per plate. In RTL the axis flips, so
+  // "inset(0 0 100% 0)" (wipes up) becomes "inset(100% 0 0 0)".
+  const wipe = reverse
+    ? (language === 'ar' ? 'inset(100% 0 0 0)' : 'inset(0 100% 0 0)')
+    : (language === 'ar' ? 'inset(0 0 100% 0)' : 'inset(0 0 100% 0)');
+
   return (
-    <figure className="group relative grid gap-8 md:grid-cols-12 md:gap-10 items-end">
-      {/* Ghosted oversized numeral — parallax at a different speed */}
-      <span
+    <figure ref={figureRef} className="group relative grid gap-8 md:grid-cols-12 md:gap-10 items-end">
+      {/* Ghosted oversized numeral - parallax at a different speed */}
+      <motion.span
         aria-hidden="true"
+        style={reduced ? undefined : { y: numeralY }}
         className={cn(
           'pointer-events-none select-none absolute -top-[0.4em] font-heading leading-none text-stone-200/70 text-[clamp(7rem,16vw,15rem)]',
           reverse ? 'end-0 md:-end-8' : 'start-0 md:-start-8',
         )}
       >
         {lookNumber}
-      </span>
+      </motion.span>
 
       <motion.div
         className={cn('relative overflow-hidden md:col-span-7', reverse && 'md:order-2')}
         {...(!reduced ? {
-          initial: { clipPath: 'inset(0 0 100% 0)' },
+          initial: { clipPath: wipe },
           whileInView: { clipPath: 'inset(0 0 0% 0)' },
           viewport: { once: true, amount: 0.25 },
           transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
@@ -54,39 +73,65 @@ export default function EditorialPlate({ product, index, reverse }: EditorialPla
         </span>
       </motion.div>
 
-      <figcaption className={cn('relative flex flex-col gap-4 md:col-span-5 md:pb-6', reverse && 'md:order-1')}>
-        <span className="font-label text-[11px] tracking-[0.35em] uppercase text-terracotta-dark">
-          {t('silhouettes.look')} {lookNumber}
-        </span>
-        <Link to={`/product/${product.id}`}>
-          <h3 className="font-heading text-3xl md:text-4xl text-stone-800 leading-tight group-hover:text-terracotta-dark transition-colors duration-700">
-            {productName}
-          </h3>
-        </Link>
-        {product.fabric && (
-          <p className="font-editorial italic text-lg text-stone-600">{translateProductValue('fabric', product.fabric, language)}</p>
+      {/*
+        The caption block overlaps the image edge by ~3rem on a champagne
+        panel - no shadow. The panel slides toward the image and pads the
+        text back by the same amount, so the caption reads as a card laid
+        over the photograph rather than as a column beside it.
+
+        Direction is logical, not physical: the image always sits on the
+        inline-start side when `reverse` is false and on the inline-end side
+        when it is true - in both LTR and RTL. So the overlap is
+        negative-inline-start for the first case and negative-inline-end for
+        the second.
+      */}
+      <figcaption
+        className={cn(
+          'relative md:col-span-5 md:pb-6',
+          reverse ? 'md:order-1' : 'md:order-2',
         )}
-        <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 mt-1">
-          {product.salePrice !== undefined && product.salePrice > 0 && (
-            <p className="font-body text-sm text-stone-800">
-              <span className="font-label text-[11px] tracking-[0.25em] uppercase text-stone-500 me-2">{t('product.purchase_value')}</span>
-              {formatPrice(product.salePrice)}
-            </p>
+      >
+        <div
+          className={cn(
+            'flex flex-col gap-4 bg-champagne p-5 lg:p-7',
+            reverse
+              ? 'md:-me-12 lg:-me-16 md:pe-12 lg:pe-16'
+              : 'md:-ms-12 lg:-ms-16 md:ps-12 lg:ps-16',
           )}
-          {product.rentalPrice !== undefined && product.rentalPrice > 0 && (
-            <p className="font-body text-sm text-terracotta-dark">
-              <span className="font-label text-[11px] tracking-[0.25em] uppercase text-stone-500 me-2">{t('product.rent')}</span>
-              {formatPrice(product.rentalPrice)}
-            </p>
-          )}
-        </div>
-        <Link
-          to={`/product/${product.id}`}
-          className="group/link inline-flex items-center gap-2 font-label text-[11px] tracking-[0.3em] uppercase text-stone-800 transition-colors duration-700 hover:text-terracotta-dark mt-2 min-h-[44px]"
         >
-          {t('silhouettes.view_reserve')}
-          <ArrowRight className="w-4 h-4 transition-transform duration-700 group-hover/link:translate-x-1 rtl:rotate-180" />
-        </Link>
+          <span className="font-label text-[11px] tracking-[0.35em] uppercase text-terracotta-dark">
+            {t('silhouettes.look')} {lookNumber}
+          </span>
+          <Link to={`/product/${product.id}`}>
+            <h3 className="font-heading text-3xl md:text-4xl text-stone-800 leading-tight group-hover:text-terracotta-dark transition-colors duration-700">
+              {productName}
+            </h3>
+          </Link>
+          {product.fabric && (
+            <p className="font-editorial italic text-lg text-stone-600">{translateProductValue('fabric', product.fabric, language)}</p>
+          )}
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 mt-1">
+            {product.salePrice !== undefined && product.salePrice > 0 && (
+              <p className="font-body text-sm text-stone-800">
+                <span className="font-label text-[11px] tracking-[0.25em] uppercase text-stone-500 me-2">{t('product.purchase_value')}</span>
+                {formatPrice(product.salePrice)}
+              </p>
+            )}
+            {product.rentalPrice !== undefined && product.rentalPrice > 0 && (
+              <p className="font-body text-sm text-terracotta-dark">
+                <span className="font-label text-[11px] tracking-[0.25em] uppercase text-stone-500 me-2">{t('product.rent')}</span>
+                {formatPrice(product.rentalPrice)}
+              </p>
+            )}
+          </div>
+          <Link
+            to={`/product/${product.id}`}
+            className="group/link inline-flex items-center gap-2 font-label text-[11px] tracking-[0.3em] uppercase text-stone-800 transition-colors duration-700 hover:text-terracotta-dark mt-2 min-h-[44px]"
+          >
+            {t('silhouettes.view_reserve')}
+            <ArrowRight className="w-4 h-4 transition-transform duration-700 group-hover/link:translate-x-1 rtl:rotate-180" />
+          </Link>
+        </div>
       </figcaption>
     </figure>
   );

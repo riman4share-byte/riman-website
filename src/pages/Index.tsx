@@ -3,26 +3,58 @@ import ScrollReveal from '../components/ScrollReveal';
 import { useData } from '../contexts/DataContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import ChapterLabel from '../components/salon/ChapterLabel';
-import RevealWords from '../components/motion/RevealWords';
 import InvitationRule from '../components/salon/InvitationRule';
 import EditorialPlate from '../components/salon/EditorialPlate';
+import AtelierSplit from '../components/salon/AtelierSplit';
+import InterstitialQuote from '../components/salon/InterstitialQuote';
 import HeroSection21st from '../components/ui-21st/HeroSection';
 import ChapterRail from '../components/motion/ChapterRail';
-import ElegantCarousel21st from '../components/ui-21st/ElegantCarousel21st';
+import HorizontalLookbook from '../components/luxury/HorizontalLookbook';
 import TypeInterlude from '../components/salon/TypeInterlude';
 import TestimonialWall21st from '../components/ui-21st/TestimonialWall21st';
 import BookingCTA21st from '../components/ui-21st/BookingCTA21st';
 import GoldThread from '../components/motion/GoldThread';
 import FrameSequence from '../components/motion/FrameSequence';
 
+/**
+ * Disciplines (brief 9.8): a staggered, uneven trio - the middle tile sits
+ * lower and the ratios differ - so the row never reads as a flat 3-up grid.
+ */
 const DISCIPLINES = [
-  { titleKey: 'cat.bridal', descKey: 'disciplines.bridal', media: '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg', alt: 'Bridal', to: '/collection/bridal', isVideo: false },
-  { titleKey: 'cat.evening', descKey: 'disciplines.evening', media: '/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg', alt: 'Evening', to: '/collection/evening', isVideo: false },
-  { titleKey: 'cat.rentals', descKey: 'disciplines.rentals', media: '/assets/rimanfashion_3306305106777368667_227867687_2024-02-19.mp4', alt: 'Rentals', to: '/collection/rental', isVideo: true },
+  {
+    titleKey: 'cat.bridal',
+    descKey: 'disciplines.bridal',
+    media: '/assets/rimanfashion_3542687554351211237_227867687_1_2025-01-10.jpg',
+    altKey: 'atelier.image_1_alt',
+    to: '/collection/bridal',
+    isVideo: false,
+    ratio: 'aspect-[3/4]',
+    offset: 'md:mt-0',
+  },
+  {
+    titleKey: 'cat.evening',
+    descKey: 'disciplines.evening',
+    media: '/assets/rimanfashion_3638158883472325906_1739454936_2_2025-05-22.jpg',
+    altKey: 'atelier.image_2_alt',
+    to: '/collection/evening',
+    isVideo: false,
+    ratio: 'aspect-[4/5]',
+    offset: 'md:mt-16',
+  },
+  {
+    titleKey: 'cat.rentals',
+    descKey: 'disciplines.rentals',
+    media: '/assets/rimanfashion_3306305106777368667_227867687_2024-02-19.mp4',
+    altKey: 'atelier.image_3_alt',
+    to: '/collection/rental',
+    isVideo: true,
+    ratio: 'aspect-[3/4]',
+    offset: 'md:mt-8',
+  },
 ];
 
 export default function Index() {
-  const { products, content } = useData();
+  const { products } = useData();
   const { t } = useLanguage();
 
   const featured = products.filter((p) => p.isFeatured).slice(0, 6);
@@ -30,58 +62,22 @@ export default function Index() {
 
   return (
     <div className="film-grain">
+      {/* 1. Hero 2.0 — onyx */}
       <HeroSection21st />
       <ChapterRail />
 
-      <GoldThread className="bg-bone" />
-      <section id="atelier" className="bg-bone py-28 md:py-40 px-6 md:px-12 lg:px-20">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-10 md:gap-16">
-          <div className="md:col-span-4">
-            <div className="md:sticky md:top-40">
-              <ChapterLabel numeral="I" titleKey="chapter.atelier" />
-            </div>
-          </div>
-          <div className="md:col-span-8 flex flex-col gap-10">
-            <ScrollReveal>
-              <h3 className="font-heading text-3xl md:text-5xl text-stone-800 leading-tight">
-                {t('atelier.heading')}
-              </h3>
-            </ScrollReveal>
-            <RevealWords
-              text={t('atelier.body')}
-              className="font-body text-stone-600 leading-loose max-w-2xl"
-            />
-          </div>
-        </div>
-      </section>
+      <GoldThread surface="bg-bone" />
 
-      {/* Dark couture interstitial — full-bleed atelier imagery, slow Ken Burns */}
-      <section className="couture-interstitial relative isolate overflow-hidden bg-onyx">
-        <div className="ken-burns absolute inset-0">
-          <img
-            src={content.quoteImage}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            className="h-full w-full object-cover object-[center_30%] opacity-45"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-onyx/70 via-onyx/10 to-onyx/80" aria-hidden="true" />
-        <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center gap-10 px-6 py-24 text-center">
-          <span className="h-px w-16 bg-terracotta/50" aria-hidden="true" />
-          <RevealWords
-            text={t('atelier.quote')}
-            className="font-editorial text-2xl italic leading-relaxed text-bone md:text-[2rem] md:leading-[1.5]"
-          />
-          <span className="font-label text-caption uppercase tracking-[0.45em] text-terracotta-light">
-            {t('chapter.atelier')}
-          </span>
-        </div>
-      </section>
+      {/* 2. I. Atelier — bone, sticky split with crossfading stills */}
+      <AtelierSplit heading={t('atelier.heading')} body={t('atelier.body')} />
 
-      <InvitationRule className="bg-bone border-t border-terracotta/15" />
+      {/* 3. Interstitial — onyx, full-bleed, oversized quote glyph */}
+      <InterstitialQuote />
 
-      <section className="bg-champagne py-24 md:py-36 px-6 md:px-12 lg:px-20">
+      <InvitationRule className="bg-champagne border-t border-terracotta/15" />
+
+      {/* 4. II. Silhouettes — champagne, alternating plates */}
+      <section id="silhouettes" className="bg-champagne py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
           <ChapterLabel numeral="II" titleKey="chapter.silhouettes" />
           <div className="mt-16 md:mt-24 flex flex-col gap-24 md:gap-36">
@@ -96,9 +92,9 @@ export default function Index() {
         </div>
       </section>
 
-      <InvitationRule className="bg-champagne border-t border-terracotta/15" />
+      <GoldThread surface="bg-champagne" />
 
-      {/* Pinned canvas frame sequence — 131 frames @8fps, DPR-aware; poster fallback on mobile/reduced-motion/save-data */}
+      {/* 5. Frame sequence — onyx, pinned canvas */}
       <FrameSequence
         captions={[
           { text: t('frames.caption_1'), at: 0.15 },
@@ -107,46 +103,47 @@ export default function Index() {
         ]}
       />
 
-      <section className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
+      {/* 6. III. Savoir-faire — bone, staggered discipline trio */}
+      <section id="savoir-faire" className="bg-bone py-24 md:py-36 px-6 md:px-12 lg:px-20">
         <div className="max-w-6xl mx-auto">
           <ChapterLabel numeral="III" titleKey="chapter.savoir_faire" />
           <div className="mt-12 grid md:grid-cols-2 gap-10 max-w-4xl">
             <p className="font-body text-stone-600 leading-loose">{t('savoir.p1')}</p>
             <p className="font-body text-stone-600 leading-loose">{t('savoir.p2')}</p>
           </div>
-          <div className="mt-16 grid md:grid-cols-3 gap-6">
+          <div className="mt-16 md:mt-24 grid md:grid-cols-3 gap-6 md:gap-8 items-start">
             {DISCIPLINES.map((d) => (
-              <div key={d.titleKey}>
+              <div key={d.titleKey} className={d.offset}>
                 <ScrollReveal>
-                <Link to={d.to} className="group block">
-                  <div className="overflow-hidden">
-                    {d.isVideo ? (
-                      <video
-                        src={d.media}
-                        autoPlay muted loop playsInline preload="none"
-                        aria-hidden="true"
-                        tabIndex={-1}
-                        ref={(el) => {
-                          if (!el) return;
-                          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) el.pause();
-                        }}
-                        className="aspect-[3/4] w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
-                      />
-                    ) : (
-                      <img
-                        src={d.media}
-                        alt={d.alt}
-                        loading="lazy"
-                        className="aspect-[3/4] w-full object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
-                      />
-                    )}
-                  </div>
-                  <h3 className="font-heading text-2xl text-stone-800 mt-5">{t(d.titleKey)}</h3>
-                  <p className="font-editorial italic text-stone-600 mt-2">{t(d.descKey)}</p>
-                  <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-terracotta-dark">
-                    {t('disciplines.discover')}
-                  </span>
-                </Link>
+                  <Link to={d.to} className="group block">
+                    <div className="overflow-hidden">
+                      {d.isVideo ? (
+                        <video
+                          src={d.media}
+                          autoPlay muted loop playsInline preload="none"
+                          aria-hidden="true"
+                          tabIndex={-1}
+                          ref={(el) => {
+                            if (!el) return;
+                            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) el.pause();
+                          }}
+                          className={`${d.ratio} w-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]`}
+                        />
+                      ) : (
+                        <img
+                          src={d.media}
+                          alt={t(d.altKey)}
+                          loading="lazy"
+                          className={`${d.ratio} w-full object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]`}
+                        />
+                      )}
+                    </div>
+                    <h3 className="font-heading text-2xl text-stone-800 mt-5">{t(d.titleKey)}</h3>
+                    <p className="font-editorial italic text-stone-600 mt-2">{t(d.descKey)}</p>
+                    <span className="link-couture inline-block mt-3 font-label text-xs tracking-[0.25em] uppercase text-terracotta-dark">
+                      {t('disciplines.discover')}
+                    </span>
+                  </Link>
                 </ScrollReveal>
               </div>
             ))}
@@ -154,30 +151,21 @@ export default function Index() {
         </div>
       </section>
 
-      <InvitationRule className="bg-bone border-t border-terracotta/15" />
+      <GoldThread surface="bg-stone-900" />
 
+      {/* 7. Type interlude — stone-900, giant outlined marquee */}
       <TypeInterlude />
 
-      <ElegantCarousel21st />
+      {/* 8. Pinned horizontal lookbook — onyx */}
+      <HorizontalLookbook />
 
       <InvitationRule className="bg-champagne border-t border-terracotta/15" />
 
+      {/* 9. Testimonials — champagne */}
       <TestimonialWall21st />
 
-      {/* Single contextual sticky CTA replaces 4 repeated strips */}
-      <section className="sticky bottom-0 z-30 bg-onyx/95 border-t border-terracotta/20 backdrop-blur-sm">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4">
-          <p className="font-label text-[11px] tracking-[0.2em] uppercase text-bone/80 text-center sm:text-start">
-            {t('hero.private_viewing')}
-          </p>
-          <Link to="/appointment" className="btn-couture-ghost !text-bone whitespace-nowrap min-h-[44px]">
-            {t('cta.viewing')}
-          </Link>
-        </div>
-      </section>
-
+      {/* 10. Closing CTA band — onyx, in-flow (the brief forbids a sticky CTA band) */}
       <BookingCTA21st />
-
     </div>
   );
 }

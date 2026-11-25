@@ -27,8 +27,8 @@ export default function TypeInterlude() {
     <span
       className={
         isAr
-          ? 'font-arabic-heading text-[clamp(3rem,10vw,9rem)] leading-none text-bone/90'
-          : 'font-heading text-[clamp(3rem,10vw,9rem)] leading-none text-transparent [-webkit-text-stroke:1px_rgba(239,234,226,0.32)]'
+          ? 'font-arabic-heading text-[clamp(4rem,12vw,11rem)] leading-none text-bone/90'
+          : 'font-heading text-[clamp(4rem,12vw,11rem)] leading-none text-transparent [-webkit-text-stroke:1px_rgba(239,234,226,0.32)]'
       }
     >
       {word}
@@ -40,8 +40,9 @@ export default function TypeInterlude() {
   if (reduced) {
     return (
       <section
+        id="interlude"
         className="bg-stone-900 py-16 md:py-24 border-y border-bone/5"
-        aria-label={t('lookbook.intro')}
+        aria-label={t('interlude.label')}
       >
         <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
           {words.map((word, i) => (
@@ -61,8 +62,9 @@ export default function TypeInterlude() {
 
   return (
     <section
+      id="interlude"
       className="bg-stone-900 py-16 md:py-24 overflow-hidden border-y border-bone/5"
-      aria-label={t('lookbook.intro')}
+      aria-label={t('interlude.label')}
     >
       <div dir={isAr ? 'rtl' : 'ltr'}>
         <div className="marquee-track flex gap-10 md:gap-16 whitespace-nowrap w-max items-center">

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useData } from '../../contexts/DataContext';
 
@@ -11,11 +11,12 @@ const PILLARS = [
 export default function TestimonialWall21st() {
   const { t } = useLanguage();
   const { content } = useData();
+  const reduced = useReducedMotion();
 
   return (
-    <section className="bg-bone py-20" aria-label={t('home.pillars_label')}>
-      <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto text-center">
+    <section className="bg-champagne py-20 md:py-28" aria-label={t('home.pillars_label')}>
+      <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20">
+        <div className="max-w-4xl">
           <p className="font-label text-caption tracking-[0.35em] uppercase text-terracotta-dark mb-4">
             {t('home.pillars_eyebrow')}
           </p>
@@ -24,17 +25,19 @@ export default function TestimonialWall21st() {
           </blockquote>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mt-16 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-16">
           {PILLARS.map((pillar, i) => (
             <motion.div
               key={pillar.titleKey}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="border-t border-pearl pt-6"
+              {...(!reduced ? {
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { delay: i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
+              } : {})}
+              className="border-t border-terracotta/25 pt-6"
             >
-              <p className="font-label text-caption tracking-[0.2em] uppercase text-stone-800 font-bold">
+              <p className="font-label text-caption tracking-[0.2em] uppercase text-stone-800">
                 {t(pillar.titleKey)}
               </p>
               <p className="font-body text-caption text-stone-600 mt-3 leading-relaxed">
