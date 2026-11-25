@@ -117,7 +117,7 @@ export default function CollectionsPage() {
                     initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.6, delay: (idx % 3) * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.6, delay: (idx % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Link
                       to={`/collection/${def.slug}`}
@@ -131,7 +131,7 @@ export default function CollectionsPage() {
                           loading="lazy"
                           decoding="async"
                           onError={(e) => { (e.target as HTMLImageElement).src = DISTINCT_FALLBACKS[def.slug] || FALLBACK_IMAGE; }}
-                          className="w-full h-full object-cover transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-700 ease-[0.22, 1, 0.36, 1] group-hover:scale-105"
                         />
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/10 to-transparent" />
