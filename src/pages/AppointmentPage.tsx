@@ -174,7 +174,7 @@ export default function AppointmentPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-lg mx-auto px-6"
         >
-          <div className="w-20 h-20 rounded-full bg-terracotta/10 flex items-center justify-center mx-auto mb-8">
+          <div className="w-20 h-20 bg-terracotta/10 flex items-center justify-center mx-auto mb-8">
             <CheckCircle2 className="w-10 h-10 text-terracotta-dark" />
           </div>
           <h1 className="font-heading text-4xl text-stone-800 mb-4">{t('appointment.booked')}</h1>
@@ -191,7 +191,7 @@ export default function AppointmentPage() {
             onClick={downloadIcs}
             className="btn-luxury-outline inline-block mt-4 px-10 w-full sm:w-auto"
           >
-            {isRtl ? 'أضيفي إلى التقويم (.ics)' : 'Add to calendar (.ics)'}
+            {t('appointment.add_to_calendar')}
           </button>
           <a
             href={buildWhatsAppUrl(
@@ -270,21 +270,21 @@ export default function AppointmentPage() {
                     <label htmlFor="appt-name" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.full_name')}</label>
                     <div className="relative">
                       <User className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
-                      <input id="appt-name" name="name" type="text" required aria-required="true" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder="Your full name" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <input id="appt-name" name="name" type="text" required aria-required="true" value={form.name} onChange={e => updateForm('name', e.target.value)} placeholder={t('appointment.name_placeholder')} className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="appt-email" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.email')}</label>
                     <div className="relative">
                       <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
-                      <input id="appt-email" name="email" type="email" required aria-required="true" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder="your@email.com" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
+                      <input id="appt-email" name="email" type="email" required aria-required="true" value={form.email} onChange={e => updateForm('email', e.target.value)} placeholder={t('appointment.email_placeholder')} className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-600" />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="appt-phone" className="block text-micro tracking-[0.3em] uppercase text-stone-600 font-bold mb-2">{t('appointment.phone')}</label>
                     <div className="relative">
                       <Phone className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" aria-hidden="true" />
-                      <input id="appt-phone" name="phone" type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder="+971 50 000 0000" aria-describedby="appt-phone-hint" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-500" />
+                      <input id="appt-phone" name="phone" type="tel" value={form.phone} onChange={e => updateForm('phone', e.target.value)} placeholder={t('appointment.phone_placeholder')} aria-describedby="appt-phone-hint" className="w-full ps-11 bg-transparent border-0 border-b border-stone-300 focus:border-terracotta focus:ring-0 rounded-none py-3 outline-none transition-colors duration-500 text-stone-800 placeholder:text-stone-500" />
                     </div>
                     <p id="appt-phone-hint" className="text-micro text-stone-500 italic mt-1.5">{t('appointment.phone_optional_hint')}</p>
                   </div>
