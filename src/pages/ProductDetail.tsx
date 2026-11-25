@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useMemo, useRef, MouseEvent, Suspense, useEffect } from 'react';
 import { ShoppingBag, Heart, ChevronRight, ChevronLeft, ChevronDown, Share2, Ruler, ShieldCheck, Truck, Search, Star, CheckCircle2, X, Calendar, Info, Loader2, RotateCcw, Box, Sparkles, MessageCircle, Gem, Wind } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { products } from '../data/products';
 import { formatPrice, cn, categoryToSlug } from '../lib/utils';
 import { resolveMediaUrl } from '../lib/seo';
@@ -32,6 +32,7 @@ export default function ProductDetail() {
   const { addItem } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { t, language } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const { settings } = useSettings();
   const navigate = useNavigate();
   const threeDViewerEnabled = useFeature('threeDViewer');
@@ -88,6 +89,7 @@ export default function ProductDetail() {
   [id, dynamicProducts, products]);
 
   const { name: productName, description: productDescription } = localizedContent(product ?? { name: '', description: '' }, language);
+  const productTitleClassName = 'font-heading text-4xl md:text-5xl lg:text-6xl normal-case text-stone-800 tracking-tight leading-[1.08]';
 
   const { pullQuote, bodyCopy } = useMemo(() => {
     const d = productDescription || '';
@@ -218,16 +220,16 @@ export default function ProductDetail() {
           {/* Breadcrumbs */}
           <nav className="flex gap-2 text-xs tracking-[0.2em] uppercase text-stone-600 mb-10">
             <Link to="/" className="hover:text-terracotta-light transition-colors">{t('nav.home')}</Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
             <Link to={`/collection/${categoryToSlug(product.category)}`} className="hover:text-terracotta-light transition-colors">{translateProductValue('category', product.category, language)}</Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 rtl:rotate-180" />
             <span className="text-stone-800 font-medium">{productName}</span>
           </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-[48fr_52fr] gap-10 lg:gap-14 mb-20">
             {/* Gallery */}
             <div className="space-y-3">
-              <div className="relative aspect-[4/5] overflow-hidden bg-ivory">
+              <div className="relative aspect-[4/5] overflow-hidden bg-ivory border border-stone-200">
                 <AnimatePresence mode="wait">
                   {is3DMode && product.glbUrl ? (
                     <motion.div key="3d-viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
@@ -241,7 +243,7 @@ export default function ProductDetail() {
                     <motion.div key="video-player" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-stone-900">
                       <video src={product.videoUrl} poster={product.images[0]} autoPlay muted loop playsInline className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-onyx/10 pointer-events-none" />
-                      <div className="absolute bottom-5 left-5 p-2 bg-ivory/20 backdrop-blur-md rounded-full">
+                      <div className="absolute bottom-5 start-5 p-2 bg-ivory/20 backdrop-blur-md">
                         <RotateCcw className="w-3 h-3 text-bone animate-spin-slow" />
                       </div>
                     </motion.div>
@@ -261,15 +263,16 @@ export default function ProductDetail() {
                         src={product.images[product.videoUrl ? currentImageIndex - 1 : currentImageIndex]}
                         alt={productName}
                         fetchPriority="high"
+                        decoding="async"
                         animate={{
                           scale: isZoomed ? 1.8 : 1,
                           x: isZoomed ? (zoomPos.x - 50) * -0.8 : 0,
                           y: isZoomed ? (zoomPos.y - 50) * -0.8 : 0,
                         }}
-                        transition={{ type: "spring", stiffness: 100, damping: 25, mass: 0.5 }}
-                        className="w-full h-full object-cover pointer-events-none"
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="w-full h-full object-cover object-[center_25%] pointer-events-none"
                       />
-                      <div className={cn("absolute top-5 left-5 p-2 bg-ivory/80 text-stone-800 rounded-full transition-opacity duration-300 pointer-events-none z-10", isZoomed ? "opacity-100" : "opacity-0")}>
+                      <div className={cn("absolute top-5 start-5 p-2 bg-ivory/80 text-stone-800 transition-opacity duration-300 pointer-events-none z-10", isZoomed ? "opacity-100" : "opacity-0")}>
                         <Search className="w-4 h-4" />
                       </div>
                     </motion.div>
@@ -277,25 +280,25 @@ export default function ProductDetail() {
                 </AnimatePresence>
 
                 {/* Image Counter Badge */}
-                <div className="absolute bottom-5 left-5 z-20 bg-ivory/90 backdrop-blur-sm px-3 py-1.5 text-micro tracking-widest uppercase text-stone-700 font-bold">
+                <div className="absolute bottom-5 start-5 z-20 bg-ivory/90 backdrop-blur-sm px-3 py-1.5 text-micro tracking-widest uppercase text-stone-700 font-bold">
                   {currentImageIndex + 1} / {totalAssets}
                 </div>
 
                 {/* Nav Arrows */}
                 {totalAssets > 1 && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label="Previous image">
-                      <ChevronLeft className="w-4 h-4" />
+                    <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute start-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label={t('product.previous_image')}>
+                      <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label="Next image">
-                      <ChevronRight className="w-4 h-4" />
+                    <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute end-3 top-1/2 -translate-y-1/2 p-1.5 bg-ivory/80 text-stone-800 hover:bg-terracotta hover:text-bone transition-all z-20" aria-label={t('product.next_image')}>
+                      <ChevronRight className="w-4 h-4 rtl:rotate-180" />
                     </button>
                   </>
                 )}
 
                 {/* Perspective Toggle */}
                 {product.glbUrl && (
-                  <div className="absolute top-5 right-5 z-30 flex gap-2">
+                  <div className="absolute top-5 end-5 z-30 flex gap-2">
                     <button onClick={() => setIs3DMode(false)} className={cn("p-2.5 transition-all backdrop-blur border", !is3DMode ? "bg-terracotta text-bone border-terracotta" : "bg-ivory/80 text-stone-600 border-stone-100 hover:border-stone-300")} title={t('product.classic_view')}>
                       <Search className="w-3.5 h-3.5" />
                     </button>
@@ -308,7 +311,7 @@ export default function ProductDetail() {
                 )}
 
                 {/* Share Menu */}
-                <div className="absolute bottom-5 right-5 z-20 flex gap-2">
+                <div className="absolute bottom-5 end-5 z-20 flex gap-2">
                   <button
                     ref={shareButtonRef}
                     onClick={() => setShowShareMenu(v => !v)}
@@ -326,7 +329,7 @@ export default function ProductDetail() {
                       ref={shareMenuRef}
                       role="menu"
                       aria-label={t('product.share')}
-                      className="absolute bottom-12 right-0 bg-ivory border border-stone-100 p-2 w-44"
+                      className="absolute bottom-12 end-0 bg-ivory border border-stone-100 p-2 w-44"
                     >
                       <a role="menuitem" href={`https://wa.me/?text=${encodeURIComponent(`Check out ${productName} at Riman Fashion: ${window.location.origin}/product/${product.id}`)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-2.5 text-micro tracking-wider uppercase text-stone-700 hover:bg-pearl transition-colors">
                         WhatsApp
@@ -353,7 +356,7 @@ export default function ProductDetail() {
                   const index = product.videoUrl ? i + 1 : i;
                   return (
                     <button key={i} onClick={() => setCurrentImageIndex(index)} className={cn("w-16 h-16 flex-shrink-0 bg-stone-100 overflow-hidden border-2 transition-all", currentImageIndex === index ? "border-terracotta" : "border-transparent")}>
-                      <img src={img} className="w-full h-full object-cover" loading="lazy" alt={`${productName} thumbnail ${i + 1}`} />
+                      <img src={img} className="w-full h-full object-cover object-[center_25%]" loading="lazy" decoding="async" alt={`${productName} thumbnail ${i + 1}`} />
                     </button>
                   );
                 })}
@@ -381,14 +384,28 @@ export default function ProductDetail() {
 
             {/* Info — Sticky on Desktop */}
             <div className="flex flex-col lg:sticky lg:top-28 lg:self-start">
-              <header className="mb-8">
-                <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-2 font-bold">{product.designer || 'Riman Fashion'}</span>
-                <h1 className="font-heading text-3xl md:text-4xl text-stone-800 tracking-wider mb-3 leading-tight">{productName}</h1>
-                <div className="flex gap-3">
+              <header className="mb-8 pb-8 border-b border-stone-200">
+                <span className="text-micro tracking-[0.3em] uppercase text-terracotta-dark block mb-3 font-bold">{product.designer || 'Riman Fashion'}</span>
+                {reducedMotion ? (
+                  <h1 className={productTitleClassName}>{productName}</h1>
+                ) : (
+                  <motion.h1
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    className={productTitleClassName}
+                  >
+                    {productName}
+                  </motion.h1>
+                )}
+                <p className="font-editorial italic text-base md:text-lg text-terracotta-dark mt-3 mb-5">
+                  {translateProductValue('fabric', product.fabric, language) || t('product.fabric_default')}
+                </p>
+                <div className="flex flex-wrap gap-3">
                   {product.isNew && (
                   <div className="flex flex-col gap-1">
                     <span className="text-terracotta-dark text-micro uppercase tracking-widest border border-terracotta/30 px-3 py-1 font-bold self-start">{t('product.limited_edition')}</span>
-                    <span className="text-[11px] text-stone-500 italic">{t('product.limited_edition_count')}</span>
+                    <span className="text-micro text-stone-500 italic">{t('product.limited_edition_count')}</span>
                   </div>
                 )}
                   <span className="text-stone-600 text-micro uppercase tracking-widest border border-stone-200 px-3 py-1 font-medium">SKU: RF-{product.id.padStart(4, '0')}</span>
@@ -519,14 +536,14 @@ export default function ProductDetail() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 flex flex-col gap-2">
-                    <button onClick={reserveViewing} className="w-full btn-luxury flex items-center justify-center gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 border-y border-stone-200 py-6">
+                  <div className="flex-1 flex flex-col gap-3">
+                    <button onClick={reserveViewing} className="order-1 w-full btn-luxury flex items-center justify-center gap-3">
                       <Sparkles className="w-4 h-4" />
-                      {t('product.reserve_viewing')}
+                      {t('product.reserve_enquire')}
                     </button>
                     {(!isSale || purchaseMode === 'sale' || (isRent && purchaseMode === 'rent')) && (
-                      <button onClick={handleAddToCart} disabled={isAddingToCart} className="w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
+                      <button onClick={handleAddToCart} disabled={isAddingToCart} className="order-2 w-full btn-luxury-outline !py-3 flex items-center justify-center gap-3">
                         {isAddingToCart ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
@@ -900,7 +917,7 @@ export default function ProductDetail() {
           <div className="flex flex-col gap-1.5 shrink-0">
             <button onClick={reserveViewing} className="btn-luxury !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
               <Sparkles className="w-3.5 h-3.5" />
-              {t('product.reserve_viewing')}
+              {t('product.reserve_enquire')}
             </button>
             <button onClick={handleAddToCart} disabled={isAddingToCart} className="btn-luxury-outline !py-2.5 !px-5 text-micro flex items-center justify-center gap-2 whitespace-nowrap">
               {isAddingToCart ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShoppingBag className="w-3.5 h-3.5" />}
