@@ -1,8 +1,9 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import ProductCard from '../components/ProductCard';
+import KineticHeading from '../components/motion/KineticHeading';
 import { cn } from '../lib/utils';
 import { useData } from '../contexts/DataContext';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -18,16 +19,7 @@ export default function CollectionPage() {
   const { products, isLoading } = useData();
   const { category } = useParams();
   const { t } = useLanguage();
-
-  // Two of these URLs rendered byte-identical product sets and competed with
-  // each other in search:
-  //   /collection/evening and /collection/couture both filtered
-  //     category === 'Evening Dress';
-  //   /collection/rental returned every gown, because all 36 products are
-  //     productType 'both' - so it duplicated /collection/all.
-  // Merge them onto one canonical URL each instead of serving thin duplicates.
-  if (category === 'evening') return <Navigate to="/collection/couture" replace />;
-  if (category === 'rental') return <Navigate to="/collection/all" replace />;
+  const reducedMotion = useReducedMotion();
 
   const filterFields: FilterFieldDef[] = [
     {
@@ -136,24 +128,53 @@ export default function CollectionPage() {
     : category === 'rental' ? t('cat.rental_title')
     : t('cat.all');
 
+  // Two of these URLs rendered byte-identical product sets and competed with
+  // each other in search:
+  //   /collection/evening and /collection/couture both filtered
+  //     category === 'Evening Dress';
+  //   /collection/rental returned every gown, because all 36 products are
+  //     productType 'both' - so it duplicated /collection/all.
+  // Merge them onto one canonical URL each instead of serving thin duplicates.
+  if (category === 'evening') return <Navigate to="/collection/couture" replace />;
+  if (category === 'rental') return <Navigate to="/collection/all" replace />;
+
   return (
     <div id="collection-page" className="pt-24 min-h-screen bg-ivory">
-      <header className="section-padding !py-12 bg-ivory border-b border-stone-100">
-        <div className="container mx-auto">
-          <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-4">
+      <header className="section-padding relative isolate !py-16 md:!py-24 overflow-hidden bg-ivory border-b border-stone-200">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          {reducedMotion ? (
+            <span className="absolute start-[-0.04em] top-1/2 -translate-y-1/2 whitespace-nowrap font-heading text-[clamp(6rem,18vw,16rem)] leading-[0.75] text-stone-200/80 select-none">
+              {categoryTitle}
+            </span>
+          ) : (
+            <motion.span
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute start-[-0.04em] top-1/2 -translate-y-1/2 whitespace-nowrap font-heading text-[clamp(6rem,18vw,16rem)] leading-[0.75] text-stone-200/80 select-none"
+            >
+              {categoryTitle}
+            </motion.span>
+          )}
+        </div>
+        <div className="container relative z-10 mx-auto">
+          <nav className="flex gap-2 text-xs tracking-widest uppercase text-stone-600 mb-6">
             <Link to="/" className="hover:text-terracotta-dark transition-colors">{t('nav.home')}</Link>
             <span>/</span>
             <span className="text-stone-800 font-medium">{t('cat.collection')}</span>
           </nav>
-          <h1 className="font-heading text-4xl md:text-5xl text-stone-800 tracking-wider uppercase mb-4 leading-tight">{categoryTitle}</h1>
-          <p className="text-stone-600 font-body text-base tracking-wide max-w-2xl italic leading-relaxed">
+          <KineticHeading
+            as="h1"
+            text={categoryTitle}
+            className="font-heading text-4xl md:text-6xl normal-case text-stone-800 tracking-tight max-w-4xl"
+          />
+          <p className="text-stone-600 font-body text-base tracking-wide max-w-2xl italic leading-relaxed mt-5">
             {t('cat.subtitle')}
           </p>
         </div>
       </header>
 
-      <div className="z-40 bg-ivory/80 backdrop-blur-md border-b border-stone-100">
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+      <div className="z-40 bg-ivory border-b border-stone-200">
         <div className="container mx-auto px-6 py-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
@@ -222,14 +243,18 @@ export default function CollectionPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto max-w-6xl px-6 py-16">
         {isLoading ? (
           <ProductGridSkeleton />
         ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start gap-x-8 gap-y-20">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+            filteredProducts.map((product, index) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                lookNumber={String(index + 1).padStart(2, '0')}
+              />
             ))
           ) : (
             <div className="col-span-full py-24 text-center">
