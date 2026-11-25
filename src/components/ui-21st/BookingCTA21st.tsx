@@ -17,7 +17,7 @@ export default function BookingCTA21st() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <h2 className="font-heading text-3xl md:text-5xl text-ivory mb-6">
             {t('cta.band_heading')}
