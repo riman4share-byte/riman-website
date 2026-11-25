@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ChevronRight, RefreshCw, ArrowLeft, Eye, CheckCircle2, CalendarCheck } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { products } from '../data/products';
 import { Product } from '../types';
 import ProductCard from '../components/ProductCard';
+import KineticHeading from '../components/motion/KineticHeading';
 
 type Answers = Record<string, string>;
 
@@ -74,7 +75,8 @@ function getRecommendations(answers: Answers): Product[] {
 }
 
 export default function StyleQuiz() {
-  const { t } = useLanguage();
+  const { t, isRtl } = useLanguage();
+  const prefersReducedMotion = useReducedMotion();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [finished, setFinished] = useState(false);
@@ -124,163 +126,215 @@ export default function StyleQuiz() {
 
   const recommendations = finished ? getRecommendations(answers) : [];
 
-  return (
-    <div className="pt-32 pb-20 min-h-screen bg-ivory flex flex-col items-center px-6">
-      <div className="max-w-2xl w-full">
-        <header className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+  const questionPanel = (
+    <div className="w-full">
+      <div className="mb-10 flex items-center justify-between">
+        <p className="font-label text-micro tracking-[0.25em] uppercase text-terracotta-dark">
+          {t('quiz.progress')} {step + 1} / {questions.length}
+        </p>
+        {step > 0 && (
+          <button
+            type="button"
+            onClick={() => setStep(step - 1)}
+            aria-label={t('quiz.back')}
+            className="inline-flex h-11 w-11 items-center justify-center border-b border-stone-300 text-stone-600 transition-colors duration-300 hover:border-terracotta hover:text-terracotta-dark"
           >
-            <h1 className="font-heading text-4xl md:text-5xl text-stone-800 tracking-widest uppercase mb-4">{t('quiz.title')}</h1>
-            <p className="font-body text-stone-600 text-micro tracking-[0.4em] uppercase">{t('quiz.subtitle')}</p>
-            <div className="w-16 h-px bg-terracotta mx-auto mt-6" />
-          </motion.div>
-        </header>
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+          </button>
+        )}
+      </div>
 
-        {/* Progress Bar */}
-        {!finished && (
-          <div className="h-1 bg-stone-100 mb-8">
-            <motion.div
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.4 }}
-              className="h-full bg-terracotta"
+      <h2 className="font-heading text-4xl md:text-6xl normal-case leading-[1.1] text-stone-800 mb-12 max-w-3xl">
+        {questions[step].question}
+      </h2>
+
+      <div className="grid sm:grid-cols-2 gap-x-12">
+        {questions[step].options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => handleAnswer(option)}
+            className="group flex min-h-[76px] items-center justify-between gap-6 border-b border-stone-300 py-5 text-start transition-colors duration-300 hover:border-terracotta focus-visible:border-terracotta"
+          >
+            <span className="font-body text-lg text-stone-700 transition-colors duration-300 group-hover:text-terracotta-dark">
+              {option}
+            </span>
+            <ChevronRight className="w-4 h-4 shrink-0 text-stone-500 transition-colors duration-300 group-hover:text-terracotta-dark rtl:rotate-180" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const resultsPanel = (
+    <div className="w-full">
+      <div className="text-start md:text-center mb-12">
+        <span className="font-label text-micro tracking-[0.35em] uppercase text-terracotta-dark">
+          {t('quiz.your_aesthetic')}
+        </span>
+        <h2 className="font-heading text-4xl md:text-5xl normal-case text-stone-800 mt-4 mb-5">
+          {recommendations.length > 0 ? t('quiz.your_matches') : t('quiz.no_matches')}
+        </h2>
+        <div className="w-16 h-px bg-terracotta md:mx-auto mb-6" />
+        <p className="font-body text-base text-stone-600 max-w-2xl md:mx-auto">
+          {recommendations.length > 0
+            ? t('quiz.based_on_answers')
+            : t('quiz.browse_collection')
+          }
+        </p>
+      </div>
+
+      {recommendations.length > 0 ? (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-12">
+            {recommendations.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className="border border-stone-300 bg-ivory p-7 md:p-10 text-center mb-12">
+            <h3 className="font-heading text-2xl md:text-3xl text-stone-800 mb-4">
+              {t('quiz.next_step_heading')}
+            </h3>
+            <p className="font-body text-base text-stone-600 leading-loose mb-7 max-w-xl mx-auto">
+              {t('quiz.next_step_body')}
+            </p>
+            <ul className="max-w-xl mx-auto grid sm:grid-cols-2 gap-3 text-start mb-8">
+              {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
+                <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-700">
+                  <CheckCircle2 className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
+                  <span>{promise}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/appointment"
+              state={{ gowns: recommendations.map((p) => ({ id: p.id, name: p.name })) }}
+              className="btn-luxury inline-flex items-center justify-center gap-2"
+            >
+              <CalendarCheck className="w-4 h-4" />
+              {t('quiz.request_these')}
+            </Link>
+          </div>
+        </>
+      ) : (
+        <div className="text-center py-10">
+          <p className="font-body text-stone-600 italic">{t('quiz.try_different')}</p>
+        </div>
+      )}
+
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Link to="/collection/all" className="btn-luxury flex items-center gap-2 justify-center">
+          <Eye className="w-4 h-4" />
+          {t('quiz.view_all')}
+        </Link>
+        <button
+          type="button"
+          onClick={resetQuiz}
+          className="btn-luxury-outline flex items-center gap-2 justify-center"
+        >
+          <RefreshCw className="w-4 h-4" />
+          {t('quiz.retry')}
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="pt-24 min-h-screen bg-ivory pb-20">
+      <header className="section-padding !py-20 md:!py-28 bg-ivory border-b border-stone-200">
+        <div className="container mx-auto max-w-6xl grid lg:grid-cols-12 gap-y-8 items-end">
+          <div className="lg:col-span-8">
+            <KineticHeading
+              as="h1"
+              text={t('quiz.title')}
+              className="font-heading text-[clamp(3.25rem,7vw,6.75rem)] normal-case leading-[1.02] text-stone-800 pointer-events-none"
             />
           </div>
-        )}
+          <div className="lg:col-span-4 lg:col-start-9">
+            <p className="font-body text-lg text-stone-600 leading-loose max-w-md">
+              {t('quiz.subtitle')}
+            </p>
+          </div>
+        </div>
+      </header>
 
-        <div className="bg-ivory p-8 md:p-12 relative min-h-[400px] flex flex-col items-center justify-center border border-stone-100">
-          <AnimatePresence mode="wait">
-            {!finished ? (
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="w-full"
-              >
-                <div className="mb-8 flex items-center justify-between">
-                   <span className="text-micro tracking-widest text-terracotta-dark font-bold uppercase">{t('quiz.progress')} {step + 1} / {questions.length}</span>
-                   {step > 0 && (
-                     <button 
-                       onClick={() => setStep(step - 1)}
-                       className="text-stone-600 hover:text-stone-800 transition-colors"
-                     >
-                       <ArrowLeft className="w-4 h-4" />
-                     </button>
-                   )}
-                </div>
-                
-                <h3 className="font-heading text-2xl md:text-3xl text-stone-800 mb-10 tracking-wide">
-                  {questions[step].question}
-                </h3>
+      <section className="section-padding !py-16 md:!py-20 bg-champagne">
+        <div className="container mx-auto max-w-5xl">
+          {!finished && (
+            <div
+              className="h-px bg-stone-300 mb-12"
+              role="progressbar"
+              aria-label={t('quiz.progress')}
+              aria-valuemin={1}
+              aria-valuemax={questions.length}
+              aria-valuenow={step + 1}
+            >
+              {prefersReducedMotion ? (
+                <div
+                  className="h-full w-full bg-terracotta"
+                  style={{
+                    transform: `scaleX(${progress / 100})`,
+                    transformOrigin: isRtl ? 'right' : 'left',
+                  }}
+                />
+              ) : (
+                <motion.div
+                  animate={{ scaleX: progress / 100 }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full w-full bg-terracotta"
+                  style={{ transformOrigin: isRtl ? 'right' : 'left' }}
+                />
+              )}
+            </div>
+          )}
 
-                <div className="grid grid-cols-1 gap-4">
-                  {questions[step].options.map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => handleAnswer(option)}
-                      className="group flex items-center justify-between p-6 border border-stone-100 bg-stone-50/50 hover:bg-ivory hover:border-terracotta transition-colors duration-300 text-left"
-                    >
-                      <span className="font-body text-sm text-stone-700 group-hover:text-stone-900 group-hover:pl-2 transition-all duration-300">{option}</span>
-                      <ChevronRight className="w-4 h-4 text-stone-500 group-hover:text-terracotta-dark transition-colors" />
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
+          <div className="border-y border-stone-300 px-0 md:px-12 py-12 md:py-16 min-h-[440px] flex flex-col justify-center">
+            {prefersReducedMotion ? (
+              <div className="w-full">
+                {finished ? resultsPanel : questionPanel}
+              </div>
             ) : (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full"
-              >
-                <div className="text-center mb-12">
-                  <span className="text-micro tracking-[0.5em] uppercase text-terracotta-dark font-bold">{t('quiz.your_aesthetic')}</span>
-                  <h2 className="font-heading text-3xl md:text-4xl text-stone-800 mt-3 mb-4">
-                    {recommendations.length > 0 ? t('quiz.your_matches') : t('quiz.no_matches')}
-                  </h2>
-                  <div className="w-16 h-px bg-terracotta mx-auto mb-5" />
-                  <p className="font-body text-sm text-stone-600">
-                    {recommendations.length > 0 
-                      ? t('quiz.based_on_answers')
-                      : t('quiz.browse_collection')
-                    }
-                  </p>
-                </div>
-
-                {recommendations.length > 0 ? (
-                  <>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
-                      {recommendations.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                      ))}
-                    </div>
-
-                    {/* R17 — the quiz was the best zero-friction entry point on the
-                        site and ended with nowhere to go. Close it into a booking. */}
-                    <div className="border border-terracotta/30 bg-terracotta/[0.04] p-7 md:p-9 text-center mb-10">
-                      <h3 className="font-heading text-xl md:text-2xl text-stone-800 mb-3">
-                        {t('quiz.next_step_heading')}
-                      </h3>
-                      <p className="font-body text-sm text-stone-600 leading-relaxed mb-6 max-w-lg mx-auto">
-                        {t('quiz.next_step_body')}
-                      </p>
-                      <ul className="max-w-lg mx-auto grid sm:grid-cols-2 gap-3 text-start mb-7">
-                        {[t('contact.promise_deposit'), t('contact.promise_consultation'), t('contact.promise_reschedule'), t('contact.promise_fit_included')].map((promise) => (
-                          <li key={promise} className="flex items-start gap-2 font-body text-sm text-stone-700">
-                            <CheckCircle2 className="w-4 h-4 text-terracotta-dark shrink-0 mt-0.5" />
-                            <span>{promise}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Link
-                        to="/appointment"
-                        state={{ gowns: recommendations.map((p) => ({ id: p.id, name: p.name })) }}
-                        className="btn-luxury inline-flex items-center justify-center gap-2"
-                      >
-                        <CalendarCheck className="w-4 h-4" />
-                        {t('quiz.request_these')}
-                      </Link>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-10">
-                    <p className="font-body text-stone-600 italic">{t('quiz.try_different')}</p>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link to="/collection/all" className="btn-luxury flex items-center gap-2 justify-center">
-                    <Eye className="w-4 h-4" />
-                    {t('quiz.view_all')}
-                  </Link>
-                  <button 
-                    onClick={resetQuiz}
-                    className="btn-luxury-outline flex items-center gap-2 justify-center"
+              <AnimatePresence mode="wait">
+                {!finished ? (
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, x: isRtl ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: isRtl ? 20 : -20 }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full"
                   >
-                    <RefreshCw className="w-4 h-4" />
-                    {t('quiz.retry')}
-                  </button>
-                </div>
-              </motion.div>
+                    {questionPanel}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="results"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                    className="w-full"
+                  >
+                    {resultsPanel}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             )}
-          </AnimatePresence>
-        </div>
+          </div>
 
-        {/* Decor */}
-        <div className="mt-12 flex justify-center gap-1">
-          {questions.map((_, i) => (
-            <div 
-              key={i} 
-              className={cn(
-                "h-0.5 transition-all duration-500", 
-                i <= step ? "w-8 bg-terracotta" : "w-4 bg-stone-200"
-              )} 
-            />
-          ))}
+          <div className="mt-10 flex justify-center gap-2" aria-hidden="true">
+            {questions.map((_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  'h-px w-10 transition-colors duration-300',
+                  i <= step ? 'bg-terracotta' : 'bg-stone-300'
+                )}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
