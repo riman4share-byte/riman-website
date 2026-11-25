@@ -24,6 +24,8 @@ const PRIMARY_LINKS: NavItem[] = [
   { path: '/collection/bridal', key: 'nav.bridal' },
   { path: '/collection/couture', key: 'nav.couture' },
   { path: '/collections', key: 'nav.collections' },
+  { path: '/gallery', key: 'nav.gallery' },
+  { path: '/style-quiz', key: 'nav.style_quiz' },
   { path: '/about', key: 'nav.about' },
 ];
 
@@ -223,7 +225,7 @@ export default function Header() {
         )}
       >
         {/* ── Start: primary nav (desktop) ── */}
-        <nav className="hidden lg:flex items-center gap-7 xl:gap-9 justify-self-start" aria-label="Primary">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 justify-self-start" aria-label="Primary">
           {PRIMARY_LINKS.map((link) => {
             const active = location.pathname === link.path;
             return (
