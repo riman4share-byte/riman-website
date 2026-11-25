@@ -132,15 +132,15 @@ export default function AboutPage() {
             <div className="lg:col-span-8">
               <ol className="relative border-s border-stone-300 ps-8 md:ps-12">
                 {TIMELINE.map((moment) => (
-                  <ScrollReveal key={moment.year}>
-                    <li className="relative pb-14 last:pb-0">
+                  <li key={moment.yearKey} className="relative pb-14 last:pb-0">
+                    <ScrollReveal>
                       <span
                         className="absolute -start-[calc(2rem+3px)] top-1.5 h-[7px] w-[7px] bg-terracotta md:-start-[calc(3rem+3px)]"
                         aria-hidden="true"
                       />
                       <div className="mb-3 flex flex-wrap items-baseline gap-x-5 gap-y-1">
                         <span className="font-label text-micro uppercase tracking-[0.3em] text-terracotta-dark">
-                          {t(moment.year === 'Today' ? 'about.timeline_today' : moment.year)}
+                          {t(moment.yearKey)}
                         </span>
                         <span className="h-px w-8 bg-stone-300" aria-hidden="true" />
                       </div>
@@ -150,8 +150,8 @@ export default function AboutPage() {
                       <p className="mt-4 max-w-xl font-body text-sm leading-relaxed text-stone-600">
                         {t(moment.bodyKey)}
                       </p>
-                    </li>
-                  </ScrollReveal>
+                    </ScrollReveal>
+                  </li>
                 ))}
               </ol>
             </div>
